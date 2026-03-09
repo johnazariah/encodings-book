@@ -4,6 +4,7 @@
 
 **John S Azariah**
 
+[![DOI](https://zenodo.org/badge/1176397444.svg)](https://doi.org/10.5281/zenodo.18917465)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/johnazariah/encodings-book)
 
 ---

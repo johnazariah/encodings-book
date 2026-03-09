@@ -6,6 +6,10 @@ authors:
   - family-names: Azariah
     given-names: John S
     orcid: ""
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.18917465
+    description: Zenodo archive
 version: "1.0.0"
 date-released: "2026-03-09"
 url: "https://github.com/johnazariah/encodings-book"
