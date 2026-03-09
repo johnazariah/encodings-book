@@ -9,7 +9,7 @@ University of Technology Sydney
 
 ---
 
-*For my father, who always knew I'd write a book.*
+*For my parents, who believed before I did.*
 
 ---
 
