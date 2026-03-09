@@ -1,0 +1,7 @@
+foreword.md
+01-electronic-structure.md
+02-notation.md
+03-spin-orbitals.md
+04-qubits-gates-circuits.md
+05-visual-encodings.md
+06-building-hamiltonian.md

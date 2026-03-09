@@ -1,0 +1,17 @@
+# Generated files
+manuscript/mermaid-images/
+manuscript/manuscript.pdf
+manuscript/sample.pdf
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# .NET
+bin/
+obj/

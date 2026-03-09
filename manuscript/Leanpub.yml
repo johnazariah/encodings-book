@@ -1,0 +1,52 @@
+title: From Molecules to Quantum Circuits
+subtitle: A Computational Guide to Fermion-to-Qubit Encodings
+authors: John S Azariah
+language: en
+has_sample: true
+cover_image: cover.png
+about: |
+  **From Molecules to Quantum Circuits** is a self-contained computational
+  guide covering the complete pipeline from molecular electronic structure
+  to quantum circuit compilation for quantum simulation.
+
+  Every formula has a corresponding executable computation in the FockMap
+  library. Every sign, every coefficient, every intermediate Pauli string
+  is computed explicitly — nothing is left as an exercise.
+
+  The guide covers five fermion-to-qubit encodings (Jordan-Wigner,
+  Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree),
+  qubit tapering via diagonal and Clifford Z₂ symmetries, Trotter
+  decomposition with CNOT cost analysis, and circuit output in OpenQASM
+  and Q#.
+
+  Two running examples — H₂ (the simplest molecule) and H₂O (the most
+  important molecule) — are developed from geometry to quantum circuit,
+  including applications like computing the H-O-H bond angle from first
+  principles and explaining why water is a greenhouse gas.
+
+  Intended for graduate students, advanced undergraduates, and researchers
+  who know some quantum mechanics and linear algebra but have not
+  previously worked with fermion-to-qubit encodings.
+
+  Companion software: https://github.com/johnazariah/encodings
+  Web version: https://johnazariah.github.io/encodings/
+
+categories:
+  - Quantum Computing
+  - Computational Chemistry
+  - Physics
+  - Computer Science
+
+tags:
+  - quantum computing
+  - quantum chemistry
+  - fermion-to-qubit encoding
+  - Jordan-Wigner
+  - Bravyi-Kitaev
+  - F#
+  - functional programming
+  - qubit tapering
+  - Trotterization
+
+minimum_price: 0
+suggested_price: 25
