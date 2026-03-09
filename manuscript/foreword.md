@@ -72,17 +72,16 @@ All of these are developed from scratch within the book.
 
 ### How to Read This Book
 
-The 21 chapters are organized into six stages, following the quantum
+The 22 chapters are organized into seven stages, following the quantum
 simulation pipeline:
 
-1. **The Electronic Structure Problem** (Chapters 1–3) — from
-   molecules to integrals
-2. **Encoding** (Chapters 4–7) — from fermions to qubits
-3. **Tapering** (Chapters 8–11) — removing redundant qubits
-4. **Trotterization** (Chapters 12–15) — from Hamiltonian to gates
-5. **Circuit Output** (Chapters 16–18) — generating executable code
-6. **Putting It Together** (Chapters 19–21) — the complete pipeline
-   and what comes next
+1. **The Molecule** (Chapters 1–3) — from molecules to integrals
+2. **The Machine** (Chapter 4) — qubits, gates, and circuits
+3. **Encoding** (Chapters 5–8) — from fermions to qubits
+4. **Tapering** (Chapters 9–12) — removing redundant qubits
+5. **Circuits** (Chapters 13–16) — Trotterization and cost analysis
+6. **The Pipeline** (Chapters 17–20) — complete pipeline, bond angle, algorithms, export
+7. **Horizons** (Chapters 21–22) — scaling and what comes next
 
 You can read straight through (recommended for first reading), or
 jump to a specific stage if you already know the earlier material.
@@ -105,7 +104,34 @@ and Linux via .NET 10, and has zero runtime dependencies.
 
 This work grew out of research at the Centre for Quantum Software
 and Information at the University of Technology Sydney. I am grateful
-to the F# Software Foundation and the .NET open-source community for
-the language and runtime ecosystem that made this library possible.
+to Dr. Chris Ferrie for his guidance and supervision, to Guang Hao Low
+for his inspiration in quantum algorithms, and to the F# Software
+Foundation and the .NET open-source community for the language and
+runtime ecosystem that made this library possible.
 
 *Sydney, March 2026*
+
+---
+
+### About the Author
+
+John S Azariah is a software engineer, language designer, and quantum
+computing researcher whose work sits at the intersection of chemistry,
+computation, and executable mathematics. He earned a BA in Computer
+Science and Chemistry from Dartmouth College, a combination that now
+finds a natural expression in quantum simulation.
+
+Over more than three decades in professional software development, he
+has worked through successive technology shifts including desktop
+software, the internet, cloud computing, quantum programming, and AI.
+His career has included roles on Microsoft Excel and Microsoft Project,
+early SharePoint prototypes, Visual J#.NET, large-scale Azure systems,
+and principal engineering work across Azure Batch, Azure Kubernetes
+Service, and AI systems in APAC. He was also compiler lead and one of
+the language designers behind Microsoft Q#.
+
+Alongside industry work, he has maintained a longstanding interest in
+functional programming, scientific computing, and software craft. He is
+currently a Principal AI SME at Microsoft and is pursuing a PhD in
+Quantum Computing at the University of Technology Sydney under
+Dr. Chris Ferrie.

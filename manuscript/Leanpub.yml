@@ -50,3 +50,11 @@ tags:
 
 minimum_price: 0
 suggested_price: 25
+author_bio: |
+  John S Azariah is a software engineer, language designer, and quantum
+  computing researcher whose career has spanned desktop software, the internet,
+  cloud computing, quantum programming, and AI. He earned a BA in Computer
+  Science and Chemistry from Dartmouth College, was compiler lead and language
+  designer for Microsoft Q#, and is currently a Principal AI SME at Microsoft
+  while pursuing a PhD in Quantum Computing at the University of Technology
+  Sydney under Dr. Chris Ferrie.
