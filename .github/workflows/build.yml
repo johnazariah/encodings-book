@@ -1,0 +1,78 @@
+name: Build Manuscript
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install pandoc
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
+
+      - name: Install LaTeX
+        run: sudo apt-get install -y -qq texlive-xetex texlive-latex-extra lmodern texlive-fonts-recommended
+
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install mermaid-cli
+        run: sudo npm install -g @mermaid-js/mermaid-cli
+
+      - name: Install Playwright Chrome
+        run: |
+          pip install playwright
+          python -m playwright install --with-deps chromium
+
+      - name: Build manuscript PDF
+        run: make
+
+      - name: Build sample PDF
+        run: make sample
+
+      - name: Word count
+        run: make word-count
+
+      - name: Upload manuscript PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: manuscript
+          path: manuscript/manuscript.pdf
+
+      - name: Upload sample PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: sample
+          path: manuscript/sample.pdf
+
+  labs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Package labs
+        run: |
+          tar czf labs.tar.gz labs/ code/ README.md
+          echo "Labs tarball created"
+          ls -lh labs.tar.gz
+
+      - name: Upload labs tarball
+        uses: actions/upload-artifact@v4
+        with:
+          name: labs
+          path: labs.tar.gz

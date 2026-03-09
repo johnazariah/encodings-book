@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use this book in your research or teaching, please cite it as below."
+type: software
+title: "From Molecules to Quantum Circuits: A Practical Guide to Fermion-to-Qubit Encodings"
+authors:
+  - family-names: Azariah
+    given-names: John S
+    orcid: ""
+version: "1.0.0"
+date-released: "2026-03-09"
+url: "https://github.com/johnazariah/encodings-book"
+repository-code: "https://github.com/johnazariah/encodings-book"
+license: "MIT"
+keywords:
+  - quantum computing
+  - quantum chemistry
+  - fermion-to-qubit encoding
+  - Jordan-Wigner
+  - Bravyi-Kitaev
+  - Trotterization
+  - qubit tapering
+  - FockMap
+abstract: >-
+  A self-contained 22-chapter guide covering the complete pipeline from
+  molecular electronic structure to quantum circuit compilation. Includes
+  five fermionic encodings, qubit tapering, Trotter decomposition, circuit
+  export, and computed results (H₂ dissociation curve, H₂O bond angle scan).
+  Companion labs provide interactive F# scripts using the FockMap library.
