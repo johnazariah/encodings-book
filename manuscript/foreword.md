@@ -9,6 +9,7 @@ University of Technology Sydney
 
 ---
 
+*For my father, who always knew I'd write a book.*
 
 ---
 
@@ -103,11 +104,14 @@ and Linux via .NET 10, and has zero runtime dependencies.
 ### Acknowledgements
 
 This work grew out of research at the Centre for Quantum Software
-and Information at the University of Technology Sydney. I am grateful
-to Dr. Chris Ferrie for his guidance and supervision, to Guang Hao Low
-for his inspiration in quantum algorithms, and to the F# Software
-Foundation and the .NET open-source community for the language and
-runtime ecosystem that made this library possible.
+and Information at the University of Technology Sydney.
+
+I am grateful to Dr Chris Ferrie for his patient guidance of my
+exploration, to Dr Guang Hao Low for sparking the journey, and to
+Dr Stephen Jordan and Dr Helmut Katzgraber for their continued
+encouragement.
+
+And to my family, for bearing all my burdens.
 
 *Sydney, March 2026*
 
