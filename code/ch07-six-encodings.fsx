@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════════════════════
-// Chapter 7 Companion: Five Encodings, One Interface
+// Chapter 7 Companion: Six Encodings, One Interface
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch07-five-encodings.fsx
+// Run with: dotnet fsi book/code/ch07-six-encodings.fsx
 // Prereq:   dotnet build --configuration Release
 
 #r "nuget: FockMap"
@@ -11,7 +11,7 @@ open System.Numerics
 open Encodings
 
 printfn ""
-printfn "Chapter 7: Five Encodings, One Interface"
+printfn "Chapter 7: Six Encodings, One Interface"
 printfn "========================================="
 
 let encoders = [
@@ -20,6 +20,7 @@ let encoders = [
     ("Parity",                parityTerms)
     ("Balanced Binary Tree",  balancedBinaryTreeTerms)
     ("Balanced Ternary Tree", ternaryTreeTerms)
+    ("Vlasov Tree",           vlasovTreeTerms)
 ]
 
 // ── Weight scaling comparison ──

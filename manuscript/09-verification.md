@@ -1,12 +1,12 @@
-# Chapter 8: Checking Our Answer
+# Chapter 9: Checking Our Answer
 
-_We have fifteen Pauli strings and fifteen coefficients. How do we know they're right? This chapter introduces the only reliable verification method: compute the eigenvalues and compare._
+_We have fifteen Pauli strings and fifteen coefficients. How do we know they're right? Chapter 8 showed how to verify an encoding algebraically — checking that the CAR hold at the Pauli string level. This chapter adds the second, independent check: compute the eigenvalues and compare with a known reference._
 
 ## In This Chapter
 
-- **What you'll learn:** How to verify an encoded Hamiltonian by exact diagonalization, how to interpret the eigenspectrum by particle-number sector, and how to confirm that all five encodings produce the same physics.
-- **Why this matters:** Encoding bugs produce Hamiltonians that look structurally correct — right number of terms, right symmetries, plausible coefficients. The only reliable test is the eigenspectrum. If you skip verification, you will eventually publish a wrong number.
-- **Prerequisites:** Chapters 1–7 (you have the 15-term Hamiltonian from all five encodings).
+- **What you'll learn:** How to verify an encoded Hamiltonian by exact diagonalization, how to interpret the eigenspectrum by particle-number sector, and how to confirm that all six encodings produce the same physics.
+- **Why this matters:** Algebraic validation (Chapter 8) guarantees the encoding is correct in isolation. But the full pipeline — integrals, coefficient assembly, like-term combination — has many other places where bugs can hide. Eigenvalue comparison catches them all. If you skip this step, you will eventually publish a wrong number.
+- **Prerequisites:** Chapters 1–8 (you have the 15-term Hamiltonian from all six encodings and understand both algebraic and numerical verification).
 
 ---
 
@@ -18,7 +18,7 @@ A wrong-convention Hamiltonian (Chapter 2, Error #1) has 15 terms with real coef
 
 None of these errors will crash your code. All of them will give wrong eigenvalues. The only way to catch them is to compute those eigenvalues and compare with a known reference.
 
-For H₂ in STO-3G, we have exact classical reference values. For larger molecules, we can still cross-check between encodings — if all five give the same spectrum, we can be confident in the pipeline (though not in the integrals, which must be checked separately).
+For H₂ in STO-3G, we have exact classical reference values. For larger molecules, we can still cross-check between encodings — if all six give the same spectrum, we can be confident in the pipeline (though not in the integrals, which must be checked separately).
 
 ---
 
@@ -81,7 +81,7 @@ Of course, STO-3G is a minimal basis — the absolute energy is still far from t
 
 ## Cross-Encoding Verification
 
-The most powerful check: build the Hamiltonian with all five encodings and verify that they produce the **same eigenspectrum**.
+The most powerful check: build the Hamiltonian with all six encodings and verify that they produce the **same eigenspectrum**.
 
 ```fsharp
 for (name, encoder) in encoders do
@@ -97,6 +97,7 @@ for (name, encoder) in encoders do
 | Parity | $-1.8572750302$ | $< 10^{-15}$ |
 | Balanced Binary Tree | $-1.8572750302$ | $< 10^{-15}$ |
 | Balanced Ternary Tree | $-1.8572750302$ | $< 10^{-15}$ |
+| Vlasov Tree | $-1.8572750302$ | $< 10^{-15}$ |
 
 **Agreement to $5 \times 10^{-16}$ Ha** — the limit of 64-bit floating-point precision. The eigenvalues are identical to machine epsilon.
 
@@ -121,26 +122,24 @@ If check 4 fails (no exchange terms), the most likely cause is the cross-spin bu
 
 ---
 
-## Stage 2 Complete
+## Encoding Stage Complete
 
 With verification done, we have walked the complete path from molecule to validated qubit Hamiltonian:
 
 ```mermaid
-flowchart TD
-    CH1["Ch.1<br/>Molecule → Integrals"]
-    CH2["Ch.2<br/>Notation fixed"]
-    CH3["Ch.3<br/>Spin-orbital tables"]
-    CH4["Ch.4<br/>Encoding concepts"]
-    CH5["Ch.5<br/>15-term Hamiltonian"]
-    CH6["Ch.6<br/>Five encodings"]
-    CH7["Ch.7<br/>Verified ✓"]
-    CH1 --> CH2 --> CH3 --> CH4 --> CH5 --> CH6 --> CH7
-    CH7 --> NEXT["Stage 3:<br/>Tapering"]
-    style CH7 fill:#d1fae5,stroke:#059669
+flowchart LR
+    CH1["Ch.1–3<br/>Integrals"]
+    CH4["Ch.4<br/>Gates"]
+    CH5["Ch.5–7<br/>Encoding"]
+    CH8["Ch.8<br/>Vlasov"]
+    CH9["Ch.9<br/>Verified ✓"]
+    CH1 --> CH4 --> CH5 --> CH8 --> CH9
+    CH9 --> NEXT["Tapering<br/>(Ch.10–13)"]
+    style CH9 fill:#d1fae5,stroke:#059669
     style NEXT fill:#fde68a,stroke:#d97706
 ```
 
-The Hamiltonian is correct. It is the exact qubit representation of H₂ in STO-3G for any of five encodings. It has 15 Pauli terms, its ground-state energy is $-1.1422$ Ha, and it captures all the electron correlation that a quantum computer would extract.
+The Hamiltonian is correct. It is the exact qubit representation of H₂ in STO-3G for any of six encodings. It has 15 Pauli terms, its ground-state energy is $-1.1422$ Ha, and it captures all the electron correlation that a quantum computer would extract.
 
 But can we make it *smaller*? Can we remove qubits without losing physics? That's what tapering does — and it's where we go next.
 
@@ -148,9 +147,9 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 
 ## Key Takeaways
 
-- The **only reliable verification** of an encoded Hamiltonian is eigenvalue comparison against a known reference or cross-encoding check.
+- Chapter 8 established **algebraic verification** (CAR checks). This chapter adds **numerical verification** (eigenvalue comparison). Both are necessary: algebraic checks validate the encoding; numerical checks validate the full pipeline.
 - The H₂/STO-3G ground-state energy is $E_0 = -1.1422$ Ha (Full CI, exact within basis).
-- All five encodings produce eigenvalues that agree to $< 5 \times 10^{-16}$ Ha — machine precision.
+- All six encodings produce eigenvalues that agree to $< 5 \times 10^{-16}$ Ha — machine precision.
 - Encoding bugs produce structurally plausible but numerically wrong Hamiltonians. Check eigenvalues early and often.
 - Matrix diagonalization is used *only* for verification. The actual quantum simulation operates on the symbolic Pauli sum.
 
@@ -168,15 +167,15 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 
 2. **Correlation energy.** Compute the Hartree–Fock energy of H₂ by hand: $E_\text{HF} = h_{00} + h_{11} + [00\mid00] + V_{nn}$ (one-body energy for each spin-orbital in $\sigma_g$, plus Coulomb repulsion, plus nuclear repulsion). Verify that $E_\text{corr} = E_\text{FCI} - E_\text{HF} \approx -0.019$ Ha $\approx -12$ kcal/mol. This is exactly the contribution of the off-diagonal exchange terms from Chapter 6.
 
-3. **Cross-encoding lab.** Run the [Compare Encodings lab](../labs/03-compare-encodings.html) and verify 5-encoding eigenvalue agreement for yourself.
+3. **Cross-encoding lab.** Run the [Compare Encodings lab](../labs/03-compare-encodings.html) and verify 6-encoding eigenvalue agreement for yourself.
 
 ## Further Reading
 
 - Szabo, A. and Ostlund, N. S. *Modern Quantum Chemistry.* §4.1 gives the Full CI eigenvalues for H₂/STO-3G.
-- Helgaker, T., Jørgensen, P., and Olsen, J. *Molecular Electronic-Structure Theory.* Chapter 11 covers Full CI theory and implementation.
+- Helgaker, T., Jørgensen, P., and Olsen, J. *Molecular Electronic-Structure Theory.* Chapter 12 covers Full CI theory and implementation.
 
 ---
 
-**Previous:** [Chapter 7 — Five Encodings, One Interface](07-five-encodings.html)
+**Previous:** [Chapter 8 — Building a Tree Encoding](08-building-vlasov.html)
 
-**Next:** [Chapter 9 — Why Tapering?](09-why-tapering.html)
+**Next:** [Chapter 10 — Why Tapering?](10-why-tapering.html)

@@ -16,7 +16,7 @@ ladder operator. But Pauli weight is a proxy for what actually matters on
 hardware: **CNOT gates**.
 
 This lab computes the concrete CNOT cost of a single Trotter step for the
-H₂ molecule under all five encodings, connecting the abstract notion of
+H₂ molecule under all six encodings, connecting the abstract notion of
 Pauli weight to measurable circuit depth.
 
 ## The CNOT Staircase
@@ -109,7 +109,7 @@ let trotterCost (ham : PauliRegisterSequence) =
        TotalCnots = totalCnots |}
 
 (**
-## Encoding H₂ with All Five Encodings
+## Encoding H₂ with All Six Encodings
 *)
 
 let encoders : (string * (LadderOperatorUnit -> uint32 -> uint32 -> PauliRegisterSequence)) list =
@@ -117,7 +117,8 @@ let encoders : (string * (LadderOperatorUnit -> uint32 -> uint32 -> PauliRegiste
       "Parity",         parityTerms
       "Bravyi-Kitaev",  bravyiKitaevTerms
       "Binary Tree",    balancedBinaryTreeTerms
-      "Ternary Tree",   ternaryTreeTerms ]
+      "Ternary Tree",   ternaryTreeTerms
+      "Vlasov Tree",    vlasovTreeTerms ]
 
 (**
 ## Results

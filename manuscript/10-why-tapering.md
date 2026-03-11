@@ -1,4 +1,4 @@
-# Chapter 9: Why Tapering?
+# Chapter 10: Why Tapering?
 
 _The Hamiltonian is correct and verified. But it may be bigger than it needs to be. This chapter shows why encoded Hamiltonians often contain redundant qubits — and how to detect them._
 
@@ -6,7 +6,7 @@ _The Hamiltonian is correct and verified. But it may be bigger than it needs to 
 
 - **What you'll learn:** How fermion-to-qubit encoding creates Z₂ symmetries that allow safe qubit removal, and why this is one of the highest-leverage optimizations in the entire pipeline.
 - **Why this matters:** Removing even one qubit halves the Hilbert space. For near-term quantum hardware with limited qubit counts and high error rates, tapering can mean the difference between a feasible and an infeasible simulation.
-- **Prerequisites:** Chapters 1–7 (you have a verified qubit Hamiltonian and understand Pauli strings).
+- **Prerequisites:** Chapters 1–9 (you have a verified qubit Hamiltonian and understand Pauli strings).
 
 ---
 
@@ -35,21 +35,16 @@ The Parity encoding makes this especially transparent: the last qubit often stor
 The benefits are concrete and multiplicative:
 
 ```mermaid
-flowchart LR
-    subgraph Before["Before Tapering"]
-        direction TB
-        BQ["n qubits"]
-        BT["m Pauli terms"]
-        BH["2ⁿ Hilbert space"]
-    end
-    subgraph After["After Tapering (k qubits removed)"]
-        direction TB
-        AQ["n−k qubits"]
-        AT["≤ m terms (often fewer)"]
-        AH["2ⁿ⁻ᵏ Hilbert space"]
-    end
-    Before --> |"Taper"| After
-    style After fill:#d1fae5,stroke:#059669
+flowchart TD
+    BQ["n qubits"] --- BT["m Pauli terms"] --- BH["2ⁿ Hilbert space"]
+    BT -->|"Taper<br/>(remove k qubits)"| AT
+    AQ["n−k qubits"] --- AT["≤ m terms"] --- AH["2ⁿ⁻ᵏ Hilbert space"]
+    style BQ fill:#e8ecf1,stroke:#6b7280
+    style BT fill:#e8ecf1,stroke:#6b7280
+    style BH fill:#e8ecf1,stroke:#6b7280
+    style AQ fill:#d1fae5,stroke:#059669
+    style AT fill:#d1fae5,stroke:#059669
+    style AH fill:#d1fae5,stroke:#059669
 ```
 
 | What shrinks | Factor | Example (12 → 9 qubits) |
@@ -80,11 +75,11 @@ Sometimes no *single* qubit is purely diagonal, but a *combination* of qubits is
 
 In this case, we can apply a small rotation circuit (built from Hadamard, S, and CNOT gates — the same gates from Chapter 4) that rearranges the Hamiltonian so that the conserved combination ends up on a single qubit. After the rotation, that qubit is diagonally taperable, and we remove it just like in Level 1.
 
-**How you detect it:** FockMap searches for Pauli operators that commute with every term in the Hamiltonian — these are the symmetry generators. The mathematical machinery behind this search involves binary linear algebra, which we'll develop step by step in Chapter 11.
+**How you detect it:** FockMap searches for Pauli operators that commute with every term in the Hamiltonian — these are the symmetry generators. The mathematical machinery behind this search involves binary linear algebra, which we'll develop step by step in Chapter 12.
 
 The important thing at this stage is the *idea*: even when the symmetry isn't visible on a single qubit, it may be hiding in a combination of qubits, and a rotation can expose it.
 
-We'll work through the diagonal case in Chapter 10, the Clifford generalization in Chapter 11, and concrete benchmarks in Chapter 12.
+We'll work through the diagonal case in Chapter 11, the Clifford generalization in Chapter 12, and concrete benchmarks in Chapter 13.
 
 ---
 
@@ -129,6 +124,6 @@ This is why we taper *before* Trotterization, not after: the circuit should oper
 
 ---
 
-**Previous:** [Chapter 8 — Checking Our Answer](08-verification.html)
+**Previous:** [Chapter 9 — Checking Our Answer](09-verification.html)
 
-**Next:** [Chapter 10 — Diagonal Z₂ Symmetries](10-diagonal-z2.html)
+**Next:** [Chapter 11 — Diagonal Z₂ Symmetries](11-diagonal-z2.html)

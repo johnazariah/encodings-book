@@ -1,4 +1,4 @@
-# Chapter 18: The Water Bond Angle
+# Chapter 19: The Water Bond Angle
 
 _We built a pipeline. Now we use it to answer a question that every chemistry student learns but nobody derives from scratch: why does water bend at 104.5°?_
 
@@ -6,7 +6,7 @@ _We built a pipeline. Now we use it to answer a question that every chemistry st
 
 - **What you'll learn:** How to scan a potential energy surface by running the same pipeline at many molecular geometries — and how the energy minimum tells you the equilibrium bond angle.
 - **Why this matters:** This is the payoff of the entire book. We built sixteen chapters of machinery. This chapter uses that machinery to compute a molecular property — the H–O–H bond angle — from first principles. No fitting. No empirical parameters. Just quantum mechanics and our pipeline.
-- **Prerequisites:** Chapter 17 (the complete H₂ pipeline).
+- **Prerequisites:** Chapter 18 (the complete H₂ pipeline).
 
 ---
 
@@ -26,8 +26,8 @@ The approach is simple:
 
 1. **Pick a range of angles.** We'll scan from 60° to 180° in 5° steps (25 geometries).
 2. **At each angle, compute the molecular integrals.** PySCF generates the one-body and two-body integrals for that geometry.
-3. **At each angle, build the encoded Hamiltonian.** Same pipeline as Chapter 17, but with different integrals each time.
-4. **At each angle, compute the ground-state energy.** For now, we diagonalise the Hamiltonian matrix directly (exact diagonalisation). On a quantum computer, this would be a VQE or QPE run — Chapter 19 covers those algorithms.
+3. **At each angle, build the encoded Hamiltonian.** Same pipeline as Chapter 18, but with different integrals each time.
+4. **At each angle, compute the ground-state energy.** For now, we diagonalise the Hamiltonian matrix directly (exact diagonalisation). On a quantum computer, this would be a VQE or QPE run — Chapter 20 covers those algorithms.
 5. **Find the angle with the lowest energy.** That's the bond angle.
 
 Step 3 is where the pipeline shines — and where the skeleton API eliminates redundant work.
@@ -92,7 +92,7 @@ def h2o_integrals(angle_degrees, bond_length=0.9584):
 
 The PySCF script runs on a laptop in seconds. For each angle, it produces the nuclear repulsion energy $V_{nn}$, the one-body integrals $h_{pq}$, and the two-body integrals $h_{pqrs}$. We export these as a JSON map with keys like `"0,1"` and `"0,1,2,3"` — the same format our `factory` function expects.
 
-The companion script `code/ch18-bond-angle-scan.py` has the full workflow: generate integrals at each angle, write CSVs, and produce the bond angle plot.
+The companion script `code/ch19-bond-angle-scan.py` has the full workflow: generate integrals at each angle, write CSVs, and produce the bond angle plot.
 
 The data flows through a simple two-stage pipeline:
 
@@ -240,6 +240,6 @@ The potential energy surface scan we performed is the first step in a vibrationa
 
 ---
 
-**Previous:** [Chapter 17 — The Complete Pipeline](17-complete-pipeline.html)
+**Previous:** [Chapter 18 — The Complete Pipeline](18-complete-pipeline.html)
 
-**Next:** [Chapter 19 — Algorithms: VQE and QPE](19-algorithms.html)
+**Next:** [Chapter 20 — Algorithms: VQE and QPE](20-algorithms.html)

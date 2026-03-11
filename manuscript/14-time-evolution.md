@@ -1,4 +1,4 @@
-# Chapter 13: From Hamiltonian to Time Evolution
+# Chapter 14: From Hamiltonian to Time Evolution
 
 _We have a Hamiltonian — a complete description of the molecule's physics. But a quantum computer can't execute a description. It needs instructions. This chapter is about turning the description into instructions._
 
@@ -6,7 +6,7 @@ _We have a Hamiltonian — a complete description of the molecule's physics. But
 
 - **What you'll learn:** Why quantum simulation boils down to implementing time evolution $e^{-iHt}$, what this operator physically represents, why it's hard to implement when the Hamiltonian has many non-commuting terms, and how Trotterization provides the practical bridge.
 - **Why this matters:** Without this bridge, the pipeline from molecule to circuit is incomplete. This is the chapter that turns a symbolic object into something a quantum processor can actually run.
-- **Prerequisites:** Chapters 1–12 (you have a verified, optionally tapered, Pauli-sum Hamiltonian and understand gates from Chapter 4).
+- **Prerequisites:** Chapters 1–13 (you have a verified, optionally tapered, Pauli-sum Hamiltonian and understand gates from Chapter 4).
 
 ---
 
@@ -55,11 +55,11 @@ This dual role is what makes quantum simulation work: if you can implement $U(t)
 Let's pause and take stock. Here's the complete pipeline so far:
 
 ```mermaid
-flowchart TD
+flowchart LR
     MOL["Molecule<br/>(Ch 1-3)"] --> GATES["Gates<br/>(Ch 4)"]
     GATES --> ENC["Encoding<br/>(Ch 5-7)"]
     ENC --> VER["Verified<br/>(Ch 8)"]
-    VER --> TAP["Tapered<br/>(Ch 9-12)"]
+    VER --> TAP["Tapered<br/>(Ch 9-13)"]
     TAP --> |"?"| CIRC["Circuit"]
     style CIRC fill:#fde68a,stroke:#d97706
 ```
@@ -91,7 +91,7 @@ If the Hamiltonian had a single term, $\hat{H} = cP$, then:
 
 $$e^{-i\hat{H}t} = e^{-ictP}$$
 
-This is a single Pauli rotation — easy to implement (Chapter 14 will show exactly how). But our Hamiltonian has $L$ terms:
+This is a single Pauli rotation — easy to implement (Chapter 15 will show exactly how). But our Hamiltonian has $L$ terms:
 
 $$\hat{H} = c_1 P_1 + c_2 P_2 + \cdots + c_L P_L$$
 
@@ -173,7 +173,7 @@ The Trotter decomposition converts our Hamiltonian into a list of Pauli rotation
 
 $$\text{Hamiltonian } \hat{H} \;\xrightarrow{\text{Trotter}}\; [e^{-i\theta_1 P_1},\; e^{-i\theta_2 P_2},\; \ldots]$$
 
-Each rotation $e^{-i\theta P}$ must then be decomposed into elementary gates (H, CNOT, Rz). That's the **CNOT staircase** — Chapter 14. But first, Chapter 13 will show how FockMap computes the rotation list.
+Each rotation $e^{-i\theta P}$ must then be decomposed into elementary gates (H, CNOT, Rz). That's the **CNOT staircase** — Chapter 15. But first, Chapter 14 will show how FockMap computes the rotation list.
 
 ---
 
@@ -193,6 +193,6 @@ Each rotation $e^{-i\theta P}$ must then be decomposed into elementary gates (H,
 
 ---
 
-**Previous:** [Chapter 12 — Tapering Benchmarks](12-tapering-benchmarks.html)
+**Previous:** [Chapter 13 — Tapering Benchmarks](13-tapering-benchmarks.html)
 
-**Next:** [Chapter 14 — Trotterization in Practice](14-trotter-formulas.html)
+**Next:** [Chapter 15 — Trotterization in Practice](15-trotter-formulas.html)

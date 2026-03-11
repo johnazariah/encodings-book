@@ -1,15 +1,15 @@
 # ══════════════════════════════════════════════════════════════
-# Chapter 17 Companion: Generate H₂ integrals at multiple
+# Chapter 18 Companion: Generate H₂ integrals at multiple
 # bond lengths for the dissociation curve.
 # ══════════════════════════════════════════════════════════════
-# Run with: python book/code/ch17-generate-h2-integrals.py
+# Run with: python book/code/ch18-generate-h2-integrals.py
 # Prereq:   pip install pyscf
 # Output:   book/code/h2_dissociation_integrals.json
 #
 # This script computes the STO-3G molecular integrals for H₂
 # at a range of bond lengths, in the spin-orbital physicist's
 # convention that FockMap expects. The output is a JSON file
-# that the F# companion script (ch17-pipeline.fsx) reads.
+# that the F# companion script (ch18-pipeline.fsx) reads.
 
 import json
 
@@ -109,7 +109,7 @@ def main():
         print("PySCF not installed. Install with: pip install pyscf")
         print("Then re-run this script to generate the integral files.")
         print()
-        print("Alternatively, the F# companion script (ch17-pipeline.fsx)")
+        print("Alternatively, the F# companion script (ch18-pipeline.fsx)")
         print("includes hardcoded integrals for the equilibrium geometry")
         print("and will still demonstrate the full pipeline.")
         return
@@ -149,7 +149,7 @@ def main():
     print()
     print(f"Written to: {out_path}")
     print(f"Bond lengths: {len(BOND_LENGTHS)}")
-    print("Use with:     dotnet fsi book/code/ch17-pipeline.fsx")
+    print("Use with:     dotnet fsi book/code/ch18-pipeline.fsx")
 
 
 if __name__ == "__main__":

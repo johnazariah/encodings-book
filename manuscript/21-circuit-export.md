@@ -1,4 +1,4 @@
-# Chapter 20: Speaking the Hardware's Language
+# Chapter 21: Speaking the Hardware's Language
 
 _The circuit exists in FockMap's type system. To run it on real hardware, we need to speak the machine's language._
 
@@ -6,13 +6,13 @@ _The circuit exists in FockMap's type system. To run it on real hardware, we nee
 
 - **What you'll learn:** How to export FockMap gate sequences as OpenQASM (universal), Q# (Azure Quantum), or JSON (Python ecosystem) — and when to use which.
 - **Why this matters:** A gate sequence that only exists in memory is a theoretical result. An exported circuit is an experiment you can run.
-- **Prerequisites:** Chapter 17 (the complete pipeline).
+- **Prerequisites:** Chapter 18 (the complete pipeline).
 
 ---
 
 ## Three Formats, One Circuit
 
-FockMap's Trotter decomposition (Chapter 15) produces a concrete gate sequence — an array of `Gate` values representing Hadamard, S, CNOT, and Rz operations. That array is a platform-independent description of the circuit. But to execute it, you need to express it in a format that a quantum platform understands.
+FockMap's Trotter decomposition (Chapter 16) produces a concrete gate sequence — an array of `Gate` values representing Hadamard, S, CNOT, and Rz operations. That array is a platform-independent description of the circuit. But to execute it, you need to express it in a format that a quantum platform understands.
 
 The three main targets:
 
@@ -52,7 +52,7 @@ cx q[0], q[1];
 h q[0];
 ```
 
-Each Pauli rotation from Chapter 15 becomes a CNOT staircase bracketed by basis-change gates. The angle in `rz()` is the rotation parameter $\theta = c_k \Delta t$.
+Each Pauli rotation from Chapter 16 becomes a CNOT staircase bracketed by basis-change gates. The angle in `rz()` is the rotation parameter $\theta = c_k \Delta t$.
 
 ### Gate Mapping
 
@@ -246,12 +246,12 @@ Whichever format you choose, verify the output end-to-end:
 
 1. **Import** the circuit into the target platform (Qiskit, Q#, Cirq)
 2. **Simulate** with a statevector backend (zero noise, exact amplitudes)
-3. **Compute** $\langle\hat{H}\rangle$ from the statevector and compare against the exact eigenvalue from Chapter 8
+3. **Compute** $\langle\hat{H}\rangle$ from the statevector and compare against the exact eigenvalue from Chapter 9
 4. **Transpile** to the target hardware's native gate set
 5. **Re-simulate** the transpiled circuit and check that the energy is unchanged (within Trotter error)
 6. **Only then** submit to real hardware or a noisy simulator
 
-For H₂, the exact FCI energy is $-1.1373$ Ha (electronic only) or $-1.8572$ Ha (including nuclear repulsion). The Trotterised circuit should produce an energy within $O(\Delta t^2)$ of this — typically within 0.01 Ha at $\Delta t = 0.1$. If the deviation is larger, check the integral convention (Chapter 2) and the encoding consistency (Chapter 8).
+For H₂, the exact FCI energy is $-1.1373$ Ha (electronic only) or $-1.8572$ Ha (including nuclear repulsion). The Trotterised circuit should produce an energy within $O(\Delta t^2)$ of this — typically within 0.01 Ha at $\Delta t = 0.1$. If the deviation is larger, check the integral convention (Chapter 2) and the encoding consistency (Chapter 9).
 
 ---
 
@@ -269,6 +269,6 @@ For H₂, the exact FCI energy is $-1.1373$ Ha (electronic only) or $-1.8572$ Ha
 
 ---
 
-**Previous:** [Chapter 19 — Algorithms: VQE and QPE](19-algorithms.html)
+**Previous:** [Chapter 20 — Algorithms: VQE and QPE](20-algorithms.html)
 
-**Next:** [Chapter 21 — Scaling: From H₂ to FeMo-co](21-scaling.html)
+**Next:** [Chapter 22 — Scaling: From H₂ to FeMo-co](22-scaling.html)

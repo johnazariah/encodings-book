@@ -13,8 +13,9 @@ about: |
   library. Every sign, every coefficient, every intermediate Pauli string
   is computed explicitly — nothing is left as an exercise.
 
-  The guide covers five fermion-to-qubit encodings (Jordan-Wigner,
-  Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree),
+  The guide covers six fermion-to-qubit encodings (Jordan-Wigner,
+  Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree,
+  Vlasov tree),
   qubit tapering via diagonal and Clifford Z₂ symmetries, Trotter
   decomposition with CNOT cost analysis, and circuit output in OpenQASM
   and Q#.

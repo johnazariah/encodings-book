@@ -40,6 +40,7 @@ the companion website.
 | `parityTerms` | same | Parity encoding |
 | `balancedBinaryTreeTerms` | same | Binary tree encoding |
 | `ternaryTreeTerms` | same | Ternary tree encoding |
+| `vlasovTreeTerms` | same | Vlasov tree encoding |
 | `encodeOperator` | `EncodingScheme → ...` | Custom encoding |
 
 ### Hamiltonian Construction

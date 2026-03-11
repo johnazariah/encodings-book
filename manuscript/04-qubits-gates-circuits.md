@@ -98,7 +98,7 @@ The pattern: CNOT is **10–100× slower** and **10–100× noisier** than singl
 
 There is also a **connectivity constraint**. On many architectures (especially superconducting), CNOT is only available between physically adjacent qubits. If you need to entangle qubit 0 with qubit 15, you must first "swap" the quantum state through the intervening qubits — and each swap costs 3 CNOTs.
 
-> **If you don't have access to quantum hardware**, you can still run everything in this book using a **quantum simulator**. The [Quokka](https://www.quokkacomputing.com/) (by Eigensystems, co-founded by Dr Chris Ferrie at UTS) is a dedicated quantum simulation appliance — available as a standalone device or accessible over the web — that can simulate up to ~30 qubits. That's more than enough for H₂ (4 qubits), H₂O (12 qubits), and most textbook-scale problems. IBM's Qiskit Aer and Google's Cirq also provide free software simulators. The circuits we generate in Stage 5 can target any of these backends.
+> **If you don't have access to quantum hardware**, you can still run everything in this book using a **quantum simulator**. The [Quokka](https://www.quokkacomputing.com/) (by Eigensystems, co-founded by Dr Chris Ferrie at UTS) is a dedicated quantum simulation appliance — available as a standalone device or accessible over the web — that can simulate up to ~30 qubits. That's more than enough for H₂ (4 qubits), H₂O (12 qubits), and most textbook-scale problems. IBM's Qiskit Aer and Google's Cirq also provide free software simulators. The circuits we generate in the later pipeline chapters can target any of these backends.
 >
 > The CNOT cost analysis is still relevant for simulated circuits: it tells you how the circuit *would* perform on real hardware, and whether your molecule is within reach of current or near-term quantum processors.
 
@@ -124,7 +124,7 @@ For quantum simulation specifically, we need even less. The Hamiltonian is a sum
 - One $R_z$ rotation (to apply the phase)
 - The reverse of the above (to undo the basis change and entanglement)
 
-This decomposition — the **CNOT staircase** — is the circuit that appears for every term in the Hamiltonian. Its cost is $2(w-1)$ CNOT gates, where $w$ is the Pauli weight of the term. We will develop it in full detail in Stage 4 (Trotterization).
+This decomposition — the **CNOT staircase** — is the circuit that appears for every term in the Hamiltonian. Its cost is $2(w-1)$ CNOT gates, where $w$ is the Pauli weight of the term. We will develop it in full detail in the Circuits stage (Chapters 14–17).
 
 For now, the key formula is:
 

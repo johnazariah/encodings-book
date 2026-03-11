@@ -1,18 +1,18 @@
-# Chapter 19: Algorithms — VQE and QPE
+# Chapter 20: Algorithms — VQE and QPE
 
-_Chapters 17 and 18 used exact diagonalisation as a stand-in energy oracle. This chapter replaces that stand-in with the quantum algorithms that run on real hardware._
+_Chapters 18 and 19 used exact diagonalisation as a stand-in energy oracle. This chapter replaces that stand-in with the quantum algorithms that run on real hardware._
 
 ## In This Chapter
 
 - **What you'll learn:** How the two major quantum chemistry algorithms — VQE (variational, near-term) and QPE (phase estimation, fault-tolerant) — consume the encoded Hamiltonian, and what measurement infrastructure they require.
-- **Why this matters:** FockMap produces the *input* to these algorithms. Understanding what the algorithms need helps you make better encoding and tapering choices — and understand why the CNOT counts from Chapter 16 matter so much.
-- **Prerequisites:** Chapters 16–18 (cost analysis, pipeline, bond angle scan).
+- **Why this matters:** FockMap produces the *input* to these algorithms. Understanding what the algorithms need helps you make better encoding and tapering choices — and understand why the CNOT counts from Chapter 17 matter so much.
+- **Prerequisites:** Chapters 17–19 (cost analysis, pipeline, bond angle scan).
 
 ---
 
 ## Two Algorithms, One Input
 
-In Chapters 17 and 18, we computed ground-state energies by exact diagonalisation — building the Hamiltonian as a matrix and finding its smallest eigenvalue classically. For H₂ ($2^4 = 16$-dimensional matrix) and H₂O in minimal basis ($2^{11} = 2{,}048$-dimensional after tapering), exact diagonalisation is trivially feasible on a laptop. But for larger systems — N₂ (20 qubits → $2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$) — the matrix does not fit in any existing memory.
+In Chapters 18 and 19, we computed ground-state energies by exact diagonalisation — building the Hamiltonian as a matrix and finding its smallest eigenvalue classically. For H₂ ($2^4 = 16$-dimensional matrix) and H₂O in minimal basis ($2^{11} = 2{,}048$-dimensional after tapering), exact diagonalisation is trivially feasible on a laptop. But for larger systems — N₂ (20 qubits → $2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$) — the matrix does not fit in any existing memory.
 
 This is where quantum algorithms enter. Instead of building the exponentially large matrix, a quantum computer prepares the state directly in $n$ qubits and extracts the energy through measurement. The pipeline output — the Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ — is exactly what these algorithms consume.
 
@@ -114,7 +114,7 @@ The actual VQE loop — parameter optimisation, circuit execution, shot collecti
 
 QPE doesn't optimise — it *reads out* the ground-state energy directly, like a quantum spectrometer. The key insight: if we can implement the time-evolution operator $e^{-i\hat{H}t}$ as a quantum circuit, then phase kickback extracts the eigenvalue.
 
-This is where Trotterization becomes essential. The operator $e^{-i\hat{H}t}$ is approximated by a product of Pauli rotations — exactly the Trotter step from Chapter 13. QPE applies this operation repeatedly, controlled by ancilla qubits, and reads the energy from the ancilla register.
+This is where Trotterization becomes essential. The operator $e^{-i\hat{H}t}$ is approximated by a product of Pauli rotations — exactly the Trotter step from Chapter 15. QPE applies this operation repeatedly, controlled by ancilla qubits, and reads the energy from the ancilla register.
 
 ### The Circuit
 
@@ -126,7 +126,7 @@ The QPE circuit has two registers. The **ancilla register** ($m$ qubits, initial
 
 The controlled-$U^{2^j}$ operation applies $2^j$ Trotter steps — so the highest ancilla qubit controls $2^{m-1}$ steps. This is where the circuit depth comes from — and why QPE demands fault-tolerant hardware.
 
-The cost is dominated by the controlled Trotter steps. Each step requires the same gates as a regular Trotter step (Chapter 15), plus control logic — roughly doubling the CNOT count per step.
+The cost is dominated by the controlled Trotter steps. Each step requires the same gates as a regular Trotter step (Chapter 16), plus control logic — roughly doubling the CNOT count per step.
 
 ### Resource Estimation
 
@@ -169,7 +169,7 @@ The 50× jump from H₂ to H₂O is driven by two factors: more qubits (more ter
 | **Bottleneck** | Shot count, barren plateaus | Circuit depth, error correction |
 | **FockMap provides** | Hamiltonian + measurement groups | Hamiltonian + Trotter circuits |
 
-For the bond angle scan in Chapter 18, we used exact diagonalisation to obtain the same target quantity that an ideal QPE calculation would produce: the ground-state energy at each geometry. On real near-term hardware, you would use VQE at each angle, accumulating enough shots to estimate the energy to chemical accuracy. The structure of the scan is the same; only the energy-evaluation subroutine changes.
+For the bond angle scan in Chapter 19, we used exact diagonalisation to obtain the same target quantity that an ideal QPE calculation would produce: the ground-state energy at each geometry. On real near-term hardware, you would use VQE at each angle, accumulating enough shots to estimate the energy to chemical accuracy. The structure of the scan is the same; only the energy-evaluation subroutine changes.
 
 ---
 
@@ -228,6 +228,6 @@ FockMap's scope ends at circuit generation. It is important to be clear about wh
 
 ---
 
-**Previous:** [Chapter 18 — The Water Bond Angle](18-bond-angle.html)
+**Previous:** [Chapter 19 — The Water Bond Angle](19-bond-angle.html)
 
-**Next:** [Chapter 20 — Speaking the Hardware's Language](20-circuit-export.html)
+**Next:** [Chapter 21 — Speaking the Hardware's Language](21-circuit-export.html)

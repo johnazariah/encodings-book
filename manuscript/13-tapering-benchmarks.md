@@ -1,4 +1,4 @@
-# Chapter 12: Tapering Benchmarks
+# Chapter 13: Tapering Benchmarks
 
 _Numbers, not promises. This chapter measures exactly how much tapering saves on real Hamiltonians._
 
@@ -6,7 +6,7 @@ _Numbers, not promises. This chapter measures exactly how much tapering saves on
 
 - **What you'll learn:** Concrete before-and-after measurements of qubit count, term count, Pauli weight, and estimated CNOT cost for tapering on multiple test systems.
 - **Why this matters:** Tapering sounds good in theory. This chapter shows exactly how good — and where the limits are.
-- **Prerequisites:** Chapters 8–10 (you understand both diagonal and Clifford tapering).
+- **Prerequisites:** Chapters 10–12 (you understand both diagonal and Clifford tapering).
 
 ---
 
@@ -88,7 +88,7 @@ $\hat{H} = XX + YY + ZZ$ on 2 qubits. No diagonal Z₂ symmetries, but $Z_0Z_1$ 
 
 ## The Impact on Circuit Cost
 
-The real payoff of tapering shows in the **CNOT staircase** (Chapter 14). Each Pauli rotation $e^{-i\theta P}$ with weight $w$ costs $2(w-1)$ CNOTs. Tapering reduces both term count and weight:
+The real payoff of tapering shows in the **CNOT staircase** (Chapter 15). Each Pauli rotation $e^{-i\theta P}$ with weight $w$ costs $2(w-1)$ CNOTs. Tapering reduces both term count and weight:
 
 | System | Terms before | Terms after | CNOTs/step before | CNOTs/step after | Savings |
 |:---|:---:|:---:|:---:|:---:|:---:|
@@ -124,20 +124,35 @@ The combination of tapering (14→11 qubits) and ternary tree encoding (weight 1
 
 ---
 
-## Stage 3 Complete
+## Tapering Stage Complete
 
 ```mermaid
 flowchart LR
-    S1["Stage 1<br/>Integrals"]
-    S2["Stage 2<br/>Encoding"]
-    S3["Stage 3<br/>Tapering ✓"]
-    S4["Stage 4<br/>Trotterization"]
-    S1 --> S2 --> S3 --> S4
-    style S3 fill:#d1fae5,stroke:#059669
-    style S4 fill:#fde68a,stroke:#d97706
+    S1["The Molecule<br/>(Ch.1–3)"]
+    S2["The Machine<br/>(Ch.4)"]
+    S3["Encoding<br/>(Ch.5–9)"]
+    S4["Tapering ✓<br/>(Ch.10–13)"]
+    S5["Circuits<br/>(Ch.14–17)"]
+    S1 --> S2 --> S3 --> S4 --> S5
+    style S4 fill:#d1fae5,stroke:#059669
+    style S5 fill:#fde68a,stroke:#d97706
 ```
 
 We now have a verified, tapered qubit Hamiltonian — smaller than what encoding alone produced, with all physics preserved exactly. The next stage turns this Hamiltonian into a sequence of quantum gates.
+
+---
+
+## How Much Tapering Is Enough?
+
+A natural question: should you always taper everything you can, or is there a point of diminishing returns?
+
+The answer is simple: **taper every symmetry you find.** Unlike basis-set truncation, where you trade accuracy for cost, tapering has no downside. Every tapered qubit preserves the physics exactly — same eigenvalues, same ground-state energy — while reducing qubit count, Hilbert space dimension, and usually circuit cost. There is no accuracy–cost tradeoff. You never want to leave a symmetry unexploited.
+
+The real question is not *how much* to taper but *whether you found all the symmetries.* Diagonal tapering (Chapter 11) catches qubits that are individually frozen — easy to spot. Clifford tapering (Chapter 12) catches symmetries hidden across combinations of qubits — harder to spot, but FockMap finds them automatically. Between the two, you exhaust all Z₂ symmetries (operators that square to the identity and commute with every Hamiltonian term).
+
+Could you do more? In principle, yes. The Hamiltonian has other symmetries beyond Z₂ — particle-number conservation (U(1)), spin symmetry (SU(2)) — that could remove additional qubits. But exploiting them requires different mathematical machinery (symmetry-adapted encodings, qubit-efficient mappings) that goes beyond the stabiliser framework we've developed here. This is an active area of research; Chapter 23 touches on it briefly.
+
+In practice, Z₂ tapering removes 2 qubits from H₂ (4 → 2), 3 from H₂O (14 → 11), and typically 3–5 from larger molecules. The absolute savings shrink as a fraction of total qubits — at FeMo-co scale (~100 qubits), tapering saves ~5 qubits. Still worth doing (it's free), but encoding choice matters more at scale. The complete optimization stack is: **taper first** (remove every qubit you can for free), **then choose the encoding** (to minimize the weight of what remains).
 
 ---
 
@@ -145,11 +160,13 @@ We now have a verified, tapered qubit Hamiltonian — smaller than what encoding
 
 - Tapering reduces qubit count, Hilbert space size, and often term count and Pauli weight.
 - Diagonal tapering handles the easy cases; Clifford tapering catches multi-qubit symmetries that diagonal misses.
+- **Taper everything** — there is no accuracy cost, so every symmetry you find is worth exploiting.
 - The savings compound with encoding choice: taper first, then the encoding operates on a smaller system.
 - The real metric is **CNOTs per Trotter step** — tapering can reduce this by 50% or more.
+- At large scale, encoding choice dominates; tapering provides a smaller but free additional reduction.
 
 ---
 
-**Previous:** [Chapter 11 — General Clifford Tapering](11-clifford-tapering.html)
+**Previous:** [Chapter 12 — General Clifford Tapering](12-clifford-tapering.html)
 
-**Next:** [Chapter 13 — From Hamiltonian to Time Evolution](13-time-evolution.html)
+**Next:** [Chapter 14 — From Hamiltonian to Time Evolution](14-time-evolution.html)

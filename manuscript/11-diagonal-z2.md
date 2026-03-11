@@ -1,4 +1,4 @@
-# Chapter 10: Diagonal Z₂ Symmetries
+# Chapter 11: Diagonal Z₂ Symmetries
 
 _The simplest form of tapering: find qubits that are always I or Z, fix their eigenvalue, and remove them._
 
@@ -6,7 +6,7 @@ _The simplest form of tapering: find qubits that are always I or Z, fix their ei
 
 - **What you'll learn:** The algorithm for detecting diagonal Z₂ symmetries, how sector choice works, and how fixing a sector modifies each Pauli term.
 - **Why this matters:** Diagonal tapering is fast, easy to implement, and often removes 1–3 qubits from molecular Hamiltonians with zero information loss.
-- **Prerequisites:** Chapter 8 (you understand why tapering is valuable and what Z₂ symmetries are).
+- **Prerequisites:** Chapter 10 (you understand why tapering is valuable and what Z₂ symmetries are).
 
 ---
 
@@ -28,7 +28,7 @@ flowchart TD
     style SKIP fill:#fee2e2,stroke:#ef4444
 ```
 
-**Complexity:** $O(n \times m)$ where $n$ is the qubit count and $m$ is the number of terms. For H₂O with 12 qubits and ~600 terms, this takes microseconds.
+**Complexity:** $O(n \times m)$ where $n$ is the qubit count and $m$ is the number of terms. For H₂O with 12 active spin-orbitals (frozen core) and ~600 terms, this takes microseconds.
 
 ### In FockMap
 
@@ -37,7 +37,7 @@ let symQubits = diagonalZ2SymmetryQubits hamiltonian
 // Returns int[] of taperable qubit indices
 ```
 
-For our toy example from Chapters 8:
+For our toy example from Chapter 10:
 
 ```fsharp
 let h =
@@ -215,6 +215,6 @@ for s0 in [+1; -1] do
 
 ---
 
-**Previous:** [Chapter 9 — Why Tapering?](09-why-tapering.html)
+**Previous:** [Chapter 10 — Why Tapering?](10-why-tapering.html)
 
-**Next:** [Chapter 11 — General Clifford Tapering](11-clifford-tapering.html)
+**Next:** [Chapter 12 — General Clifford Tapering](12-clifford-tapering.html)

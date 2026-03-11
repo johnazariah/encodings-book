@@ -1,24 +1,24 @@
-# Chapter 14: Trotterization in Practice
+# Chapter 15: Trotterization in Practice
 
-_Chapter 13 explained why we need to break the time-evolution operator into small, implementable pieces. This chapter actually does it — and reveals something satisfying: the structure of the Hamiltonian we've been studying since Chapter 6 determines the structure of the circuit._
+_Chapter 14 explained why we need to break the time-evolution operator into small, implementable pieces. This chapter actually does it — and reveals something satisfying: the structure of the Hamiltonian we've been studying since Chapter 6 determines the structure of the circuit._
 
 ## In This Chapter
 
 - **What you'll learn:** How to apply first-order and second-order Trotter decomposition to the H₂ Hamiltonian, what the rotation list looks like, how to choose a time step, and how to estimate circuit cost before generating a single gate.
 - **Why this matters:** The rotation list is the bridge between the symbolic Hamiltonian (the physicist's object) and the physical circuit (the engineer's object). This is where the two worlds meet.
-- **Prerequisites:** Chapter 13 (you understand the Trotter–Suzuki formula and why it's needed).
+- **Prerequisites:** Chapter 14 (you understand the Trotter–Suzuki formula and why it's needed).
 
 ---
 
 ## What Happens When Theory Meets H₂
 
-In Chapter 13, we developed the Trotter formula in general terms: break $e^{-i\hat{H}t}$ into a product of single-term rotations. The formula looked clean and abstract. Now let's apply it to the actual 15-term Hamiltonian we've been carrying since Chapter 6 — the one we built integral by integral, verified against eigenvalues, and (optionally) tapered.
+In Chapter 14, we developed the Trotter formula in general terms: break $e^{-i\hat{H}t}$ into a product of single-term rotations. The formula looked clean and abstract. Now let's apply it to the actual 15-term Hamiltonian we've been carrying since Chapter 6 — the one we built integral by integral, verified against eigenvalues, and (optionally) tapered.
 
 What comes out the other end is a **rotation list** — an ordered sequence of Pauli rotations, each with:
 - a **Pauli string** (the "axis" of rotation: $XXYY$, $IIZZ$, etc.)
 - a **rotation angle** (the coefficient times the time step)
 
-This list is the intermediate representation between the symbolic world (where the Hamiltonian lives) and the gate world (where the quantum computer lives). Chapter 15 will decompose each rotation into elementary gates; here, we focus on producing the list and understanding its structure.
+This list is the intermediate representation between the symbolic world (where the Hamiltonian lives) and the gate world (where the quantum computer lives). Chapter 16 will decompose each rotation into elementary gates; here, we focus on producing the list and understanding its structure.
 
 Remember what we learned in Chapter 6: the Hamiltonian's terms split into diagonal (classical) and off-diagonal (quantum). That split carries through to the rotation list — the diagonal rotations are cheap ($Z$-only, no CNOTs), and the off-diagonal rotations are expensive ($XXYY$-type, 6 CNOTs each). Trotterization doesn't change this fundamental economics; it just makes it executable.
 
@@ -172,7 +172,7 @@ At 72 CNOTs per step: ~3,700 total CNOTs. This is why second-order Trotter is th
 
 ### The practical message
 
-For H₂, even the conservative estimate says ~52 second-order steps suffice for chemical accuracy — about 3,700 CNOTs. For H₂O ($\lVert H \rVert_1 \approx 30$ Ha), the step count grows and the per-step cost is higher, pushing the total to ~500,000 CNOTs. These numbers match the resource estimates in Chapter 19.
+For H₂, even the conservative estimate says ~52 second-order steps suffice for chemical accuracy — about 3,700 CNOTs. For H₂O ($\lVert H \rVert_1 \approx 30$ Ha), the step count grows and the per-step cost is higher, pushing the total to ~500,000 CNOTs. These numbers match the resource estimates in Chapter 20.
 
 The tighter commutator-based bounds (Childs and Su, PRL 2019) typically improve on the 1-norm estimate by a factor of 5–50×, because real molecular Hamiltonians have significant commuting structure. But the 1-norm bound is safe, easy to compute, and gives the right order of magnitude.
 
@@ -204,6 +204,6 @@ The tighter commutator-based bounds (Childs and Su, PRL 2019) typically improve 
 
 ---
 
-**Previous:** [Chapter 13 — From Hamiltonian to Time Evolution](13-time-evolution.html)
+**Previous:** [Chapter 14 — From Hamiltonian to Time Evolution](14-time-evolution.html)
 
-**Next:** [Chapter 15 — The CNOT Staircase](15-cnot-staircase.html)
+**Next:** [Chapter 16 — The CNOT Staircase](16-cnot-staircase.html)

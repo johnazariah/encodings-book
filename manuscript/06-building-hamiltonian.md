@@ -91,7 +91,7 @@ Now we can state precisely what the encoding must accomplish:
 
 The **diagonal part** of the Hamiltonian (orbital energies, Coulomb repulsion) is cheap. It maps to I and Z Pauli operators, diagonal in the computational basis. Measuring them is trivial. Simulating their time evolution requires only single-qubit Z-rotations. No entanglement, no deep circuits.
 
-The **off-diagonal part** (exchange interactions) is expensive. It maps to X and Y Pauli operators, which flip qubits and create entanglement. Simulating these terms requires multi-qubit gates — CNOT staircases, as we'll see in Stage 4. The Pauli weight of these off-diagonal terms directly determines the circuit depth.
+The **off-diagonal part** (exchange interactions) is expensive. It maps to X and Y Pauli operators, which flip qubits and create entanglement. Simulating these terms requires multi-qubit gates — CNOT staircases, as we'll see in the Circuits stage (Chapters 14–17). The Pauli weight of these off-diagonal terms directly determines the circuit depth.
 
 **The encoding choice determines the cost of the off-diagonal terms.** JW, BK, and tree encodings all produce the same diagonal terms — they differ only in how they handle the Z-chains that accompany the off-diagonal X/Y operators.
 
@@ -303,7 +303,7 @@ let h2_tt  = computeHamiltonianWith ternaryTreeTerms    h2Factory 4u
 let h2_par = computeHamiltonianWith parityTerms         h2Factory 4u
 ```
 
-All four produce different Pauli strings but the **same eigenvalues**. We'll verify this in Chapter 8.
+All four produce different Pauli strings but the **same eigenvalues**. We'll verify this in Chapter 9.
 
 ---
 
@@ -330,7 +330,7 @@ All four produce different Pauli strings but the **same eigenvalues**. We'll ver
 
 3. **Diagonal-only energy.** Delete terms 12–15. What is the ground-state energy of the remaining diagonal Hamiltonian? Compare with $E_{\text{HF}} = -1.1168$ Ha.
 
-4. **Encoding comparison.** Run the code with all five encodings. Do they all produce the same number of terms for H₂?
+4. **Encoding comparison.** Run the code with all six encodings. Do they all produce the same number of terms for H₂?
 
 ## Further Reading
 
@@ -341,4 +341,4 @@ All four produce different Pauli strings but the **same eigenvalues**. We'll ver
 
 **Previous:** [Chapter 5 — A Visual Guide to Encodings](05-visual-encodings.html)
 
-**Next:** [Chapter 7 — Five Encodings, One Interface](07-five-encodings.html)
+**Next:** [Chapter 7 — Six Encodings, One Interface](07-six-encodings.html)

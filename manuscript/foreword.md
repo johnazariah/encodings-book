@@ -73,16 +73,16 @@ All of these are developed from scratch within the book.
 
 ### How to Read This Book
 
-The 22 chapters are organized into seven stages, following the quantum
+The 23 chapters are organized into seven stages, following the quantum
 simulation pipeline:
 
 1. **The Molecule** (Chapters 1–3) — from molecules to integrals
 2. **The Machine** (Chapter 4) — qubits, gates, and circuits
-3. **Encoding** (Chapters 5–8) — from fermions to qubits
-4. **Tapering** (Chapters 9–12) — removing redundant qubits
-5. **Circuits** (Chapters 13–16) — Trotterization and cost analysis
-6. **The Pipeline** (Chapters 17–20) — complete pipeline, bond angle, algorithms, export
-7. **Horizons** (Chapters 21–22) — scaling and what comes next
+3. **Encoding** (Chapters 5–9) — from fermions to qubits
+4. **Tapering** (Chapters 10–13) — removing redundant qubits
+5. **Circuits** (Chapters 14–17) — Trotterization and cost analysis
+6. **The Pipeline** (Chapters 18–21) — complete pipeline, bond angle, algorithms, export
+7. **Horizons** (Chapters 22–23) — scaling and what comes next
 
 You can read straight through (recommended for first reading), or
 jump to a specific stage if you already know the earlier material.

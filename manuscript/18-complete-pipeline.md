@@ -1,4 +1,4 @@
-# Chapter 17: The Question We Can Now Answer
+# Chapter 18: The Question We Can Now Answer
 
 _Sixteen chapters of theory and code. Time to run the whole thing._
 
@@ -6,7 +6,7 @@ _Sixteen chapters of theory and code. Time to run the whole thing._
 
 - **What you'll learn:** Every stage of the pipeline assembled into a single executable script — from molecular integrals to quantum circuit — for the hydrogen molecule.
 - **Why this matters:** This is the capstone. Every concept from the preceding chapters appears here in its final, integrated form. If you can follow this script line by line and understand what each call does, you have mastered the pipeline.
-- **Prerequisites:** All of Stages 1–5 (Chapters 1–16).
+- **Prerequisites:** All of the preceding stages (Chapters 1–17).
 
 ---
 
@@ -18,7 +18,7 @@ In Chapter 1, we started with a molecule and asked: *what is its ground-state en
 
 Now we put the whole chain together. The script below takes the H₂ molecular integrals and produces a quantum circuit — ready to run on a simulator or real hardware. Five function calls. Under fifty lines of code. Under a second of runtime.
 
-> **A note on energy evaluation:** In this chapter and the next, we use **exact diagonalisation** (classical matrix eigensolving) as the energy-evaluation backend. For H₂ (4 qubits, $2^4 = 16$-dimensional matrix) and H₂O in minimal basis (~11 qubits after tapering, $2^{11} = 2{,}048$-dimensional matrix), this is trivially feasible on a laptop. The pipeline constructs the *circuit*; exact diagonalisation is a stand-in for the quantum measurement step. Chapter 19 explains the quantum algorithms (VQE, QPE) that replace exact diagonalisation when the system is too large for classical solution.
+> **A note on energy evaluation:** In this chapter and the next, we use **exact diagonalisation** (classical matrix eigensolving) as the energy-evaluation backend. For H₂ (4 qubits, $2^4 = 16$-dimensional matrix) and H₂O in minimal basis (~11 qubits after tapering, $2^{11} = 2{,}048$-dimensional matrix), this is trivially feasible on a laptop. The pipeline constructs the *circuit*; exact diagonalisation is a stand-in for the quantum measurement step. Chapter 20 explains the quantum algorithms (VQE, QPE) that replace exact diagonalisation when the system is too large for classical solution.
 
 ---
 
@@ -58,8 +58,8 @@ let integrals = Map [
 let factory key = integrals |> Map.tryFind key
 
 // ═══════════════════════════════════════════════════════════════
-//  All five encodings, one loop
-// ═══════════════════════════════════════════════════════════════
+//  All six encodings, one loop
+// ═════════════════════════════════════════════════════════════
 
 let encoders = [
     ("Jordan-Wigner",  jordanWignerTerms)
@@ -67,20 +67,21 @@ let encoders = [
     ("Parity",         parityTerms)
     ("Binary Tree",    balancedBinaryTreeTerms)
     ("Ternary Tree",   ternaryTreeTerms)
+    ("Vlasov Tree",    vlasovTreeTerms)
 ]
 
 for (name, encoder) in encoders do
-    // Stage 1: Build the qubit Hamiltonian
+    // Step 1: Build the qubit Hamiltonian
     let ham = computeHamiltonianWith encoder factory 4u
 
-    // Stage 2: Taper — remove symmetry-redundant qubits
+    // Step 2: Taper — remove symmetry-redundant qubits
     let tapResult = taper defaultTaperingOptions ham
 
-    // Stage 3: Trotterize — one first-order step at Δt = 0.1
+    // Step 3: Trotterize — one first-order step at Δt = 0.1
     let step = firstOrderTrotter 0.1 tapResult.Hamiltonian
     let stats = trotterStepStats step
 
-    // Stage 4: Export to OpenQASM
+    // Step 4: Export to OpenQASM
     let gates = decomposeTrotterStep step
     let qasm = toOpenQasm defaultOpenQasmOptions tapResult.TaperedQubitCount gates
 
@@ -93,7 +94,7 @@ for (name, encoder) in encoders do
         stats.TotalGates
 ```
 
-That's it. One loop, five encodings, each going from integrals all the way to a quantum circuit.
+That's it. One loop, six encodings, each going from integrals all the way to a quantum circuit.
 
 ---
 
@@ -103,15 +104,15 @@ If you've read the preceding chapters, every line should be familiar. But let's 
 
 **`computeHamiltonianWith encoder factory 4u`** — Takes the encoder function and the integral lookup, builds a 4-qubit Pauli Hamiltonian. This is Chapter 6: the one-body and two-body integrals are paired with encoded ladder operators and summed into a `PauliRegisterSequence`. For JW, we get the 15-term Hamiltonian we first met in Chapter 3.
 
-**`taper defaultTaperingOptions ham`** — Finds Z₂ symmetries (Chapter 10), synthesizes the Clifford rotation (Chapter 11), applies it, and removes the redundant qubits. The default options use the positive sector and Clifford-based tapering. For JW on H₂, this typically removes 2 qubits, leaving a 2-qubit Hamiltonian.
+**`taper defaultTaperingOptions ham`** — Finds Z₂ symmetries (Chapter 11), synthesizes the Clifford rotation (Chapter 12), applies it, and removes the redundant qubits. The default options use the positive sector and Clifford-based tapering. For JW on H₂, this typically removes 2 qubits, leaving a 2-qubit Hamiltonian.
 
-**`firstOrderTrotter 0.1 tapResult.Hamiltonian`** — Decomposes the tapered Hamiltonian into a sequence of Pauli rotations (Chapter 13). Each term $c_k P_k$ becomes a rotation $e^{-i c_k \Delta t P_k / 2}$. The time step $\Delta t = 0.1$ controls the Trotter error.
+**`firstOrderTrotter 0.1 tapResult.Hamiltonian`** — Decomposes the tapered Hamiltonian into a sequence of Pauli rotations (Chapter 14). Each term $c_k P_k$ becomes a rotation $e^{-i c_k \Delta t P_k / 2}$. The time step $\Delta t = 0.1$ controls the Trotter error.
 
-**`decomposeTrotterStep step`** — Converts each Pauli rotation into concrete gates via the CNOT staircase (Chapter 15). A weight-$w$ rotation becomes $2(w-1)$ CNOTs plus single-qubit gates.
+**`decomposeTrotterStep step`** — Converts each Pauli rotation into concrete gates via the CNOT staircase (Chapter 16). A weight-$w$ rotation becomes $2(w-1)$ CNOTs plus single-qubit gates.
 
-**`toOpenQasm defaultOpenQasmOptions numQubits gates`** — Writes the gate sequence as a valid OpenQASM 3.0 program (Chapter 20 will explore this in detail).
+**`toOpenQasm defaultOpenQasmOptions numQubits gates`** — Writes the gate sequence as a valid OpenQASM 3.0 program (Chapter 21 will explore this in detail).
 
-**`trotterStepStats step`** — Counts everything: rotations, CNOTs, single-qubit gates, total gates (Chapter 16).
+**`trotterStepStats step`** — Counts everything: rotations, CNOTs, single-qubit gates, total gates (Chapter 17).
 
 ---
 
@@ -131,7 +132,7 @@ Wait — they're all the same?
 
 Yes. At 4 qubits, every encoding produces the same cost after tapering. The Pauli strings are different, but the weights are the same. H₂ was always our *teacher*, not our *benchmark*. The differences appear at scale — we'll see them with H₂O in the next chapter.
 
-But notice what we've achieved: **five independent encoding pipelines all converge to the same physical answer.** That's the verification from Chapter 8, the eigenvalue agreement from Chapter 7, now confirmed at the circuit level. The mathematics works.
+But notice what we've achieved: **five independent encoding pipelines all converge to the same physical answer.** That's the verification from Chapter 9, the eigenvalue agreement from Chapter 7, now confirmed at the circuit level. The mathematics works.
 
 ---
 
@@ -149,7 +150,7 @@ let qasm = toOpenQasm defaultOpenQasmOptions jwTapered.TaperedQubitCount jwGates
 printfn "%s" qasm
 ```
 
-The output is a valid QASM 3.0 program — qubit declarations, followed by a sequence of `h`, `cx`, `rz`, `s`, and `sdg` instructions. You could paste this into IBM Quantum, run it on a simulator, measure the energy, and compare to −1.8572 Hartrees. Chapter 19 will explore the algorithms that do exactly that.
+The output is a valid QASM 3.0 program — qubit declarations, followed by a sequence of `h`, `cx`, `rz`, `s`, and `sdg` instructions. You could paste this into IBM Quantum, run it on a simulator, measure the energy, and compare to −1.8572 Hartrees. Chapter 20 will explore the algorithms that do exactly that.
 
 ---
 
@@ -193,7 +194,7 @@ for R in bondLengths do
     printfn "R = %.2f Å   E = %.6f Ha" R Etotal
 ```
 
-> **Where do `loadH2Integrals` and `exactGroundStateEnergy` come from?** They are helper functions defined in the companion script `code/ch17-dissociation-scan.py` (which generates the integral JSON files) and `code/ch17-pipeline.fsx` (which reads them). `loadH2Integrals R` reads a JSON file mapping integral keys like `"0,1"` to complex values — the same `Map<string, Complex>` format our `factory` function expects. `exactGroundStateEnergy` constructs the $2^n \times 2^n$ Hamiltonian matrix from the Pauli terms and returns its smallest eigenvalue via standard linear algebra. Both are thin wrappers — the real work is done by the FockMap API calls shown in the text.
+> **Where do `loadH2Integrals` and `exactGroundStateEnergy` come from?** They are helper functions defined in the companion script `code/ch18-dissociation-scan.py` (which generates the integral JSON files) and `code/ch18-pipeline.fsx` (which reads them). `loadH2Integrals R` reads a JSON file mapping integral keys like `"0,1"` to complex values — the same `Map<string, Complex>` format our `factory` function expects. `exactGroundStateEnergy` constructs the $2^n \times 2^n$ Hamiltonian matrix from the Pauli terms and returns its smallest eigenvalue via standard linear algebra. Both are thin wrappers — the real work is done by the FockMap API calls shown in the text.
 
 ### The Result
 
@@ -215,11 +216,11 @@ The energy drops steeply as the atoms approach from infinity, reaches a minimum 
 
 Notice how Hartree–Fock and FCI agree near equilibrium but diverge at large $R$: HF wrongly forces the two electrons to stay paired (giving −0.599 Ha at $R = 5$ Å, far too high), while FCI correctly dissociates into two independent atoms. This is the **static correlation** problem that motivated quantum simulation in the first place.
 
-The companion script `code/ch17-dissociation-scan.py` generates the data and a publication-quality plot saved to `code/h2_dissociation.png`.
+The companion script `code/ch18-dissociation-scan.py` generates the data and a publication-quality plot saved to `code/h2_dissociation.png`.
 
 ![H₂ dissociation curve (STO-3G): Hartree–Fock vs Full CI. The FCI curve correctly dissociates while HF fails at large bond lengths.](code/h2_dissociation.png)
 
-This is the same kind of scan we'll do for H₂O's bond angle in Chapter 18 — but the structural parameter will be an angle instead of a distance. The machinery is identical: skeleton precomputation, integral swap, energy evaluation.
+This is the same kind of scan we'll do for H₂O's bond angle in Chapter 19 — but the structural parameter will be an angle instead of a distance. The machinery is identical: skeleton precomputation, integral swap, energy evaluation.
 
 ### What the Curve Tells You
 
@@ -244,13 +245,13 @@ In the next chapter, we'll do exactly that — but instead of scanning a bond le
 ## Key Takeaways
 
 - The entire pipeline from integrals to quantum circuit is **five function calls**: `computeHamiltonianWith`, `taper`, `firstOrderTrotter`, `decomposeTrotterStep`, `toOpenQasm`.
-- All five encodings produce the **same physics** (same eigenvalues, same energy) — confirmed at every stage from Hamiltonian to circuit.
+- All six encodings produce the **same physics** (same eigenvalues, same energy) — confirmed at every stage from Hamiltonian to circuit.
 - The **skeleton API** separates Pauli structure (computed once) from integral values (applied per geometry), making potential energy surface scans efficient.
 - The H₂ dissociation curve — equilibrium bond length, dissociation energy, vibrational frequency — emerges from the pipeline without empirical input.
 - The pipeline is **composable**: swap the integrals and qubit count to compute any molecule.
 
 ---
 
-**Previous:** [Chapter 16 — Cost Analysis](16-cost-analysis.html)
+**Previous:** [Chapter 17 — Cost Analysis](17-cost-analysis.html)
 
-**Next:** [Chapter 18 — The Water Bond Angle](18-bond-angle.html)
+**Next:** [Chapter 19 — The Water Bond Angle](19-bond-angle.html)

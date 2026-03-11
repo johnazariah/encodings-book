@@ -1,4 +1,4 @@
-# Chapter 11: General Clifford Tapering
+# Chapter 12: General Clifford Tapering
 
 _When no single qubit is diagonal, multi-qubit Z₂ symmetries may still exist. A Clifford rotation reveals them._
 
@@ -6,7 +6,7 @@ _When no single qubit is diagonal, multi-qubit Z₂ symmetries may still exist. 
 
 - **What you'll learn:** The symplectic representation of Pauli strings, how to find all Z₂ symmetry generators via GF(2) linear algebra, how to synthesize a Clifford circuit that makes them diagonal, and how FockMap's unified `taper` function combines everything.
 - **Why this matters:** Many molecular Hamiltonians have Z₂ symmetries that diagonal-only tapering cannot exploit. Clifford tapering finds and uses them all.
-- **Prerequisites:** Chapters 8–9 (diagonal tapering concepts and mechanics).
+- **Prerequisites:** Chapters 10–11 (diagonal tapering concepts and mechanics).
 
 ---
 
@@ -135,7 +135,7 @@ let rotatedH = applyClifford gates hamiltonian
 // Every term is now conjugated — generators have become single-qubit Zs
 ```
 
-After rotation, the target qubits are diagonally taperable, and we apply the v1 diagonal tapering from Chapter 9.
+After rotation, the target qubits are diagonally taperable, and we apply the v1 diagonal tapering from Chapter 10.
 
 ---
 
@@ -254,6 +254,6 @@ A 2-qubit problem reduced to 1 qubit — a 2× Hilbert space reduction that diag
 
 ---
 
-**Previous:** [Chapter 10 — Diagonal Z₂ Symmetries](10-diagonal-z2.html)
+**Previous:** [Chapter 11 — Diagonal Z₂ Symmetries](11-diagonal-z2.html)
 
-**Next:** [Chapter 12 — Tapering Benchmarks](12-tapering-benchmarks.html)
+**Next:** [Chapter 13 — Tapering Benchmarks](13-tapering-benchmarks.html)

@@ -2,10 +2,11 @@
 % DejaVu has box-drawing, subscripts, Greek, and check marks that LM lacks
 \usepackage{newunicodechar}
 \newfontfamily{\fallbackfont}{DejaVu Serif}
+\newfontfamily{\fallbacksans}{DejaVu Sans}
 \newfontfamily{\fallbackmono}{DejaVu Sans Mono}
-\newunicodechar{✓}{{\fallbackfont ✓}}
-\newunicodechar{✗}{{\fallbackfont ✗}}
-\newunicodechar{✘}{{\fallbackfont ✘}}
+\newunicodechar{✓}{{\fallbacksans ✓}}
+\newunicodechar{✗}{{\fallbacksans ✗}}
+\newunicodechar{✘}{{\fallbacksans ✘}}
 \newunicodechar{₀}{{\fallbackfont ₀}}
 \newunicodechar{₂}{{\fallbackfont ₂}}
 \newunicodechar{₃}{{\fallbackfont ₃}}
@@ -21,6 +22,7 @@
 \newunicodechar{═}{{\fallbackmono ═}}
 \newunicodechar{α}{{\fallbackfont α}}
 \newunicodechar{β}{{\fallbackfont β}}
+\newunicodechar{δ}{{\fallbackfont δ}}
 \newunicodechar{σ}{{\fallbackfont σ}}
 \newunicodechar{→}{{\fallbackfont →}}
 
@@ -43,3 +45,7 @@
 \def\maxheight{\ifdim\Gin@nat@height>0.4\textheight 0.4\textheight\else\Gin@nat@height\fi}
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% Smaller code font (one step down from body text)
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{fontsize=\small,commandchars=\\\{\}}

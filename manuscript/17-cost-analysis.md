@@ -1,12 +1,12 @@
-# Chapter 16: Cost Analysis Across Encodings
+# Chapter 17: Cost Analysis Across Encodings
 
 _Everything we've done — encoding, tapering, Trotterization — converges to one number: the CNOT count. This chapter computes it._
 
 ## In This Chapter
 
-- **What you'll learn:** The complete CNOT cost for H₂ and H₂O across all five encodings, with and without tapering, and how the optimization stack compounds.
+- **What you'll learn:** The complete CNOT cost for H₂ and H₂O across all six encodings, with and without tapering, and how the optimization stack compounds.
 - **Why this matters:** This answers the practical question: "which encoding should I use for my molecule?" The answer depends on the system size, and the numbers tell the story.
-- **Prerequisites:** Chapters 13–15 (Trotter decomposition and CNOT staircase).
+- **Prerequisites:** Chapters 14–16 (Trotter decomposition and CNOT staircase).
 
 ---
 
@@ -15,11 +15,11 @@ _Everything we've done — encoding, tapering, Trotterization — converges to o
 Before we compute anything, here is the complete pipeline showing every optimization we've developed:
 
 ```mermaid
-flowchart TD
+flowchart LR
     RAW["Raw JW Hamiltonian<br/>n qubits, O(n) weight"]
-    RAW --> |"Tapering<br/>(Ch 9–12)"| TAP["Tapered Hamiltonian<br/>n-k qubits"]
-    TAP --> |"Encoding choice<br/>(Ch 7)"| ENC["Ternary tree encoding<br/>O(log₃ n) weight"]
-    ENC --> |"2nd-order Trotter<br/>(Ch 13–14)"| TROT["Gate sequence<br/>2L rotations × 2(w-1) CNOTs each"]
+    RAW --> |"Tapering<br/>(Ch 10–13)"| TAP["Tapered<br/>n-k qubits"]
+    TAP --> |"Encoding<br/>(Ch 7)"| ENC["Ternary tree<br/>O(log₃ n) weight"]
+    ENC --> |"Trotter<br/>(Ch 14–15)"| TROT["Gate sequence"]
     style TROT fill:#d1fae5,stroke:#059669
 ```
 
@@ -51,6 +51,7 @@ where $L$ is the number of non-identity terms and $w_k$ is the Pauli weight of t
 | Parity | 4 | 2.3 | 38 | 76 |
 | Balanced Binary | 4 | 2.3 | 38 | 76 |
 | Balanced Ternary | 4 | 2.4 | 40 | 80 |
+| Vlasov Tree | 4 | 2.4 | 40 | 80 |
 
 **Observation:** At 4 qubits, JW is actually the *cheapest*. The tree encodings have slightly higher average weight because the tree structure on 4 nodes doesn't provide enough room for the logarithmic advantage to manifest. This matches our observation from Chapter 6.
 
@@ -59,6 +60,8 @@ where $L$ is the number of non-identity terms and $w_k$ is the Pauli weight of t
 ## H₂O (12 qubits, frozen core, STO-3G)
 
 This is where the differences become real. H₂O has 7 spatial orbitals (with frozen core), giving 14 spin-orbitals — but we freeze 2 core electrons, leaving 12 active spin-orbitals = 12 qubits.
+
+> **Note:** The bond-angle scan in Chapter 19 uses the full 14-spin-orbital model (no frozen core) because that chapter focuses on the chemistry. Here we use the frozen-core active space because it better represents production practice and makes the cost comparisons cleaner.
 
 | Configuration | Qubits | Terms | Max weight | CNOTs/step |
 |:---|:---:|:---:|:---:|:---:|
@@ -93,7 +96,7 @@ The ratio grows monotonically because JW's worst-case weight scales as $O(n)$ wh
 - For large molecules ($n \sim 100$), the savings are ~25× — potentially enabling experiments that would otherwise be infeasible.
 - The complete optimization stack is: **taper → encode → Trotterize**. Each stage compounds multiplicatively.
 - The CNOT count is the single most important feasibility metric for near-term quantum simulation.
-- **Measurement cost matters too**: on near-term hardware running VQE, the total experimental cost includes both circuit depth (CNOT count per shot) and shot count (repetitions needed for statistical precision). The shot count scales as $N \sim (\sum_k |c_k|)^2 / \epsilon^2$, where the 1-norm $\sum |c_k|$ depends on encoding and tapering. Tapering reduces the 1-norm, so it saves both gate cost *and* measurement cost. Chapter 19 covers this in detail.
+- **Measurement cost matters too**: on near-term hardware running VQE, the total experimental cost includes both circuit depth (CNOT count per shot) and shot count (repetitions needed for statistical precision). The shot count scales as $N \sim (\sum_k |c_k|)^2 / \epsilon^2$, where the 1-norm $\sum |c_k|$ depends on encoding and tapering. Tapering reduces the 1-norm, so it saves both gate cost *and* measurement cost. Chapter 20 covers this in detail.
 
 ## Common Mistakes
 
@@ -109,10 +112,10 @@ The ratio grows monotonically because JW's worst-case weight scales as $O(n)$ wh
 
 2. **Tapering impact.** If tapering removes 3 qubits from a 14-qubit system and reduces the term count from 630 to 420, estimate the CNOT savings assuming average weight drops from 4 to 3.
 
-3. **Run it.** Use the companion script `code/ch07-five-encodings.fsx` to compute the weight scaling table for $n = 4, 8, 16, 32, 64$. At what $n$ does the ternary tree first beat JW?
+3. **Run it.** Use the companion script `code/ch07-six-encodings.fsx` to compute the weight scaling table for $n = 4, 8, 16, 32, 64$. At what $n$ does the ternary tree first beat JW?
 
 ---
 
-**Previous:** [Chapter 15 — The CNOT Staircase](15-cnot-staircase.html)
+**Previous:** [Chapter 16 — The CNOT Staircase](16-cnot-staircase.html)
 
-**Next:** [Chapter 17 — The Complete Pipeline](17-complete-pipeline.html)
+**Next:** [Chapter 18 — The Complete Pipeline](18-complete-pipeline.html)

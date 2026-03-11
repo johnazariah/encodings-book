@@ -1,10 +1,10 @@
 (**
 # Comparing Encodings Side-by-Side
 
-This tutorial demonstrates all five fermion-to-qubit encodings available
+This tutorial demonstrates all six fermion-to-qubit encodings available
 in the library and compares their Pauli weight scaling.
 
-## The Five Encodings
+## The Six Encodings
 
 | Encoding | Pauli Weight | Function |
 |----------|--------------|----------|
@@ -13,6 +13,7 @@ in the library and compares their Pauli weight scaling.
 | Parity | O(n) | `parityTerms` |
 | Binary Tree | O(log₂ n) | `balancedBinaryTreeTerms` |
 | Ternary Tree | O(log₃ n) | `ternaryTreeTerms` |
+| Vlasov Tree | O(log₃ n) | `vlasovTreeTerms` |
 
 ## Setup
 *)
@@ -35,6 +36,7 @@ let encodings = [
     ("Parity",        parityTerms)
     ("Binary Tree",   balancedBinaryTreeTerms)
     ("Ternary Tree",  ternaryTreeTerms)
+    ("Vlasov Tree",   vlasovTreeTerms)
 ]
 
 (**

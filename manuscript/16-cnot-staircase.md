@@ -1,12 +1,12 @@
-# Chapter 15: The CNOT Staircase
+# Chapter 16: The CNOT Staircase
 
 _Every Pauli rotation becomes a sequence of elementary gates. This chapter shows exactly how — and connects the dots from encoding choice to circuit cost._
 
 ## In This Chapter
 
 - **What you'll learn:** How $e^{-i\theta P}$ decomposes into basis-change gates, a CNOT chain, and an $R_z$ rotation. Why the cost is exactly $2(w-1)$ CNOTs. How to trace a complete decomposition for the $XXYY$ exchange term.
-- **Why this matters:** This is where everything converges. Encoding choice (Chapter 7), tapering (Chapters 9–12), and Trotterization (Chapters 13–14) all reduce to one question: how many times do we run this staircase, and how tall is it?
-- **Prerequisites:** Chapters 4 (gates), 13–14 (Trotter decomposition).
+- **Why this matters:** This is where everything converges. Encoding choice (Chapter 7), tapering (Chapters 10–13), and Trotterization (Chapters 14–15) all reduce to one question: how many times do we run this staircase, and how tall is it?
+- **Prerequisites:** Chapters 4 (gates), 14–15 (Trotter decomposition).
 
 ---
 
@@ -23,13 +23,11 @@ The intuition: a weight-$w$ Pauli rotation $e^{-i\theta P}$ applies a phase rota
 A Pauli rotation $e^{-i\theta P}$ for a weight-$w$ Pauli string $P$ is implemented in three phases:
 
 ```mermaid
-flowchart TD
-    BC["1. Basis change<br/>(single-qubit gates)"]
-    CS["2. CNOT staircase<br/>(entangling)"]
-    RZ["3. Rz(2θ)<br/>(rotation)"]
-    UCS["4. Undo staircase"]
-    UBC["5. Undo basis change"]
-    BC --> CS --> RZ --> UCS --> UBC
+flowchart LR
+    BC["1. Basis change"] --> CS["2. CNOT staircase"]
+    CS --> RZ["3. Rz(2θ)"]
+    RZ --> UCS["4. Undo staircase"]
+    UCS --> UBC["5. Undo basis change"]
 ```
 
 ### Phase 1: Basis change
@@ -141,6 +139,6 @@ The 6× ratio between JW and TT at $n=32$ is entirely due to the CNOT staircase 
 
 ---
 
-**Previous:** [Chapter 14 — Trotterization in Practice](14-trotter-formulas.html)
+**Previous:** [Chapter 15 — Trotterization in Practice](15-trotter-formulas.html)
 
-**Next:** [Chapter 16 — Cost Analysis Across Encodings](16-cost-analysis.html)
+**Next:** [Chapter 17 — Cost Analysis Across Encodings](17-cost-analysis.html)

@@ -132,7 +132,8 @@ We encode H₂O under three encodings and compare:
 let encoders : (string * (LadderOperatorUnit -> uint32 -> uint32 -> PauliRegisterSequence)) list =
     [ "Jordan-Wigner",  jordanWignerTerms
       "Bravyi-Kitaev",  bravyiKitaevTerms
-      "Ternary Tree",   ternaryTreeTerms ]
+      "Ternary Tree",   ternaryTreeTerms
+      "Vlasov Tree",    vlasovTreeTerms ]
 
 let pauliWeight (sig' : string) =
     sig' |> Seq.sumBy (fun c -> if c = 'I' then 0 else 1)

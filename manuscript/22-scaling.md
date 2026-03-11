@@ -1,4 +1,4 @@
-# Chapter 21: Scaling — From H₂ to FeMo-co
+# Chapter 22: Scaling — From H₂ to FeMo-co
 
 _H₂ was our teacher. H₂O was our first real test. Now we look at where the pipeline goes — and where it meets its limits._
 
@@ -6,7 +6,7 @@ _H₂ was our teacher. H₂O was our first real test. Now we look at where the p
 
 - **What you'll learn:** How the pipeline's cost scales from small test systems through medium molecules to the grand challenge of quantum chemistry, and where encoding choice makes — or breaks — the simulation.
 - **Why this matters:** The promise of quantum simulation is that it handles molecules classical computers cannot. This chapter asks: at what point does that promise become real, and what does the hardware need to deliver?
-- **Prerequisites:** Chapters 16–18 (cost analysis, pipeline, bond angle scan).
+- **Prerequisites:** Chapters 17–19 (cost analysis, pipeline, bond angle scan).
 
 ---
 
@@ -30,7 +30,7 @@ A quantum computer doesn't enumerate configurations — it represents the quantu
 
 ## The Encoding Crossover
 
-At 4 qubits, all encodings cost the same (Chapter 17). At 14 qubits, the differences appear (Chapter 18). Let's trace the crossover:
+At 4 qubits, all encodings cost the same (Chapter 18). At 14 qubits, the differences appear (Chapter 19). Let's trace the crossover:
 
 | Molecule | $n$ | JW CNOTs/step | TT CNOTs/step | Ratio |
 |:---|:---:|:---:|:---:|:---:|
@@ -52,7 +52,7 @@ $$P_\text{success} \approx (1 - \varepsilon)^{C_\text{CNOT}}$$
 
 At $\varepsilon = 0.5\%$ and 1,800 CNOTs (JW for H₂O), $P_\text{success} \approx 0.01\%$. At 600 CNOTs (TT for H₂O), $P_\text{success} \approx 5\%$. Under these typical assumptions, that's roughly a 500× improvement in success probability from encoding choice alone — before error mitigation, before hardware improvements, before anything else. (In practice, error mitigation techniques like zero-noise extrapolation can partially compensate for low success rates, but they impose their own sampling overhead.)
 
-This is why the chapters on encoding (5–8), tapering (9–12), and cost analysis (16) matter. They're not academic exercises. They directly determine whether a simulation succeeds or fails on real hardware.
+This is why the chapters on encoding (5–9), tapering (10–13), and cost analysis (17) matter. They're not academic exercises. They directly determine whether a simulation succeeds or fails on real hardware.
 
 ---
 
@@ -66,7 +66,7 @@ Tapering compounds with encoding choice. At each system size, tapering removes $
 | H₂O | 14 | ~11 | ~600 | ~300 |
 | N₂ | 20 | ~16 | ~2,000 | ~1,200 |
 
-Fewer terms means fewer Pauli rotations per Trotter step. Combined with lower Pauli weights from a good encoding, the circuit shrinks multiplicatively. The optimisation stack from Chapter 16 — encoding + tapering + Trotter order — compounds at every scale.
+Fewer terms means fewer Pauli rotations per Trotter step. Combined with lower Pauli weights from a good encoding, the circuit shrinks multiplicatively. The optimisation stack from Chapter 17 — encoding + tapering + Trotter order — compounds at every scale.
 
 ---
 
@@ -145,6 +145,6 @@ Quantum simulation's niche is the strongly correlated regime: transition-metal c
 
 ---
 
-**Previous:** [Chapter 20 — Speaking the Hardware's Language](20-circuit-export.html)
+**Previous:** [Chapter 21 — Speaking the Hardware's Language](21-circuit-export.html)
 
-**Next:** [Chapter 22 — What Comes Next](22-whats-next.html)
+**Next:** [Chapter 23 — What Comes Next](23-whats-next.html)

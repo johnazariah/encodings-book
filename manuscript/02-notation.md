@@ -235,7 +235,7 @@ This is the single most important function in any quantum chemistry pipeline. Ge
 ## Further Reading
 
 - Szabo, A. and Ostlund, N. S. *Modern Quantum Chemistry.* Chapter 2, §2.3.2–2.3.3 gives both conventions and the conversion explicitly.
-- Helgaker, T., Jørgensen, P., and Olsen, J. *Molecular Electronic-Structure Theory.* Chapter 9 is the definitive treatment of two-electron integrals, including symmetry properties.
+- Helgaker, T., Jørgensen, P., and Olsen, J. *Molecular Electronic-Structure Theory.* Chapter 10 is the definitive treatment of two-electron integrals, including symmetry properties.
 - PySCF documentation on `mol.intor('int2e')` — returns integrals in chemist's notation.
 
 ---

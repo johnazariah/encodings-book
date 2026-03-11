@@ -33,12 +33,13 @@ graduate students, advanced undergraduates, and researchers who know
 some quantum mechanics and linear algebra but have not previously worked
 with fermion-to-qubit encodings.
 
-The tutorial comprises 21 chapters organized around six pipeline stages:
+The tutorial comprises 23 chapters organized around six pipeline stages:
 
 1. **Electronic structure** — Born–Oppenheimer approximation, basis
    sets, and molecular integrals, using H~2~/STO-3G as a running example.
-2. **Encoding** — Five fermion-to-qubit encodings (Jordan–Wigner,
-   Bravyi–Kitaev, Parity, balanced binary tree, balanced ternary tree)
+2. **Encoding** — Six fermion-to-qubit encodings (Jordan–Wigner,
+   Bravyi–Kitaev, Parity, balanced binary tree, balanced ternary tree,
+   Vlasov tree)
    presented visually and algebraically, with side-by-side comparison.
 3. **Tapering** — Qubit reduction via diagonal and general Z~2~
    symmetries, including Clifford rotation synthesis.
@@ -93,7 +94,7 @@ After completing the full tutorial, a student will be able to:
 1. Construct one-body and two-body integral tables from a molecular
    geometry and basis set specification.
 2. Translate a second-quantized Hamiltonian into a qubit Pauli-sum
-   Hamiltonian using any of five encoding schemes.
+   Hamiltonian using any of six encoding schemes.
 3. Identify and exploit Z~2~ symmetries (both diagonal and
    general) to reduce qubit requirements.
 4. Decompose a Pauli-sum Hamiltonian into a Trotter circuit and
@@ -152,7 +153,7 @@ Satellite resources include:
 
 The tutorial has been designed for use in three modes:
 
-1. **Self-study:** A graduate student reads chapters 1–21 over a
+1. **Self-study:** A graduate student reads chapters 1–22 over a
    weekend, running the companion scripts to build intuition.
 2. **Course module:** A lecturer assigns 3–4 chapters per week as
    readings, with the corresponding lab scripts as homework exercises.
@@ -178,5 +179,9 @@ for 2026–2027 at the University of Technology Sydney.
 This tutorial is dedicated to Dr. Guang Hao Low, whose encouragement
 to study Bravyi–Kitaev encodings motivated both the library and this
 educational resource.
+
+The author thanks Dr Robin Kothari and Dr Stephen Jordan for bringing
+Vlasov's Clifford-algebraic tree construction to his attention, which
+led to the addition of the sixth encoding.
 
 # References

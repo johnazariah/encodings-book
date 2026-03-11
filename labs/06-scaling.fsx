@@ -23,6 +23,7 @@ making this analysis crucial for choosing the right encoding.
 | Bravyi-Kitaev     | O(log₂ n)    | O(log n)      |
 | Binary Tree       | O(log₂ n)    | O(log n)      |
 | Ternary Tree      | O(log₃ n)    | O(log n)      |
+| Vlasov Tree       | O(log₃ n)    | O(log n)      |
 *)
 
 #r "nuget: FockMap"
@@ -45,7 +46,7 @@ let maxWeight (prs : PauliRegisterSequence) =
 (**
 ## Encoding Functions
 
-We'll compare these five encodings:
+We'll compare these six encodings:
 *)
 
 let encodings : (string * (LadderOperatorUnit -> uint32 -> uint32 -> PauliRegisterSequence)) list =
@@ -53,7 +54,8 @@ let encodings : (string * (LadderOperatorUnit -> uint32 -> uint32 -> PauliRegist
       "Parity",        parityTerms
       "Bravyi-Kitaev", bravyiKitaevTerms
       "Binary Tree",   balancedBinaryTreeTerms
-      "Ternary Tree",  ternaryTreeTerms ]
+      "Ternary Tree",  ternaryTreeTerms
+      "Vlasov Tree",   vlasovTreeTerms ]
 
 (**
 ## Maximum Weight Across All Modes

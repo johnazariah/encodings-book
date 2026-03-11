@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════════════════════
-// Chapter 10 Companion: Diagonal Z₂ Symmetries
+// Chapter 11 Companion: Diagonal Z₂ Symmetries
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch10-diagonal-z2.fsx
+// Run with: dotnet fsi book/code/ch11-diagonal-z2.fsx
 // Prereq:   dotnet build --configuration Release
 
 #r "nuget: FockMap"
@@ -10,7 +10,7 @@ open System.Numerics
 open Encodings
 
 printfn ""
-printfn "Chapter 10: Diagonal Z₂ Symmetries"
+printfn "Chapter 11: Diagonal Z₂ Symmetries"
 printfn "===================================="
 
 // ── Example: a fully diagonal Hamiltonian ──

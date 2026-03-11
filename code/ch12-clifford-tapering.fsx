@@ -1,7 +1,7 @@
 // ══════════════════════════════════════════════════════════════
-// Chapter 11 Companion: General Clifford Tapering
+// Chapter 12 Companion: General Clifford Tapering
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch11-clifford-tapering.fsx
+// Run with: dotnet fsi book/code/ch12-clifford-tapering.fsx
 // Prereq:   dotnet build --configuration Release
 
 #r "nuget: FockMap"
@@ -10,7 +10,7 @@ open System.Numerics
 open Encodings
 
 printfn ""
-printfn "Chapter 11: General Clifford Tapering"
+printfn "Chapter 12: General Clifford Tapering"
 printfn "======================================"
 
 // ── Symplectic representation ──

@@ -46,6 +46,7 @@ let encoders = [
     ("Parity",                parityTerms)
     ("Balanced Binary Tree",  balancedBinaryTreeTerms)
     ("Balanced Ternary Tree", ternaryTreeTerms)
+    ("Vlasov Tree",           vlasovTreeTerms)
 ]
 
 for (name, encoder) in encoders do

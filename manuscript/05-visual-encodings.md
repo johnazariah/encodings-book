@@ -62,25 +62,21 @@ That's what this chapter is about.
 
 ## The Tempting (Wrong) Idea
 
-At the end of Chapter 1, we noticed something suggestive: the occupation vector $\lvert 1010\rangle$ looks exactly like a 4-qubit computational basis state. Four spin-orbitals, four qubits, each qubit storing the occupation of one orbital. Simple.
+At the end of Chapter 1, we noticed something suggestive: the occupation vector $\lvert 1100\rangle$ — the Hartree–Fock ground state of H₂, with both electrons in the bonding orbital $\sigma_g$ — looks exactly like a 4-qubit computational basis state. Four spin-orbitals, four qubits, each qubit storing the occupation of one orbital. Simple.
 
 ```mermaid
-flowchart LR
+flowchart TD
     subgraph Orbitals["Chemistry World"]
-        direction TB
-        O0["Orbital 0: ↑"] --- O1["Orbital 1: ∅"]
-        O1 --- O2["Orbital 2: ↑"]
-        O2 --- O3["Orbital 3: ∅"]
-    end
-
-    subgraph Qubits["Quantum Computer"]
-        direction TB
-        Q0["Qubit 0"] --- Q1["Qubit 1"]
-        Q1 --- Q2["Qubit 2"]
-        Q2 --- Q3["Qubit 3"]
+        direction LR
+        O0["σ_g α: ↑"] --- O1["σ_g β: ↓"] --- O2["σ_u α: ∅"] --- O3["σ_u β: ∅"]
     end
 
     Orbitals -- "occupied ↔ |1⟩<br/>empty ↔ |0⟩" --> Qubits
+
+    subgraph Qubits["Quantum Computer"]
+        direction LR
+        Q0["Qubit 0: |1⟩"] --- Q1["Qubit 1: |1⟩"] --- Q2["Qubit 2: |0⟩"] --- Q3["Qubit 3: |0⟩"]
+    end
 ```
 
 This mapping is correct for the **basis states**. But it is wrong for the **operators**.
@@ -289,7 +285,7 @@ flowchart TD
     style PAULI fill:#d1fae5,stroke:#059669
 ```
 
-All five encodings in FockMap (JW, BK, Parity, balanced binary tree, balanced ternary tree) produce the same output type: a `PauliRegisterSequence`. They all give the same eigenvalues — the same physics. They differ only in how many qubits each Pauli string touches, which determines circuit depth and measurement cost.
+All six encodings in FockMap (JW, BK, Parity, balanced binary tree, balanced ternary tree, Vlasov tree) produce the same output type: a `PauliRegisterSequence`. They all give the same eigenvalues — the same physics. They differ only in how many qubits each Pauli string touches, which determines circuit depth and measurement cost.
 
 ---
 
@@ -315,7 +311,7 @@ So while *creating* or *moving* electrons gets expensive under JW (the Z-chains 
 | Large molecule / all-to-all interactions | Ternary Tree | $O(\log_3 n)$ — the best known scaling |
 | Research / exploring custom topologies | Custom tree | FockMap supports arbitrary tree shapes |
 
-In the next chapter, we will use all five encodings to build the complete 15-term H₂ Hamiltonian — and see that they all agree.
+In the next chapter, we will use all six encodings to build the complete 15-term H₂ Hamiltonian — and see that they all agree.
 
 ---
 

@@ -23,10 +23,11 @@ keywords:
   - Bravyi-Kitaev
   - Trotterization
   - qubit tapering
+  - Vlasov
   - FockMap
 abstract: >-
-  A self-contained 22-chapter guide covering the complete pipeline from
+  A self-contained 23-chapter guide covering the complete pipeline from
   molecular electronic structure to quantum circuit compilation. Includes
-  five fermionic encodings, qubit tapering, Trotter decomposition, circuit
+  six fermionic encodings (including Vlasov tree), qubit tapering, Trotter decomposition, circuit
   export, and computed results (H₂ dissociation curve, H₂O bond angle scan).
   Companion labs provide interactive F# scripts using the FockMap library.

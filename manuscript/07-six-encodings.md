@@ -1,4 +1,4 @@
-# Chapter 7: Five Encodings, One Interface
+# Chapter 7: Six Encodings, One Interface
 
 _We built the H₂ Hamiltonian with Jordan–Wigner. But JW has a problem — its Z-chains grow linearly with system size. This chapter asks: can we do better? And if we use a different encoding, do we get the same physics?_
 
@@ -14,7 +14,7 @@ _We built the H₂ Hamiltonian with Jordan–Wigner. But JW has a problem — it
 
 In Chapter 6, we saw that 4 of the 15 Pauli terms — the exchange terms XXYY, XYYX, YXXY, YYXX — are off-diagonal. These are the terms that generate coherences in the density matrix and produce the correlation energy. They are also the terms that are expensive to simulate on a quantum computer, because each one requires a CNOT staircase proportional to its Pauli weight.
 
-Under Jordan–Wigner, the worst-case Pauli weight of an operator grows linearly with system size: $O(n)$. For H₂ with 4 qubits, the maximum weight is 4 — manageable. But for H₂O with 12 qubits, it's 12. For the FeMo-co nitrogen-fixation catalyst with ~100 qubits, it's ~100. Each off-diagonal term would require ~200 CNOT gates.
+Under Jordan–Wigner, the worst-case Pauli weight of an operator grows linearly with system size: $O(n)$. For H₂ with 4 qubits, the maximum weight is 4 — manageable. But for H₂O with 12 active spin-orbitals (frozen core), it's 12. For the FeMo-co nitrogen-fixation catalyst with ~100 qubits, it's ~100. Each off-diagonal term would require ~200 CNOT gates.
 
 This is the motivation for alternative encodings: **can we represent the same physics with shorter Pauli strings?**
 
@@ -26,7 +26,7 @@ The answer is that all valid encodings preserve the **canonical anti-commutation
 
 ## Do Different Encodings Give the Same Answer?
 
-Let's find out empirically. Build the H₂ Hamiltonian with all five encodings and compare:
+Let's find out empirically. Build the H₂ Hamiltonian with all six encodings and compare:
 
 ```fsharp
 let h2Factory key = h2Integrals |> Map.tryFind key
@@ -43,11 +43,12 @@ Bravyi-Kitaev              15 terms
 Parity                     15 terms
 Balanced Binary Tree       15 terms
 Balanced Ternary Tree      15 terms
+Vlasov Tree                15 terms
 ```
 
-Same number of terms. Same identity coefficient ($-1.0704$ Ha in every case). And if we diagonalize each — as we'll do in Chapter 8 — the eigenvalues agree to machine precision ($< 5 \times 10^{-16}$ Ha).
+Same number of terms. Same identity coefficient ($-1.0704$ Ha in every case). And if we diagonalize each — as we'll do in Chapter 9 — the eigenvalues agree to machine precision ($< 5 \times 10^{-16}$ Ha).
 
-For H₂ with 4 qubits, the Pauli strings are actually identical across all five encodings. With only 4 qubits, there isn't enough room for the different encodings to diverge — the Z-chain is at most length 3, and BK's tree structure on 4 nodes provides at most a marginal improvement.
+For H₂ with 4 qubits, the Pauli strings are actually identical across all six encodings. With only 4 qubits, there isn't enough room for the different encodings to diverge — the Z-chain is at most length 3, and BK's tree structure on 4 nodes provides at most a marginal improvement.
 
 This is an important lesson: **for small molecules, encoding choice barely matters.** The differences emerge at scale. But the equivalence — the fact that they all give the same answer — holds at every scale. Let's understand why.
 
@@ -77,15 +78,15 @@ FockMap's test suite verifies the CAR at the Pauli string level for every encodi
 
 $$(\text{encoded } a_i^\dagger)(\text{encoded } a_j) + (\text{encoded } a_j)(\text{encoded } a_i^\dagger) = \delta_{ij} \cdot I$$
 
-for all pairs $(i, j)$, using symbolic Pauli multiplication. If this check passes, the encoding is algebraically valid and the encoded Hamiltonian is guaranteed to preserve the spectrum in principle. In practice, we still compare eigenvalues numerically in Chapter 8 to verify the full pipeline implementation — because algebraic correctness of the encoding does not protect against bugs in integral processing, coefficient assembly, or like-term combination.
+for all pairs $(i, j)$, using symbolic Pauli multiplication. If this check passes, the encoding is algebraically valid and the encoded Hamiltonian is guaranteed to preserve the spectrum in principle. In practice, we still compare eigenvalues numerically in Chapter 9 to verify the full pipeline implementation — because algebraic correctness of the encoding does not protect against bugs in integral processing, coefficient assembly, or like-term combination.
 
 This is not just a theoretical nicety. It is what makes encoding choice a **free optimization**: you can pick the encoding that minimizes circuit cost, knowing — with mathematical certainty, not just empirical evidence — that the physics is preserved.
 
 ---
 
-## Five Encodings in Five Lines
+## Six Encodings in Six Lines
 
-With equivalence established, let's see all five:
+With equivalence established, let's see all six. Chapter 5 introduced three encoding concepts — JW, BK, and ternary trees. FockMap ships six concrete implementations, because the path-based tree framework (which we'll see shortly) makes it trivial to define new tree shapes:
 
 ```fsharp
 let encoders = [
@@ -94,10 +95,11 @@ let encoders = [
     ("Parity",                parityTerms)
     ("Balanced Binary Tree",  balancedBinaryTreeTerms)
     ("Balanced Ternary Tree", ternaryTreeTerms)
+    ("Vlasov Tree",           vlasovTreeTerms)
 ]
 ```
 
-All five have the same function signature. All five produce `PauliRegisterSequence`. Swapping one for another is a one-word change.
+All six have the same function signature. All six produce `PauliRegisterSequence`. Swapping one for another is a one-word change. The first five will be familiar from Chapter 5; the sixth — the Vlasov tree — is a second ternary tree encoding that we'll introduce in the frameworks section below.
 
 ---
 
@@ -125,19 +127,16 @@ FockMap implements encodings through two complementary frameworks (plus one spec
 ```mermaid
 flowchart TD
     subgraph ISF["Index-Set Framework"]
-        JW["Jordan-Wigner"]
-        BK["Bravyi-Kitaev"]
-        PAR["Parity"]
+        direction LR
+        JW["Jordan-Wigner"] ~~~ BK["Bravyi-Kitaev"] ~~~ PAR["Parity"]
+    end
+
+    subgraph PBF["Path-Based Framework"]
+        direction LR
+        BBT["Balanced Binary"] ~~~ BTT["Balanced Ternary"] ~~~ VLT["Vlasov"] ~~~ CT["Custom"]
     end
 
     ISF --> PS["PauliRegisterSequence"]
-
-    subgraph PBF["Path-Based Framework"]
-        BBT["Balanced Binary Tree"]
-        BTT["Balanced Ternary Tree"]
-        CT["Custom Tree"]
-    end
-
     PBF --> PS
     style PS fill:#d1fae5,stroke:#059669
 ```
@@ -150,22 +149,23 @@ flowchart TD
 
 > **Design note:** The index-set framework was introduced by Seeley, Richard, and Love (2012) as a unifying abstraction. Our investigation showed that it produces correct encodings *only* for star-shaped (depth-1) trees — a previously undocumented constraint. The path-based framework (Jiang et al., 2020) removes this restriction. FockMap provides both because the index-set framework is simpler and faster when it applies.
 
+### Two ternary trees: why tree shape matters
+
+The path-based framework's generality has a concrete payoff: FockMap ships *two* ternary tree encodings that achieve the same optimal $O(\log_3 n)$ worst-case Pauli weight but use different tree shapes — the balanced ternary tree (Jiang et al., 2020) and the Vlasov tree (Vlasov, arXiv:1904.09912). Both preserve the CAR, both produce the same eigenvalues, but they assign qubits to tree nodes differently.
+
+How does one go from a tree shape to a working encoding? That's the subject of the next chapter, where we'll build the Vlasov tree step by step — define the tree, plug it into the framework, and verify that it works.
+
 ---
 
-## Defining Your Own Encoding
+## Defining Custom Encodings
 
-Because encodings are *values* (not classes), defining a new one is concise:
+FockMap supports two routes for custom encodings beyond the six built-in options:
 
-```fsharp
-let myScheme : EncodingScheme =
-    { Update     = fun j n -> set [ j + 1 .. n - 1 ]
-      Parity     = fun j   -> Set.empty
-      Occupation = fun j   -> Set.singleton j }
+**Index-set route.** Define three set-valued functions — Update, Parity, Occupation — and pass them as an `EncodingScheme`. This works for star-shaped trees (JW, Parity) and is the simplest path.
 
-let ham = computeHamiltonianWith (encodeOperator myScheme) h2Factory 4u
-```
+**Tree-based route.** Define a tree shape and plug it into the path-based framework. This is strictly more general and is the subject of the next chapter, where we build the Vlasov tree from scratch.
 
-> **Warning:** Not every set of three functions produces a valid encoding. A valid encoding must preserve the CAR: $\{a_i, a_j^\dagger\} = \delta_{ij}$. Use FockMap's anti-commutation test infrastructure to verify correctness before trusting results from a custom scheme. An encoding that fails the CAR check will produce a Hamiltonian with wrong eigenvalues — and the error will be silent.
+> **Warning:** Not every custom scheme produces a valid encoding. Always verify the CAR before trusting results — Chapter 8 shows how.
 
 ---
 
@@ -177,9 +177,10 @@ let ham = computeHamiltonianWith (encodeOperator myScheme) h2Factory 4u
 | Small system ($n \leq 16$) | Jordan–Wigner | Weight overhead is manageable |
 | 1D chain / local interactions | Jordan–Wigner | Adjacent-orbital terms have short Z-chains |
 | General-purpose ($n \leq 100$) | Bravyi–Kitaev | $O(\log_2 n)$ weight, well-studied |
-| Minimum circuit depth | Ternary Tree | $O(\log_3 n)$ — best known asymptotic scaling |
+| Minimum circuit depth | Ternary Tree or Vlasov Tree | $O(\log_3 n)$ — best known asymptotic scaling |
 | Exploring custom topologies | Path-based | Arbitrary tree shapes supported |
-| Comparing multiple encodings | All five | FockMap's interchangeable interface makes this trivial |
+| Comparing ternary tree variants | Vlasov Tree | Same scaling, different qubit assignment |
+| Comparing multiple encodings | All six | FockMap's interchangeable interface makes this trivial |
 
 ---
 
@@ -205,16 +206,17 @@ let ham = computeHamiltonianWith (encodeOperator myScheme) h2Factory 4u
 
 2. **CAR verification.** Define a custom encoding and use FockMap's test infrastructure to check whether it satisfies anti-commutation. What happens if it doesn't?
 
-3. **Encoding comparison for H₂O.** Build the H₂O/STO-3G Hamiltonian (12 spin-orbitals) with all five encodings. Compare maximum and average Pauli weight.
+3. **Encoding comparison for H₂O.** Build the H₂O/STO-3G Hamiltonian (12 active spin-orbitals, frozen core) with all six encodings. Compare maximum and average Pauli weight.
 
 ## Further Reading
 
 - Seeley, J. T., Richard, M. J., and Love, P. J. "The Bravyi–Kitaev transformation for quantum computation of electronic structure." *J. Chem. Phys.* 137, 224109 (2012). The index-set framework.
 - Jiang, Z. et al. "Optimal fermion-to-qubit mapping via ternary trees." *PRX Quantum* 1, 010306 (2020). The path-based ternary tree encoding.
+- Vlasov, A. Yu. "Clifford algebras, Spin groups and qubit trees." arXiv:1904.09912 (2019/2022). The complete ternary tree encoding via Clifford algebra.
 - Tranter, A. et al. "The Bravyi–Kitaev transformation: Properties and applications." *Int. J. Quantum Chem.* 115, 1431 (2015). Practical JW vs BK comparison.
 
 ---
 
 **Previous:** [Chapter 6 — Building the Qubit Hamiltonian](06-building-hamiltonian.html)
 
-**Next:** [Chapter 8 — Checking Our Answer](08-verification.html)
+**Next:** [Chapter 8 — Building a Tree Encoding](08-building-vlasov.html)

@@ -104,10 +104,10 @@ diagrams:
 # ── Data generation (requires pyscf) ──
 data: $(CODE_DIR)/h2_dissociation.csv $(CODE_DIR)/h2o_bond_angle_coarse.csv
 
-$(CODE_DIR)/h2_dissociation.csv: $(CODE_DIR)/ch17-dissociation-scan.py
+$(CODE_DIR)/h2_dissociation.csv: $(CODE_DIR)/ch18-dissociation-scan.py
 	python3 $<
 
-$(CODE_DIR)/h2o_bond_angle_coarse.csv: $(CODE_DIR)/ch18-bond-angle-scan.py
+$(CODE_DIR)/h2o_bond_angle_coarse.csv: $(CODE_DIR)/ch19-bond-angle-scan.py
 	python3 $<
 
 # ── Labs ──

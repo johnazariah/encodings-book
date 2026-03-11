@@ -1,7 +1,7 @@
 # ══════════════════════════════════════════════════════════════
-# Chapter 18 Companion: H₂O Bond Angle Scan
+# Chapter 19 Companion: H₂O Bond Angle Scan
 # ══════════════════════════════════════════════════════════════
-# Run with: python book/code/ch18-bond-angle-scan.py
+# Run with: python book/code/ch19-bond-angle-scan.py
 # Prereq:   pip install pyscf matplotlib numpy
 # Output:   book/code/h2o_bond_angle_coarse.csv
 #           book/code/h2o_bond_angle_fine.csv
@@ -153,7 +153,7 @@ def main():
         print("  Install with: pip install matplotlib")
 
     # ── Print markdown table for the book ──
-    print("\n\nMarkdown table for Chapter 18 (coarse scan, selected angles):")
+    print("\n\nMarkdown table for Chapter 19 (coarse scan, selected angles):")
     print("| Angle (°) | $E$ (Ha) | | Angle (°) | $E$ (Ha) |")
     print("|:---:|:---:|:---:|:---:|:---:|")
     # Pick representative angles for the two-column table
@@ -167,7 +167,7 @@ def main():
         le_str = f"**{le:.6f}**" if la == fine_min_angle else f"{le:.6f}"
         print(f"| {la_str} | {le_str} | | {ra:.0f} | {re:.6f} |")
 
-    print("\n\nMarkdown table for Chapter 18 (fine scan):")
+    print("\n\nMarkdown table for Chapter 19 (fine scan):")
     print("| Angle (°) | $E$ (Ha) | | Angle (°) | $E$ (Ha) |")
     print("|:---:|:---:|:---:|:---:|:---:|")
     half = len(fine) // 2 + 1

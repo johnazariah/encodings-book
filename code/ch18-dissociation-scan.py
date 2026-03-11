@@ -1,7 +1,7 @@
 # ══════════════════════════════════════════════════════════════
-# Chapter 17 Companion: H₂ Dissociation Curve
+# Chapter 18 Companion: H₂ Dissociation Curve
 # ══════════════════════════════════════════════════════════════
-# Run with: python book/code/ch17-dissociation-scan.py
+# Run with: python book/code/ch18-dissociation-scan.py
 # Prereq:   pip install pyscf matplotlib numpy
 # Output:   book/code/h2_dissociation.csv
 #           book/code/h2_dissociation.png
@@ -142,8 +142,8 @@ def main():
     except ImportError:
         print("  matplotlib not installed — skipping plot.")
 
-    # Markdown table for Chapter 17
-    print("\n\nMarkdown table for Chapter 17:")
+    # Markdown table for Chapter 18
+    print("\n\nMarkdown table for Chapter 18:")
     print("| $R$ (Å) | $E_\\text{FCI}$ (Ha) | | $R$ (Å) | $E_\\text{FCI}$ (Ha) |")
     print("|:---:|:---:|:---:|:---:|:---:|")
     half = len(results) // 2
