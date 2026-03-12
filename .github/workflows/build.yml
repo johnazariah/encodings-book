@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
     steps:
       - uses: actions/checkout@v4
 
@@ -56,7 +56,7 @@ jobs:
           path: manuscript/sample.pdf
 
   labs:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
     steps:
       - uses: actions/checkout@v4
 
