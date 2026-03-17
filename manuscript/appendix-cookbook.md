@@ -45,26 +45,26 @@ the companion website.
 
 ### Hamiltonian Construction
 
-| Function | What it does |
-|:---|:---|
-| `computeHamiltonianWith` | Build Hamiltonian with any encoding |
-| `computeHamiltonianWithParallel` | Parallel version |
-| `computeHamiltonianSkeleton` | Pre-compute Pauli structure |
-| `applyCoefficients` | Dress skeleton with integrals |
+| Function | Signature | What it does |
+|:---|:---|:---|
+| `computeHamiltonianWith` | `EncoderFn → CoefficientFactory → uint32 → PauliRegisterSequence` | Build Hamiltonian with any encoding |
+| `computeHamiltonianWithParallel` | same | Parallel version |
+| `computeHamiltonianSkeleton` | `EncoderFn → uint32 → HamiltonianSkeleton` | Pre-compute Pauli structure |
+| `applyCoefficients` | `HamiltonianSkeleton → CoefficientFactory → PauliRegisterSequence` | Dress skeleton with integrals |
 
 ### Tapering
 
-| Function | What it does |
-|:---|:---|
-| `diagonalZ2SymmetryQubits` | Find diagonal Z₂ qubits |
-| `taperDiagonalZ2` | Apply diagonal tapering |
-| `findCommutingGenerators` | Find all Z₂ symmetries |
-| `taper` | Unified tapering pipeline |
+| Function | Signature | What it does |
+|:---|:---|:---|
+| `diagonalZ2SymmetryQubits` | `PauliRegisterSequence → int[]` | Find diagonal Z₂ qubits |
+| `taperDiagonalZ2` | `(int × int) list → PauliRegisterSequence → Z2TaperingResult` | Apply diagonal tapering |
+| `findCommutingGenerators` | `PauliRegisterSequence → SymplecticVector[]` | Find all Z₂ symmetries |
+| `taper` | `TaperingOptions → PauliRegisterSequence → TaperingResult` | Unified tapering pipeline |
 
 ### Normal Ordering
 
-| Function | What it does |
-|:---|:---|
-| `ConstructNormalOrdered` | Fermionic (CAR) normal ordering |
-| `constructBosonicNormalOrdered` | Bosonic (CCR) normal ordering |
-| `constructMixedNormalOrdered` | Mixed fermion-boson ordering |
+| Function | Signature | What it does |
+|:---|:---|:---|
+| `ConstructNormalOrdered` | `S<IxOp<uint32, LadderOperatorUnit>> → ... option` | Fermionic (CAR) normal ordering |
+| `constructBosonicNormalOrdered` | same | Bosonic (CCR) normal ordering |
+| `constructMixedNormalOrdered` | `S<IxOp<uint32, SectorLadderOperatorUnit>> → ... option` | Mixed fermion-boson ordering |

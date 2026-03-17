@@ -9536,47 +9536,92 @@ encoding \\
 
 \subsection{Hamiltonian Construction}\label{hamiltonian-construction}
 
-\begin{longtable}[]{@{}ll@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
-Function & What it does \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Function
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Signature
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+What it does
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{computeHamiltonianWith} & Build Hamiltonian with any encoding \\
-\texttt{computeHamiltonianWithParallel} & Parallel version \\
-\texttt{computeHamiltonianSkeleton} & Pre-compute Pauli structure \\
-\texttt{applyCoefficients} & Dress skeleton with integrals \\
+\texttt{computeHamiltonianWith} &
+\texttt{EncoderFn\ $\rightarrow$\ CoefficientFactory\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Build Hamiltonian with any encoding \\
+\texttt{computeHamiltonianWithParallel} & same & Parallel version \\
+\texttt{computeHamiltonianSkeleton} &
+\texttt{EncoderFn\ $\rightarrow$\ uint32\ $\rightarrow$\ HamiltonianSkeleton} & Pre-compute
+Pauli structure \\
+\texttt{applyCoefficients} &
+\texttt{HamiltonianSkeleton\ $\rightarrow$\ CoefficientFactory\ $\rightarrow$\ PauliRegisterSequence}
+& Dress skeleton with integrals \\
 \end{longtable}
 
 \subsection{Tapering}\label{tapering}
 
-\begin{longtable}[]{@{}ll@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
-Function & What it does \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Function
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Signature
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+What it does
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{diagonalZ2SymmetryQubits} & Find diagonal Z\textsubscript{2} qubits \\
-\texttt{taperDiagonalZ2} & Apply diagonal tapering \\
-\texttt{findCommutingGenerators} & Find all Z\textsubscript{2} symmetries \\
-\texttt{taper} & Unified tapering pipeline \\
+\texttt{diagonalZ2SymmetryQubits} &
+\texttt{PauliRegisterSequence\ $\rightarrow$\ int{[}{]}} & Find diagonal Z\textsubscript{2}
+qubits \\
+\texttt{taperDiagonalZ2} &
+\texttt{(int\ $\times$\ int)\ list\ $\rightarrow$\ PauliRegisterSequence\ $\rightarrow$\ Z2TaperingResult}
+& Apply diagonal tapering \\
+\texttt{findCommutingGenerators} &
+\texttt{PauliRegisterSequence\ $\rightarrow$\ SymplecticVector{[}{]}} & Find all Z\textsubscript{2}
+symmetries \\
+\texttt{taper} &
+\texttt{TaperingOptions\ $\rightarrow$\ PauliRegisterSequence\ $\rightarrow$\ TaperingResult} &
+Unified tapering pipeline \\
 \end{longtable}
 
 \subsection{Normal Ordering}\label{normal-ordering}
 
-\begin{longtable}[]{@{}ll@{}}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}
+  >{\raggedright\arraybackslash}p{(\linewidth - 4\tabcolsep) * \real{0.3333}}@{}}
 \toprule\noalign{}
-Function & What it does \\
+\begin{minipage}[b]{\linewidth}\raggedright
+Function
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+Signature
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+What it does
+\end{minipage} \\
 \midrule\noalign{}
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-\texttt{ConstructNormalOrdered} & Fermionic (CAR) normal ordering \\
-\texttt{constructBosonicNormalOrdered} & Bosonic (CCR) normal
+\texttt{ConstructNormalOrdered} &
+\texttt{S\textless{}IxOp\textless{}uint32,\ LadderOperatorUnit\textgreater{}\textgreater{}\ $\rightarrow$\ ...\ option}
+& Fermionic (CAR) normal ordering \\
+\texttt{constructBosonicNormalOrdered} & same & Bosonic (CCR) normal
 ordering \\
-\texttt{constructMixedNormalOrdered} & Mixed fermion-boson ordering \\
+\texttt{constructMixedNormalOrdered} &
+\texttt{S\textless{}IxOp\textless{}uint32,\ SectorLadderOperatorUnit\textgreater{}\textgreater{}\ $\rightarrow$\ ...\ option}
+& Mixed fermion-boson ordering \\
 \end{longtable}
 
 \backmatter
