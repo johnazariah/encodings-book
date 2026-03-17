@@ -116,6 +116,8 @@
 % Better table formatting
 \usepackage{booktabs}
 \usepackage{longtable}
+\usepackage{etoolbox}
+\AtBeginEnvironment{longtable}{\small}
 
 % Prevent overfull hboxes in tables
 \usepackage{array}
