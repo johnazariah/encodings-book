@@ -9,12 +9,9 @@
 #   make word-count   Print word counts per chapter
 #   make diagrams     Render mermaid diagrams only
 #   make data         Regenerate H₂ and H₂O data
-#   make leanpub      Trigger Leanpub publish
-#   make preview      Trigger Leanpub preview
 #
 # Prerequisites:
 #   pandoc, xelatex, mmdc, python3  (all installed by devcontainer)
-#   LEANPUB_API_KEY env var (for leanpub/preview targets)
 
 SHELL := /bin/bash
 
@@ -24,9 +21,6 @@ CODE_DIR    := code
 IMG_DIR     := $(MS_DIR)/mermaid-images
 OUT         := $(MS_DIR)/manuscript.pdf
 SAMPLE_OUT  := $(MS_DIR)/sample.pdf
-
-# ── Leanpub ──
-LEANPUB_SLUG := from-molecules-to-quantum-circuits
 
 # ── Source files ──
 CHAPTERS     := $(shell cat $(MS_DIR)/Book.txt | sed 's|^|$(MS_DIR)/|')
@@ -49,9 +43,11 @@ PANDOC_OPTS := \
   -V monofont="Latin Modern Mono" \
   -V mathfont="Latin Modern Math" \
   -V title="From Molecules to Quantum Circuits" \
-  -V subtitle="A Practical Guide to Fermion-to-Qubit Encodings" \
+  -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
   -V author="John S Azariah" \
+  -V thanks="Centre for Quantum Software and Information, University of Technology Sydney. Email: john.azariah@student.uts.edu.au" \
   -V date="March 2026" \
+  --metadata=abstract:"This tutorial covers the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation. Starting from one-body and two-body integrals of the hydrogen molecule (H₂) in the STO-3G basis, we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree, and a Vlasov complete-ternary-tree encoding), verify spectral equivalence across encodings, reduce qubit count via diagonal and Clifford Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q\#. Every formula has a corresponding executable computation in the companion FockMap library, an open-source F\# framework for symbolic Fock-space operator algebra. Two running examples — H₂ (4 qubits) and H₂O (12–14 qubits) — are developed from molecular geometry to quantum circuit, including computing the H₂ dissociation curve and the H-O-H bond angle from first principles. The tutorial comprises 23 chapters with exercises, 10 companion scripts, and 10 interactive laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings." \
   --toc \
   --toc-depth=2 \
   --highlight-style=tango \
@@ -64,7 +60,7 @@ PANDOC_OPTS := \
 #  Targets
 # ══════════════════════════════════════════════════════════════
 
-.PHONY: all clean word-count diagrams data sample leanpub preview leanpub-status
+.PHONY: all clean word-count diagrams data sample
 
 all: $(OUT)
 
@@ -84,8 +80,27 @@ $(SAMPLE_OUT): $(SAMPLE_CHAPS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Sample.txt
 	@echo "Done: $$(python3 -c "import pymupdf; d=pymupdf.open('$(SAMPLE_OUT)'); print(f'{d.page_count} pages'); d.close()" 2>/dev/null || echo '(install pymupdf for page count)')"
 	@ls -lh $(SAMPLE_OUT)
 
+# ── arXiv submission ──
+ARXIV_DIR   := arxiv-submission
+ARXIV_TEX   := $(ARXIV_DIR)/manuscript.tex
+
+arxiv: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
+	@echo "Building arXiv submission package..."
+	@rm -rf $(ARXIV_DIR) $(IMG_DIR)
+	@mkdir -p $(ARXIV_DIR)
+	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_OPTS)
+	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
+	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
+	fi
+	@cp $(CODE_DIR)/*.png $(ARXIV_DIR)/ 2>/dev/null || true
+	@sed -i 's|manuscript/mermaid-images/||g; s|code/||g' $(ARXIV_TEX)
+	@cd $(ARXIV_DIR) && tar czf ../arxiv-submission.tar.gz *
+	@echo "Created arxiv-submission.tar.gz with:"
+	@tar tzf arxiv-submission.tar.gz | sed 's/^/  /'
+	@ls -lh arxiv-submission.tar.gz
+
 clean:
-	rm -rf $(IMG_DIR) $(OUT) $(SAMPLE_OUT)
+	rm -rf $(IMG_DIR) $(OUT) $(SAMPLE_OUT) $(ARXIV_DIR) arxiv-submission.tar.gz
 
 word-count:
 	@echo "Chapter word counts:"
@@ -117,31 +132,6 @@ lab-check:
 	@for f in labs/*.fsx; do \
 	  echo "  $$f"; \
 	done
-
-# ── Leanpub ──
-.PHONY: leanpub-check
-leanpub-check:
-	@if [ -z "$(LEANPUB_API_KEY)" ]; then \
-	  echo "Error: LEANPUB_API_KEY not set"; \
-	  echo "  export LEANPUB_API_KEY=your-key-here"; \
-	  exit 1; \
-	fi
-
-leanpub: $(OUT) $(SAMPLE_OUT) leanpub-check
-	@echo "Publishing to Leanpub ($(LEANPUB_SLUG))..."
-	@curl -s -X POST \
-	  "https://leanpub.com/$(LEANPUB_SLUG)/publish.json" \
-	  -d "api_key=$(LEANPUB_API_KEY)" \
-	  | python3 -c "import sys,json; r=json.load(sys.stdin); print(r.get('message', r))"
-	@echo "Publish triggered. Check https://leanpub.com/$(LEANPUB_SLUG)"
-
-preview: leanpub-check
-	@echo "Triggering Leanpub preview ($(LEANPUB_SLUG))..."
-	@curl -s -X POST \
-	  "https://leanpub.com/$(LEANPUB_SLUG)/preview.json" \
-	  -d "api_key=$(LEANPUB_API_KEY)" \
-	  | python3 -c "import sys,json; r=json.load(sys.stdin); print(r.get('message', r))"
-	@echo "Preview triggered. Check https://leanpub.com/$(LEANPUB_SLUG)"
 
 leanpub-status: leanpub-check
 	@curl -s \
