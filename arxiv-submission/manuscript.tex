@@ -9,9 +9,20 @@
 \usepackage[margin=1in]{geometry}
 \usepackage{amsmath,amssymb}
 \setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\usepackage[T1]{fontenc}
-\usepackage[utf8]{inputenc}
-\usepackage{textcomp}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \IfFileExists{microtype.sty}{% use microtype if available
@@ -96,11 +107,11 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-% Abstract formatting for arXiv-style title page (book class lacks abstract)
-\newenvironment{abstract}%
-  {\vspace{1em}\small\quotation\noindent\textbf{Abstract.}\\}%
-  {\endquotation\vspace{1em}}
+% pdflatex-compatible preamble for arXiv submission
+% (replaces preamble.tex which uses xelatex/fontspec/DejaVu)
 
+% Greek letters in text mode
+\usepackage{textgreek}
 
 % Better table formatting
 \usepackage{booktabs}
@@ -150,27 +161,6 @@
 \begin{document}
 \frontmatter
 \maketitle
-\begin{abstract}
-This tutorial covers the complete pipeline from molecular electronic
-structure to quantum circuit compilation for quantum simulation.
-Starting from one-body and two-body integrals of the hydrogen molecule
-(H\textsubscript{2}) in the STO-3G basis, we construct the qubit Hamiltonian explicitly
-under six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev,
-Parity, balanced binary tree, balanced ternary tree, and a Vlasov
-complete-ternary-tree encoding), verify spectral equivalence across
-encodings, reduce qubit count via diagonal and Clifford Z\textsubscript{2} symmetry
-tapering, decompose the tapered Hamiltonian into Trotter circuits with
-explicit CNOT gate counts, and export the result to OpenQASM 3.0 and
-Q\#. Every formula has a corresponding executable computation in the
-companion FockMap library, an open-source F\# framework for symbolic
-Fock-space operator algebra. Two running examples --- H\textsubscript{2} (4 qubits) and
-H\textsubscript{2}O (12--14 qubits) --- are developed from molecular geometry to quantum
-circuit, including computing the H\textsubscript{2} dissociation curve and the H-O-H
-bond angle from first principles. The tutorial comprises 23 chapters
-with exercises, 10 companion scripts, and 10 interactive laboratory
-sessions. Companion software and source at
-https://github.com/johnazariah/encodings.
-\end{abstract}
 
 {
 \hypersetup{linkcolor=}
@@ -9453,8 +9443,8 @@ The quantum computer isn't ready yet. The pipeline is.
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
 
-\chapter{Appendix A: Library Cookbook
-Reference}\label{appendix-a-library-cookbook-reference}
+\chapter{Appendix: Library Cookbook
+Reference}\label{appendix-library-cookbook-reference}
 
 \emph{A quick-reference guide to every public type and function in
 FockMap.}
@@ -9588,125 +9578,6 @@ Function & What it does \\
 ordering \\
 \texttt{constructMixedNormalOrdered} & Mixed fermion-boson ordering \\
 \end{longtable}
-
-\chapter{Appendix B: Mathematical
-Background}\label{appendix-b-mathematical-background}
-
-\emph{Formal derivations and proofs for readers who want the full
-treatment.}
-
-This appendix summarizes the 7-chapter Theory section that accompanies
-the main text. For full derivations, see the
-\href{../docs/theory/01-why-encodings.html}{Theory pages} on the
-companion website.
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\section{B.1 Why Encodings? (Theory Ch.
-1)}\label{b.1-why-encodings-theory-ch.-1}
-
-Fermions obey anti-commutation relations:
-\(\{a_i, a_j^\dagger\} = \delta_{ij}\). Qubits obey commutation
-relations: \([\sigma_i, \sigma_j] = 0\) for \(i \neq j\). An encoding is
-a mapping from the first algebra to the second that preserves the
-anti-commutation structure.
-
-\textbf{Key result:} Any valid encoding must map each fermionic mode to
-at least one qubit, so \(n\) modes require \(\geq n\) qubits. The
-challenge is to minimize the Pauli weight (number of non-identity Pauli
-operators) per encoded operator.
-
-\section{B.2 Second Quantization (Theory Ch.
-2)}\label{b.2-second-quantization-theory-ch.-2}
-
-The occupation-number representation replaces \(N\)-particle
-wavefunctions with Fock states \(\lvert n_0, n_1, \ldots \rangle\) and
-ladder operators \(a_p^\dagger, a_p\). The canonical anti-commutation
-relations (CAR):
-
-\[\{a_p, a_q^\dagger\} = \delta_{pq}, \quad \{a_p, a_q\} = \{a_p^\dagger, a_q^\dagger\} = 0\]
-
-encode the Pauli exclusion principle and fermionic exchange symmetry.
-
-The electronic Hamiltonian in second quantization:
-
-\[\hat{H} = \sum_{pq} h_{pq}\, a_p^\dagger a_q + \frac{1}{2}\sum_{pqrs} \langle pq \mid rs\rangle\, a_p^\dagger a_q^\dagger a_s a_r\]
-
-\section{B.3 Pauli Algebra (Theory Ch.
-3)}\label{b.3-pauli-algebra-theory-ch.-3}
-
-The single-qubit Pauli matrices \(\{I, X, Y, Z\}\) form a basis for all
-\(2 \times 2\) Hermitian operators. Their multiplication table is closed
-with phases in \(\{\pm 1, \pm i\}\):
-
-\[XY = iZ, \quad YZ = iX, \quad ZX = iY\]
-
-Any two distinct non-identity Paulis anti-commute: \(XY = -YX\), etc.
-
-An \(n\)-qubit Pauli string
-\(P = P_0 \otimes P_1 \otimes \cdots \otimes P_{n-1}\) is a tensor
-product of single-qubit Paulis. The set of all \(4^n\) Pauli strings
-forms a group under multiplication (the Pauli group).
-
-\section{B.4 Jordan--Wigner Transform (Theory Ch.
-4)}\label{b.4-jordanwigner-transform-theory-ch.-4}
-
-The Jordan--Wigner encoding maps:
-
-\[a_j^\dagger \to \frac{1}{2}(X_j - iY_j) \bigotimes_{k < j} Z_k\]
-
-The Z-chain \(\bigotimes_{k < j} Z_k\) tracks the parity of occupied
-orbitals below \(j\), enforcing the fermionic sign convention. The chain
-length grows linearly with \(j\), giving worst-case Pauli weight
-\(O(n)\).
-
-\section{B.5 Beyond Jordan--Wigner (Theory Ch.
-5)}\label{b.5-beyond-jordanwigner-theory-ch.-5}
-
-\textbf{Bravyi--Kitaev:} Uses a Fenwick tree to pre-compute partial
-parity sums, reducing the chain length to \(O(\log_2 n)\).
-
-\textbf{Parity encoding:} Swaps the roles of occupation and parity
-information, placing the total parity on the last qubit (always
-taperable).
-
-\textbf{Tree-based encodings:} Any rooted labelled ternary tree defines
-a valid encoding, with each root-to-leaf path contributing Pauli labels.
-Balanced ternary trees achieve \(O(\log_3 n)\) worst-case weight --- the
-best known scaling.
-
-\textbf{The index-set framework (Seeley--Richard--Love 2012):} Unifies
-JW, BK, and Parity as instances of a common abstraction defined by three
-set-valued functions: Update(\(j\)), Parity(\(j\)), Occupation(\(j\)).
-
-\section{B.6 Bosonic Operators (Theory Ch.
-6)}\label{b.6-bosonic-operators-theory-ch.-6}
-
-Bosonic modes obey canonical commutation relations (CCR):
-\([b_i, b_j^\dagger] = \delta_{ij}\).
-
-Bosonic Fock spaces are infinite-dimensional and must be truncated to
-\(d\) levels for qubit encoding. Three truncation encodings:
-
-\begin{itemize}
-\tightlist
-\item
-  \textbf{Unary:} \(d\) qubits, weight $\leq$ 2
-\item
-  \textbf{Standard binary:} \(\lceil\log_2 d\rceil\) qubits
-\item
-  \textbf{Gray code:} \(\lceil\log_2 d\rceil\) qubits, reduced average
-  weight
-\end{itemize}
-
-\section{B.7 Mixed Systems (Theory Ch.
-7)}\label{b.7-mixed-systems-theory-ch.-7}
-
-For Hamiltonians with both fermionic and bosonic modes: - Separate
-operators by sector (fermionic vs bosonic) - Cross-sector swaps are free
-(no sign change: \([a_f, b^\dagger_b] = 0\)) - Normal-order each sector
-independently using the appropriate algebra - Encode fermionic sector
-with JW/BK/etc.; encode bosonic sector with unary/binary/Gray
 
 \backmatter
 \end{document}

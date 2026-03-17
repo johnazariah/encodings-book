@@ -1,0 +1,29 @@
+% pdflatex-compatible preamble for arXiv submission
+% (replaces preamble.tex which uses xelatex/fontspec/DejaVu)
+
+% Greek letters in text mode
+\usepackage{textgreek}
+
+% Better table formatting
+\usepackage{booktabs}
+\usepackage{longtable}
+
+% Prevent overfull hboxes in tables
+\usepackage{array}
+\setlength{\tabcolsep}{4pt}
+
+% Pagination: prevent widows and orphans
+\widowpenalty=10000
+\clubpenalty=10000
+
+% Image sizing: scale to text width but cap height at 40% of text height
+\usepackage{graphicx}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>0.4\textheight 0.4\textheight\else\Gin@nat@height\fi}
+\makeatother
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+
+% Smaller code font (one step down from body text)
+\usepackage{fancyvrb}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{fontsize=\small,commandchars=\\\{\}}

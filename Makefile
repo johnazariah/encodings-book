@@ -5,6 +5,7 @@
 # Usage:
 #   make              Build manuscript.pdf
 #   make sample       Build sample.pdf (first 7 chapters)
+#   make arxiv-pdflatex  Build pdflatex arXiv submission (tarball + PDF)
 #   make clean        Remove generated files
 #   make word-count   Print word counts per chapter
 #   make diagrams     Render mermaid diagrams only
@@ -85,7 +86,7 @@ ARXIV_DIR   := arxiv-submission
 ARXIV_TEX   := $(ARXIV_DIR)/manuscript.tex
 
 arxiv: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
-	@echo "Building arXiv submission package..."
+	@echo "Building arXiv submission package (xelatex)..."
 	@rm -rf $(ARXIV_DIR) $(IMG_DIR)
 	@mkdir -p $(ARXIV_DIR)
 	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_OPTS)
@@ -98,6 +99,57 @@ arxiv: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
 	@echo "Created arxiv-submission.tar.gz with:"
 	@tar tzf arxiv-submission.tar.gz | sed 's/^/  /'
 	@ls -lh arxiv-submission.tar.gz
+
+# ── arXiv submission (pdflatex — required by arXiv) ──
+PREAMBLE_ARXIV := $(MS_DIR)/preamble-arxiv.tex
+CONVERT_SCRIPT := scripts/convert-to-pdflatex.py
+
+PANDOC_ARXIV_OPTS := \
+  --pdf-engine=pdflatex \
+  --lua-filter=$(LUA_FILTER) \
+  -H $(PREAMBLE_ARXIV) \
+  -V geometry:margin=1in \
+  -V fontsize=11pt \
+  -V classoption=oneside \
+  -V title="From Molecules to Quantum Circuits" \
+  -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
+  -V author="John S Azariah" \
+  -V thanks="Centre for Quantum Software and Information, University of Technology Sydney. Email: john.azariah@student.uts.edu.au" \
+  -V date="March 2026" \
+  --toc \
+  --toc-depth=2 \
+  --highlight-style=tango \
+  --top-level-division=chapter \
+  -V colorlinks=true \
+  -V linkcolor=blue \
+  -V urlcolor=blue
+
+arxiv-pdflatex: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE_ARXIV) $(MS_DIR)/Book.txt $(CONVERT_SCRIPT)
+	@echo "Building arXiv submission package (pdflatex)..."
+	@rm -rf $(ARXIV_DIR) $(IMG_DIR)
+	@mkdir -p $(ARXIV_DIR)
+	$(PANDOC) $(CHAPTERS) -o $(ARXIV_TEX) -s $(PANDOC_ARXIV_OPTS)
+	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
+	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
+	fi
+	@cp $(CODE_DIR)/*.png $(ARXIV_DIR)/ 2>/dev/null || true
+	@sed -i 's|manuscript/mermaid-images/||g; s|code/||g' $(ARXIV_TEX)
+	@python3 $(CONVERT_SCRIPT) $(ARXIV_TEX)
+	@echo "Compiling PDF (two passes)..."
+	@cd $(ARXIV_DIR) && pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
+	@cd $(ARXIV_DIR) && pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
+	@if grep -q '^!' $(ARXIV_DIR)/manuscript.log; then \
+	  echo "ERROR: LaTeX errors found:"; \
+	  grep '^!' $(ARXIV_DIR)/manuscript.log; \
+	  exit 1; \
+	fi
+	@grep "Output written" $(ARXIV_DIR)/manuscript.log
+	@rm -f $(ARXIV_DIR)/manuscript.aux $(ARXIV_DIR)/manuscript.log \
+	       $(ARXIV_DIR)/manuscript.out $(ARXIV_DIR)/manuscript.toc
+	@cd $(ARXIV_DIR) && tar czf ../arxiv-submission.tar.gz manuscript.tex *.png
+	@echo "Created arxiv-submission.tar.gz with:"
+	@tar tzf arxiv-submission.tar.gz | sed 's/^/  /'
+	@ls -lh arxiv-submission.tar.gz $(ARXIV_DIR)/manuscript.pdf
 
 clean:
 	rm -rf $(IMG_DIR) $(OUT) $(SAMPLE_OUT) $(ARXIV_DIR) arxiv-submission.tar.gz

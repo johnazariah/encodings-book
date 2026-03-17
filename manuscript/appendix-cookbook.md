@@ -1,4 +1,4 @@
-# Appendix A: Library Cookbook Reference
+# Appendix: Library Cookbook Reference
 
 _A quick-reference guide to every public type and function in FockMap._
 
