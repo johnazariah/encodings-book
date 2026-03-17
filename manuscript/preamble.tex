@@ -48,6 +48,14 @@
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 
+% Affiliation and email below author name on title page
+\let\oldauthor\author
+\renewcommand{\author}[1]{%
+  \oldauthor{#1\\[0.5em]
+    {\normalsize Centre for Quantum Software and Information, University of Technology Sydney}\\[0.3em]
+    {\normalsize\texttt{john.azariah@student.uts.edu.au}}}%
+}
+
 % Smaller code font (one step down from body text)
 \usepackage{fancyvrb}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{fontsize=\small,commandchars=\\\{\}}

@@ -4,8 +4,7 @@
 
 **John S Azariah**
 
-Centre for Quantum Software and Information
-University of Technology Sydney
+Centre for Quantum Software and Information, University of Technology Sydney
 
 ---
 

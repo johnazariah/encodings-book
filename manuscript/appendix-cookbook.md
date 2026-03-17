@@ -36,11 +36,11 @@ the companion website.
 | Function | Signature | What it does |
 |:---|:---|:---|
 | `jordanWignerTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | JW encoding |
-| `bravyiKitaevTerms` | same | BK encoding |
-| `parityTerms` | same | Parity encoding |
-| `balancedBinaryTreeTerms` | same | Binary tree encoding |
-| `ternaryTreeTerms` | same | Ternary tree encoding |
-| `vlasovTreeTerms` | same | Vlasov tree encoding |
+| `bravyiKitaevTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | BK encoding |
+| `parityTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | Parity encoding |
+| `balancedBinaryTreeTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | Binary tree encoding |
+| `ternaryTreeTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | Ternary tree encoding |
+| `vlasovTreeTerms` | `LadderOperatorUnit → uint32 → uint32 → PauliRegisterSequence` | Vlasov tree encoding |
 | `encodeOperator` | `EncodingScheme → ...` | Custom encoding |
 
 ### Hamiltonian Construction
@@ -48,7 +48,7 @@ the companion website.
 | Function | Signature | What it does |
 |:---|:---|:---|
 | `computeHamiltonianWith` | `EncoderFn → CoefficientFactory → uint32 → PauliRegisterSequence` | Build Hamiltonian with any encoding |
-| `computeHamiltonianWithParallel` | same | Parallel version |
+| `computeHamiltonianWithParallel` | `EncoderFn → CoefficientFactory → uint32 → PauliRegisterSequence` | Parallel version |
 | `computeHamiltonianSkeleton` | `EncoderFn → uint32 → HamiltonianSkeleton` | Pre-compute Pauli structure |
 | `applyCoefficients` | `HamiltonianSkeleton → CoefficientFactory → PauliRegisterSequence` | Dress skeleton with integrals |
 
@@ -66,5 +66,5 @@ the companion website.
 | Function | Signature | What it does |
 |:---|:---|:---|
 | `ConstructNormalOrdered` | `S<IxOp<uint32, LadderOperatorUnit>> → ... option` | Fermionic (CAR) normal ordering |
-| `constructBosonicNormalOrdered` | same | Bosonic (CCR) normal ordering |
+| `constructBosonicNormalOrdered` | `S<IxOp<uint32, LadderOperatorUnit>> → ... option` | Bosonic (CCR) normal ordering |
 | `constructMixedNormalOrdered` | `S<IxOp<uint32, SectorLadderOperatorUnit>> → ... option` | Mixed fermion-boson ordering |

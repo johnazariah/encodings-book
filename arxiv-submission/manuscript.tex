@@ -135,6 +135,14 @@
 \makeatother
 \setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
 
+% Affiliation and email below author name on title page
+\let\oldauthor\author
+\renewcommand{\author}[1]{%
+  \oldauthor{#1\\[0.5em]
+    {\normalsize Centre for Quantum Software and Information, University of Technology Sydney}\\[0.3em]
+    {\normalsize\texttt{john.azariah@student.uts.edu.au}}}%
+}
+
 % Smaller code font (one step down from body text)
 \usepackage{fancyvrb}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{fontsize=\small,commandchars=\\\{\}}
@@ -149,7 +157,7 @@
   urlcolor={blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{From Molecules to Quantum Circuits\thanks{Centre for Quantum Software and Information, University of Technology Sydney. Email: john.azariah@student.uts.edu.au}}
+\title{From Molecules to Quantum Circuits}
 \usepackage{etoolbox}
 \makeatletter
 \providecommand{\subtitle}[1]{% add subtitle to \maketitle
@@ -177,7 +185,7 @@ Circuits}\label{from-molecules-to-quantum-circuits}
 
 \textbf{John S Azariah}
 
-Centre for Quantum Software and Information University of Technology
+Centre for Quantum Software and Information, University of Technology
 Sydney
 
 \begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
@@ -9527,11 +9535,21 @@ What it does
 \texttt{jordanWignerTerms} &
 \texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
 & JW encoding \\
-\texttt{bravyiKitaevTerms} & same & BK encoding \\
-\texttt{parityTerms} & same & Parity encoding \\
-\texttt{balancedBinaryTreeTerms} & same & Binary tree encoding \\
-\texttt{ternaryTreeTerms} & same & Ternary tree encoding \\
-\texttt{vlasovTreeTerms} & same & Vlasov tree encoding \\
+\texttt{bravyiKitaevTerms} &
+\texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& BK encoding \\
+\texttt{parityTerms} &
+\texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Parity encoding \\
+\texttt{balancedBinaryTreeTerms} &
+\texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Binary tree encoding \\
+\texttt{ternaryTreeTerms} &
+\texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Ternary tree encoding \\
+\texttt{vlasovTreeTerms} &
+\texttt{LadderOperatorUnit\ $\rightarrow$\ uint32\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Vlasov tree encoding \\
 \texttt{encodeOperator} & \texttt{EncodingScheme\ $\rightarrow$\ ...} & Custom
 encoding \\
 \end{longtable}
@@ -9557,7 +9575,9 @@ What it does
 \texttt{computeHamiltonianWith} &
 \texttt{EncoderFn\ $\rightarrow$\ CoefficientFactory\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
 & Build Hamiltonian with any encoding \\
-\texttt{computeHamiltonianWithParallel} & same & Parallel version \\
+\texttt{computeHamiltonianWithParallel} &
+\texttt{EncoderFn\ $\rightarrow$\ CoefficientFactory\ $\rightarrow$\ uint32\ $\rightarrow$\ PauliRegisterSequence}
+& Parallel version \\
 \texttt{computeHamiltonianSkeleton} &
 \texttt{EncoderFn\ $\rightarrow$\ uint32\ $\rightarrow$\ HamiltonianSkeleton} & Pre-compute
 Pauli structure \\
@@ -9619,8 +9639,9 @@ What it does
 \texttt{ConstructNormalOrdered} &
 \texttt{S\textless{}IxOp\textless{}uint32,\ LadderOperatorUnit\textgreater{}\textgreater{}\ $\rightarrow$\ ...\ option}
 & Fermionic (CAR) normal ordering \\
-\texttt{constructBosonicNormalOrdered} & same & Bosonic (CCR) normal
-ordering \\
+\texttt{constructBosonicNormalOrdered} &
+\texttt{S\textless{}IxOp\textless{}uint32,\ LadderOperatorUnit\textgreater{}\textgreater{}\ $\rightarrow$\ ...\ option}
+& Bosonic (CCR) normal ordering \\
 \texttt{constructMixedNormalOrdered} &
 \texttt{S\textless{}IxOp\textless{}uint32,\ SectorLadderOperatorUnit\textgreater{}\textgreater{}\ $\rightarrow$\ ...\ option}
 & Mixed fermion-boson ordering \\
