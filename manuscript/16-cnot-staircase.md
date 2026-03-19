@@ -124,6 +124,7 @@ For the same molecule encoded differently:
 | Jordan–Wigner ($n=32$) | 32 | ~2000 |
 | Bravyi–Kitaev ($n=32$) | 6 | ~500 |
 | Ternary Tree ($n=32$) | 5 | ~400 |
+| Vlasov Tree ($n=32$) | 5 | ~400 |
 | Tapered + TT ($n=29$) | 5 | ~340 |
 
 The 6× ratio between JW and TT at $n=32$ is entirely due to the CNOT staircase — the same formula, the same chemistry, but dramatically different circuit depth.

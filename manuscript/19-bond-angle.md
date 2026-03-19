@@ -211,6 +211,7 @@ With 14 spin-orbitals, H₂O is the first molecule in this book where encoding c
 | Parity | 14 | ~7 |
 | Binary Tree | 5 | ~3 |
 | Ternary Tree | 4 | ~3 |
+| Vlasov Tree | 4 | ~3 |
 
 The ternary tree encoding produces the lightest Pauli strings, which translates directly to fewer CNOTs per Trotter step. This is the compression we studied in Chapters 7 and 16 — now applied to a molecule large enough for it to matter.
 

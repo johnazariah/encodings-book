@@ -81,6 +81,7 @@ With 14 spin-orbitals, H₂O is the smallest molecule where encoding choice make
 | Parity | ~11 | 11 | ~1,800 | ~3,600 |
 | Binary Tree | ~11 | 5 | ~700 | ~1,400 |
 | Ternary Tree | ~11 | 4 | ~600 | ~1,200 |
+| Vlasov Tree | ~11 | 4 | ~600 | ~1,200 |
 
 The 3× reduction from JW to TT is the difference between a circuit that fries on near-term hardware and one that might just survive. On a device with ~99.5% two-qubit gate fidelity, the TT circuit has roughly a 10× higher success probability per shot. Over millions of VQE shots, that translates directly to better energy estimates.
 

@@ -32,7 +32,7 @@ PANDOC      := pandoc
 LUA_FILTER  := $(MS_DIR)/mermaid.lua
 PREAMBLE    := $(MS_DIR)/preamble.tex
 
-PANDOC_OPTS := \
+PANDOC_COMMON := \
   --pdf-engine=xelatex \
   --lua-filter=$(LUA_FILTER) \
   -H $(PREAMBLE) \
@@ -47,7 +47,6 @@ PANDOC_OPTS := \
   -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
   -V author="John S Azariah" \
   -V date="March 2026" \
-  --metadata=abstract:"This tutorial covers the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation. Starting from one-body and two-body integrals of the hydrogen molecule (H₂) in the STO-3G basis, we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree, and a Vlasov complete-ternary-tree encoding), verify spectral equivalence across encodings, reduce qubit count via diagonal and Clifford Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q\#. Every formula has a corresponding executable computation in the companion FockMap library, an open-source F\# framework for symbolic Fock-space operator algebra. Two running examples — H₂ (4 qubits) and H₂O (12–14 qubits) — are developed from molecular geometry to quantum circuit, including computing the H₂ dissociation curve and the H-O-H bond angle from first principles. The tutorial comprises 23 chapters with exercises, 10 companion scripts, and 10 interactive laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings." \
   --toc \
   --toc-depth=2 \
   --highlight-style=tango \
@@ -55,6 +54,12 @@ PANDOC_OPTS := \
   -V colorlinks=true \
   -V linkcolor=blue \
   -V urlcolor=blue
+
+PANDOC_OPTS := $(PANDOC_COMMON) \
+  --metadata=abstract:"This tutorial covers the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation. Starting from one-body and two-body integrals of the hydrogen molecule (H₂) in the STO-3G basis, we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree, and a Vlasov complete-ternary-tree encoding), verify spectral equivalence across encodings, reduce qubit count via diagonal and Clifford Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q\#. Every formula has a corresponding executable computation in the companion FockMap library, an open-source F\# framework for symbolic Fock-space operator algebra. Two running examples — H₂ (4 qubits) and H₂O (12–14 qubits) — are developed from molecular geometry to quantum circuit, including computing the H₂ dissociation curve and the H-O-H bond angle from first principles. The tutorial comprises 23 chapters with exercises, 10 companion scripts, and 10 interactive laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings."
+
+SAMPLE_FILTER := $(MS_DIR)/sample-filter.lua
+SAMPLE_OPTS := $(PANDOC_COMMON) --lua-filter=$(SAMPLE_FILTER)
 
 # ══════════════════════════════════════════════════════════════
 #  Targets
@@ -75,8 +80,7 @@ sample: $(SAMPLE_OUT)
 
 $(SAMPLE_OUT): $(SAMPLE_CHAPS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Sample.txt
 	@echo "Building sample..."
-	@rm -rf $(IMG_DIR)
-	$(PANDOC) $(SAMPLE_CHAPS) -o $(SAMPLE_OUT) $(PANDOC_OPTS)
+	$(PANDOC) $(SAMPLE_CHAPS) -o $(SAMPLE_OUT) $(SAMPLE_OPTS)
 	@echo "Done: $$(python3 -c "import pymupdf; d=pymupdf.open('$(SAMPLE_OUT)'); print(f'{d.page_count} pages'); d.close()" 2>/dev/null || echo '(install pymupdf for page count)')"
 	@ls -lh $(SAMPLE_OUT)
 

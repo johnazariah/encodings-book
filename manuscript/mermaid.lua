@@ -62,6 +62,10 @@ function CodeBlock(block)
     ensure_dir(img_dir)
     local config = ensure_puppeteer_config()
 
+    -- Use content hash for stable filenames across partial builds
+    local hash = pandoc.utils.sha1(block.text)
+    local short_hash = hash:sub(1, 8)
+
     -- Write mermaid source to temp file
     local src_file = os.tmpname() .. ".mmd"
     local f = io.open(src_file, "w")
@@ -71,7 +75,16 @@ function CodeBlock(block)
     -- Output as PNG (universally supported by LaTeX, no rsvg-convert needed)
     -- Use -w 1600 for high-resolution renders that scale well on portrait pages
     -- -s 3 gives 3x pixel density for crisp text after downscaling
-    local out_file = img_dir .. "/diagram-" .. string.format("%02d", img_counter) .. ".png"
+    local out_file = img_dir .. "/diagram-" .. short_hash .. ".png"
+
+    -- Skip rendering if a cached image with this hash already exists
+    local cached = io.open(out_file, "r")
+    if cached then
+        cached:close()
+        os.remove(src_file)
+        io.stderr:write("  ✓ " .. out_file .. " (cached)\n")
+        return pandoc.Para({pandoc.Image({}, out_file)})
+    end
 
     local cmd = "mmdc -i " .. src_file .. " -o " .. out_file .. " -b white -s 3 -w 1600"
     if config and config ~= "" then
@@ -89,6 +102,13 @@ function CodeBlock(block)
         io.stderr:write("  ✓ " .. out_file .. "\n")
         return pandoc.Para({pandoc.Image({}, out_file)})
     else
+        -- Check if a pre-rendered image already exists (e.g. copied from arxiv-submission)
+        local f = io.open(out_file, "r")
+        if f then
+            f:close()
+            io.stderr:write("  ⟳ " .. out_file .. ": using pre-rendered image\n")
+            return pandoc.Para({pandoc.Image({}, out_file)})
+        end
         io.stderr:write("  ✗ " .. out_file .. ": " .. result .. "\n")
         return nil  -- Keep original code block on failure
     end

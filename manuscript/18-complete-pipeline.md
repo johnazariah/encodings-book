@@ -16,7 +16,7 @@ Let's take stock of what we've built.
 
 In Chapter 1, we started with a molecule and asked: *what is its ground-state energy?* That question led us through electronic structure (the integrals), second quantization (the ladder operators), encoding (the Pauli strings), tapering (removing redundant qubits), Trotterization (turning operators into gates), and cost analysis (counting the CNOTs). At each stage we introduced one mathematical transformation, implemented it, and tested it on H₂.
 
-Now we put the whole chain together. The script below takes the H₂ molecular integrals and produces a quantum circuit — ready to run on a simulator or real hardware. Five function calls. Under fifty lines of code. Under a second of runtime.
+Now we put the whole chain together. The script below takes the H₂ molecular integrals and produces a quantum circuit — ready to run on a simulator or real hardware. Six function calls. Under fifty lines of code. Under a second of runtime.
 
 > **A note on energy evaluation:** In this chapter and the next, we use **exact diagonalisation** (classical matrix eigensolving) as the energy-evaluation backend. For H₂ (4 qubits, $2^4 = 16$-dimensional matrix) and H₂O in minimal basis (~11 qubits after tapering, $2^{11} = 2{,}048$-dimensional matrix), this is trivially feasible on a laptop. The pipeline constructs the *circuit*; exact diagonalisation is a stand-in for the quantum measurement step. Chapter 20 explains the quantum algorithms (VQE, QPE) that replace exact diagonalisation when the system is too large for classical solution.
 
@@ -127,12 +127,13 @@ Run the script and you get a table like this:
 | Parity | 4 | 2 | 5 | 12 | 52 |
 | Binary Tree | 4 | 2 | 5 | 12 | 52 |
 | Ternary Tree | 4 | 2 | 5 | 12 | 52 |
+| Vlasov Tree | 4 | 2 | 5 | 12 | 52 |
 
 Wait — they're all the same?
 
 Yes. At 4 qubits, every encoding produces the same cost after tapering. The Pauli strings are different, but the weights are the same. H₂ was always our *teacher*, not our *benchmark*. The differences appear at scale — we'll see them with H₂O in the next chapter.
 
-But notice what we've achieved: **five independent encoding pipelines all converge to the same physical answer.** That's the verification from Chapter 9, the eigenvalue agreement from Chapter 7, now confirmed at the circuit level. The mathematics works.
+But notice what we've achieved: **six independent encoding pipelines all converge to the same physical answer.** That's the verification from Chapter 9, the eigenvalue agreement from Chapter 7, now confirmed at the circuit level. The mathematics works.
 
 ---
 

@@ -1,0 +1,1 @@
+../manuscript/07-six-encodings.md

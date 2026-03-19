@@ -8,6 +8,8 @@ Centre for Quantum Software and Information, University of Technology Sydney
 [![DOI](https://zenodo.org/badge/1176397444.svg)](https://doi.org/10.5281/zenodo.18917465)
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/johnazariah/encodings-book)
 
+**[📖 Read Online](https://johnazariah.github.io/encodings-book)** · **[📥 Download PDF](https://github.com/johnazariah/encodings-book/releases/latest)**
+
 ---
 
 ## Short Blurb
@@ -102,10 +104,11 @@ Two running examples — H₂ (the simplest molecule) and H₂O (the most import
 
 ```
 manuscript/     23 chapters + 2 appendices (Markdown source)
+docs/           GitHub Pages site (symlinks to manuscript/)
 labs/           10 interactive F# scripts — run with dotnet fsi
 code/           Python data generation + F# companion scripts
 .devcontainer/  One-click Codespaces/Dev Container setup
-Makefile        Build PDF, sample, word counts, Leanpub deploy
+Makefile        Build PDF, sample, word counts
 ```
 
 ## Make Targets
@@ -113,12 +116,10 @@ Makefile        Build PDF, sample, word counts, Leanpub deploy
 | Target | Description |
 |---|---|
 | `make` | Build full manuscript PDF |
-| `make sample` | Build sample PDF (foreword + Ch 1–6) |
+| `make sample` | Build sample PDF (selected chapters) |
 | `make word-count` | Per-chapter and total word counts |
 | `make data` | Regenerate H₂/H₂O data (requires PySCF) |
 | `make clean` | Remove generated files |
-| `make preview` | Trigger Leanpub preview |
-| `make leanpub` | Trigger Leanpub publish |
 
 ## The FockMap Library
 

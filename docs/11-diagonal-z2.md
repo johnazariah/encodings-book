@@ -1,0 +1,1 @@
+../manuscript/11-diagonal-z2.md

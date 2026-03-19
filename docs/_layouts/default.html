@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ page.title | default: site.title }}</title>
+    <style>
+      :root {
+        --bg: #ffffff;
+        --bg-alt: #f8f9fb;
+        --text: #24292f;
+        --text-muted: #57606a;
+        --accent: #0969da;
+        --accent-light: #ddf4ff;
+        --border: #d0d7de;
+        --code-bg: #f6f8fa;
+        --sidebar-w: 280px;
+        --content-w: 780px;
+        --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+        --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: var(--font); color: var(--text); background: var(--bg-alt); line-height: 1.6; }
+
+      .page { display: flex; min-height: 100vh; }
+      .sidebar {
+        width: var(--sidebar-w); padding: 24px 20px; background: var(--bg);
+        border-right: 1px solid var(--border); position: sticky; top: 0;
+        height: 100vh; overflow-y: auto; flex-shrink: 0;
+      }
+      .main { flex: 1; max-width: var(--content-w); padding: 32px 40px; margin: 0 auto; }
+
+      .sidebar .book-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; color: var(--text); text-decoration: none; display: block; }
+      .sidebar .book-subtitle { font-size: 12px; color: var(--text-muted); margin-bottom: 20px; }
+      .sidebar nav { font-size: 13px; }
+      .sidebar nav a {
+        display: block; padding: 3px 8px; margin: 1px 0; border-radius: 6px;
+        color: var(--text-muted); text-decoration: none; transition: all 0.15s;
+      }
+      .sidebar nav a:hover { background: var(--accent-light); color: var(--accent); }
+      .sidebar nav .section-title {
+        font-size: 11px; font-weight: 600; text-transform: uppercase;
+        letter-spacing: 0.5px; color: var(--text-muted); margin: 16px 0 6px 8px;
+      }
+
+      .main h1 { font-size: 28px; border-bottom: 1px solid var(--border); padding-bottom: 8px; margin-top: 0; }
+      .main h2 { font-size: 22px; margin-top: 32px; border-bottom: 1px solid var(--border); padding-bottom: 6px; }
+      .main h3 { font-size: 18px; margin-top: 24px; }
+      .main a { color: var(--accent); text-decoration: none; }
+      .main a:hover { text-decoration: underline; }
+      .main code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-family: var(--font-mono); font-size: 85%; }
+      .main pre { background: var(--code-bg); padding: 16px; border-radius: 8px; overflow-x: auto; border: 1px solid var(--border); }
+      .main pre code { background: none; padding: 0; font-size: 13px; }
+      .main table { border-collapse: collapse; width: 100%; margin: 16px 0; }
+      .main th, .main td { padding: 8px 12px; border: 1px solid var(--border); text-align: left; }
+      .main th { background: var(--code-bg); font-weight: 600; }
+      .main blockquote { border-left: 3px solid var(--accent); margin: 16px 0; padding: 8px 16px; background: var(--accent-light); border-radius: 0 6px 6px 0; }
+      .main img { max-width: 100%; border-radius: 8px; }
+      .main .mermaid { overflow-x: auto; }
+
+      .download-btn {
+        display: inline-block; padding: 8px 16px; margin: 8px 4px 8px 0;
+        background: var(--accent); color: #fff; border-radius: 6px;
+        text-decoration: none; font-size: 14px; font-weight: 600;
+      }
+      .download-btn:hover { background: #0550ae; color: #fff; text-decoration: none; }
+
+      @media (max-width: 900px) {
+        .page { flex-direction: column; }
+        .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); }
+        .main { padding: 20px; }
+      }
+    </style>
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']], processEscapes: true }
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        if (!window.mermaid) return;
+        mermaid.initialize({ startOnLoad: false, securityLevel: 'loose', theme: 'neutral' });
+        var blocks = document.querySelectorAll('pre > code.language-mermaid');
+        blocks.forEach(function (code, index) {
+          var pre = code.parentElement;
+          if (!pre) return;
+          var container = document.createElement('div');
+          container.className = 'mermaid';
+          container.id = 'mermaid-diagram-' + index;
+          container.textContent = code.textContent || '';
+          pre.replaceWith(container);
+        });
+        mermaid.run();
+      });
+    </script>
+  </head>
+  <body>
+    <div class="page">
+      <aside class="sidebar">
+        <a class="book-title" href="{{ '/' | relative_url }}">From Molecules to Quantum Circuits</a>
+        <div class="book-subtitle">A Computational Guide to<br/>Fermion-to-Qubit Encodings</div>
+        <nav>
+          <div class="section-title">Preface</div>
+          <a href="{{ '/foreword' | relative_url }}">Preface</a>
+
+          <div class="section-title">I — The Molecule</div>
+          <a href="{{ '/01-electronic-structure' | relative_url }}">1. Electronic Structure</a>
+          <a href="{{ '/02-notation' | relative_url }}">2. The Notation Minefield</a>
+          <a href="{{ '/03-spin-orbitals' | relative_url }}">3. Spin-Orbital Integrals</a>
+
+          <div class="section-title">II — The Machine</div>
+          <a href="{{ '/04-qubits-gates-circuits' | relative_url }}">4. Qubits, Gates, Circuits</a>
+
+          <div class="section-title">III — Encoding</div>
+          <a href="{{ '/05-visual-encodings' | relative_url }}">5. Visual Guide to Encodings</a>
+          <a href="{{ '/06-building-hamiltonian' | relative_url }}">6. Building the Hamiltonian</a>
+          <a href="{{ '/07-six-encodings' | relative_url }}">7. Six Encodings, One Interface</a>
+          <a href="{{ '/08-building-vlasov' | relative_url }}">8. Building a Tree Encoding</a>
+          <a href="{{ '/09-verification' | relative_url }}">9. Checking Our Answer</a>
+
+          <div class="section-title">IV — Tapering</div>
+          <a href="{{ '/10-why-tapering' | relative_url }}">10. Why Tapering?</a>
+          <a href="{{ '/11-diagonal-z2' | relative_url }}">11. Diagonal Z₂ Symmetries</a>
+          <a href="{{ '/12-clifford-tapering' | relative_url }}">12. Clifford Tapering</a>
+          <a href="{{ '/13-tapering-benchmarks' | relative_url }}">13. Tapering Benchmarks</a>
+
+          <div class="section-title">V — Circuits</div>
+          <a href="{{ '/14-time-evolution' | relative_url }}">14. Hamiltonian → Time Evolution</a>
+          <a href="{{ '/15-trotter-formulas' | relative_url }}">15. Trotterization in Practice</a>
+          <a href="{{ '/16-cnot-staircase' | relative_url }}">16. The CNOT Staircase</a>
+          <a href="{{ '/17-cost-analysis' | relative_url }}">17. Cost Analysis</a>
+
+          <div class="section-title">VI — The Pipeline</div>
+          <a href="{{ '/18-complete-pipeline' | relative_url }}">18. The Complete Pipeline</a>
+          <a href="{{ '/19-bond-angle' | relative_url }}">19. The Water Bond Angle</a>
+          <a href="{{ '/20-algorithms' | relative_url }}">20. VQE and QPE</a>
+          <a href="{{ '/21-circuit-export' | relative_url }}">21. Circuit Export</a>
+
+          <div class="section-title">VII — Horizons</div>
+          <a href="{{ '/22-scaling' | relative_url }}">22. Scaling</a>
+          <a href="{{ '/23-whats-next' | relative_url }}">23. What Comes Next</a>
+
+          <div class="section-title">Appendices</div>
+          <a href="{{ '/appendix-cookbook' | relative_url }}">A. Library Cookbook</a>
+
+          <div class="section-title">Links</div>
+          <a href="https://github.com/johnazariah/encodings">FockMap Library</a>
+          <a href="https://github.com/johnazariah/encodings-book">Source</a>
+        </nav>
+      </aside>
+      <div class="main">
+        {{ content }}
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,3 +1,6 @@
+% Color support (needed for sample PDF gray ToC entries)
+\usepackage{xcolor}
+
 % Unicode symbol fallback for Latin Modern
 % DejaVu has box-drawing, subscripts, Greek, and check marks that LM lacks
 \usepackage{newunicodechar}
@@ -39,6 +42,13 @@
 % Pagination: prevent widows and orphans
 \widowpenalty=10000
 \clubpenalty=10000
+
+% Define abstract environment for book class (Pandoc expects it)
+\makeatletter
+\@ifundefined{abstract}{%
+  \newenvironment{abstract}{\chapter*{Abstract}\small}{}%
+}{}
+\makeatother
 
 % Image sizing: scale to text width but cap height at 40% of text height
 \usepackage{graphicx}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>$if(title-prefix)$$title-prefix$ – $endif$$pagetitle$</title>
+  <style>
+    :root { --max-width: 48rem; --fg: #1a1a1a; --bg: #fff; --link: #1a56db; --code-bg: #f5f5f5; --border: #e5e7eb; }
+    @media (prefers-color-scheme: dark) {
+      :root { --fg: #e5e7eb; --bg: #1a1a1a; --link: #93bbfc; --code-bg: #2d2d2d; --border: #404040; }
+    }
+    * { box-sizing: border-box; }
+    body { font-family: "Latin Modern Roman", Georgia, serif; color: var(--fg); background: var(--bg); max-width: var(--max-width); margin: 0 auto; padding: 1rem 1.5rem; line-height: 1.6; }
+    h1 { font-size: 1.8rem; border-bottom: 2px solid var(--border); padding-bottom: 0.3rem; }
+    h2 { font-size: 1.4rem; margin-top: 2rem; }
+    h3 { font-size: 1.15rem; }
+    a { color: var(--link); }
+    pre { background: var(--code-bg); padding: 1rem; border-radius: 4px; overflow-x: auto; font-size: 0.9rem; }
+    code { font-family: "Latin Modern Mono", "Fira Code", monospace; font-size: 0.9em; }
+    p code { background: var(--code-bg); padding: 0.15em 0.3em; border-radius: 3px; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid var(--border); padding: 0.4rem 0.8rem; text-align: left; }
+    th { background: var(--code-bg); font-weight: 600; }
+    blockquote { border-left: 3px solid var(--border); margin: 1rem 0; padding: 0.5rem 1rem; color: #6b7280; }
+    img { max-width: 100%; height: auto; }
+    nav.chapter-nav { display: flex; justify-content: space-between; padding: 1rem 0; border-top: 1px solid var(--border); margin-top: 2rem; font-size: 0.9rem; }
+    nav.chapter-nav a { text-decoration: none; }
+    nav.top-nav { font-size: 0.85rem; margin-bottom: 1rem; }
+    nav.top-nav a { text-decoration: none; margin-right: 1rem; }
+    .subtitle { font-style: italic; color: #6b7280; margin-top: -0.5rem; }
+  </style>
+  $if(math)$<script>MathJax={tex:{inlineMath:[['$$','$$'],['\\(','\\)']]}};
+  </script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>$endif$
+</head>
+<body>
+<nav class="top-nav">
+  <a href="index.html">← Table of Contents</a>
+  <a href="https://github.com/johnazariah/encodings-book">GitHub</a>
+</nav>
+$body$
+<nav class="chapter-nav">
+  <span>$if(prev)$<a href="$prev$">← Previous</a>$endif$</span>
+  <span><a href="index.html">Contents</a></span>
+  <span>$if(next)$<a href="$next$">Next →</a>$endif$</span>
+</nav>
+</body>
+</html>
