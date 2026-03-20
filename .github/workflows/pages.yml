@@ -23,6 +23,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare site
+        run: |
+          cd docs
+          for f in ../manuscript/foreword.md ../manuscript/[0-9]*.md ../manuscript/appendix-cookbook.md; do
+            cp "$f" "$(basename "$f")"
+          done
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
