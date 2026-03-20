@@ -19,7 +19,7 @@ jobs:
         run: sudo apt-get update -qq && sudo apt-get install -y -qq pandoc
 
       - name: Install LaTeX
-        run: sudo apt-get install -y -qq texlive-xetex texlive-latex-extra lmodern texlive-fonts-recommended
+        run: sudo apt-get install -y -qq texlive-xetex texlive-latex-extra texlive-fonts-extra lmodern texlive-fonts-recommended
 
       - name: Install Node.js
         uses: actions/setup-node@v4

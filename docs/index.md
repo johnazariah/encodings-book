@@ -7,8 +7,7 @@ Centre for Quantum Software and Information, University of Technology Sydney
 
 ---
 
-<a class="download-btn" href="https://github.com/johnazariah/encodings-book/releases/latest">📥 Download PDF</a>
-<a class="download-btn" href="https://github.com/johnazariah/encodings">💻 FockMap Library</a>
+[📥 Download PDF](https://github.com/johnazariah/encodings-book/releases/latest) · [💻 FockMap Library](https://github.com/johnazariah/encodings)
 
 ---
 
