@@ -1,5 +1,5 @@
 % Color support (needed for sample PDF gray ToC entries)
-\usepackage{xcolor}
+\makeatletter\@ifpackageloaded{xcolor}{}{\usepackage{xcolor}}\makeatother
 
 % Unicode symbol fallback for Latin Modern
 % DejaVu has box-drawing, subscripts, Greek, and check marks that LM lacks

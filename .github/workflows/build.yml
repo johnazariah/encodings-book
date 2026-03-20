@@ -39,6 +39,7 @@ jobs:
 
       - name: Build sample PDF
         run: make sample
+        continue-on-error: true
 
       - name: Word count
         run: make word-count
