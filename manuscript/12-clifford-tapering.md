@@ -195,19 +195,15 @@ $Z_0 Z_1$ is a Z₂ generator. One independent generator → one qubit can be ta
 
 We want a circuit $U$ such that $U (Z_0 Z_1) U^\dagger = Z_0 I_1$ — the generator acts on only one qubit after rotation.
 
-The key gate: **CNOT(1 → 0)** (qubit 1 is control, qubit 0 is target). Recall from Chapter 4 that CNOT propagates Z from target to control. So:
+The key gate: **CNOT(1 → 0)** (qubit 1 is control, qubit 0 is target). Recall from Chapter 4 that CNOT propagates Z from target to control: $Z_\text{target} \to Z_\text{control} \cdot Z_\text{target}$, while $Z_\text{control}$ is unchanged. So:
 
-$$\text{CNOT}_{1,0}:\quad Z_0 \to Z_0, \quad Z_1 \to Z_0 Z_1$$
+$$\text{CNOT}_{1,0}:\quad Z_0 \to Z_0 Z_1, \quad Z_1 \to Z_1$$
 
-Wait — that goes the wrong way (it *creates* $Z_0 Z_1$, not removes it). We need the reverse: **CNOT(0 → 1)** (qubit 0 is control, qubit 1 is target):
+Under this gate, $Z_0 Z_1 \to (Z_0 Z_1) \cdot Z_1 = Z_0 Z_1^2 = Z_0$ — we've isolated a single $Z_0$, which is good. But let's try the other direction for comparison: **CNOT(0 → 1)** (qubit 0 is control, qubit 1 is target):
 
-$$\text{CNOT}_{0,1}:\quad Z_0 \to Z_0 Z_1, \quad Z_1 \to Z_1$$
+$$\text{CNOT}_{0,1}:\quad Z_0 \to Z_0, \quad Z_1 \to Z_0 Z_1$$
 
-That also doesn't isolate it. Let's think more carefully. Under CNOT conjugation, the *Z* propagation rule is: $Z_{\text{target}} \to Z_{\text{control}} \cdot Z_{\text{target}}$. So if we apply CNOT(0,1) to $Z_0 Z_1$:
-
-$$Z_0 Z_1 \xrightarrow{\text{CNOT}_{0,1}} Z_0 \cdot (Z_0 Z_1) = Z_0^2 Z_1 = I \cdot Z_1 = Z_1$$
-
-Now $Z_0 Z_1$ has become $Z_1$ — a single-qubit Z on qubit 1!
+Under this gate, $Z_0 Z_1 \to Z_0 \cdot (Z_0 Z_1) = Z_0^2 Z_1 = Z_1$ — we've isolated a single $Z_1$.
 
 > **What just happened:** The CNOT "absorbed" the $Z_0$ factor by multiplying it with another $Z_0$, leaving only $Z_1$. This is the Clifford rotation — it's not a physical rotation in space, but an algebraic simplification achieved by conjugation with a gate.
 

@@ -52,6 +52,8 @@ The Jordan–Wigner encoding maps:
 
 $$a_j^\dagger \to \frac{1}{2}(X_j - iY_j) \bigotimes_{k < j} Z_k$$
 
+> **Convention:** Under the convention $|1\rangle$ = occupied, $|0\rangle$ = unoccupied, the creation operator maps $|0\rangle \to |1\rangle$ via $\frac{1}{2}(X - iY) = |1\rangle\langle 0|$. Some references use $\frac{1}{2}(X + iY)$, corresponding to the opposite occupation convention.
+
 The Z-chain $\bigotimes_{k < j} Z_k$ tracks the parity of occupied orbitals below $j$,
 enforcing the fermionic sign convention. The chain length grows linearly with $j$,
 giving worst-case Pauli weight $O(n)$.

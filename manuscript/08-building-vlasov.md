@@ -49,7 +49,7 @@ graph TD
     style N8 fill:#fde68a,stroke:#d97706
 ```
 
-Node 0 has children 1, 2, 3. Node 1 has children 4, 5, 6. Node 2 has children 7, 8. Node 3 is a leaf — its would-be children (9, 10, 11) all fall outside $n = 9$.
+Node 0 has children 1, 2, 3. Node 1 has children 4, 5, 6. Node 2 has children 7, 8. Node 3 is a leaf — its would-be children (10, 11, 12) all fall outside $n = 9$.
 
 Compare this with the balanced ternary tree, which uses a recursive midpoint partition: for 9 modes, it puts modes 0–2 in the left subtree, modes 3–5 in the middle, and modes 6–8 on the right. The tree has the same branching factor but a completely different assignment of mode indices to tree positions.
 

@@ -76,7 +76,7 @@ That one was trivial — all indices are the same. Now consider a more revealing
 
 $$\langle 01 \mid 01\rangle = [00 \mid 11] = 0.6636 \text{ Ha}$$
 
-Notice: $\langle 01 \mid 01\rangle \neq \langle 00 \mid 11\rangle$ in general. The integral $\langle 00 \mid 11\rangle = [01 \mid 01]$ is a different integral (the exchange integral). For H₂ in STO-3G, $[01 \mid 01] = 0.6976$ Ha — a different value from $[00 \mid 11] = 0.6636$ Ha.
+Notice: $\langle 01 \mid 01\rangle \neq \langle 00 \mid 11\rangle$ in general. The integral $\langle 00 \mid 11\rangle = [01 \mid 01]$ is a different integral — a pair-scattering integral in which both electrons change orbital. For H₂ in STO-3G, $[01 \mid 01] = 0.6976$ Ha — a different value from $[00 \mid 11] = 0.6636$ Ha.
 
 > **Common Mistake #1: Using the wrong convention.** If you take $[00 \mid 11]$ from PySCF and use it as $\langle 00 \mid 11\rangle$ in the physicist's Hamiltonian, you have swapped a Coulomb integral for an exchange integral. The Hamiltonian will have plausible structure, but the eigenvalues will be wrong. There is no error message. The only way to catch it is to verify against a known result.
 
@@ -110,7 +110,7 @@ Two-electron integrals have symmetries that reduce the number of independent val
 
 ### Chemist's notation symmetries
 
-$$[pq \mid rs] = [qp \mid rs]^* = [pq \mid sr]^* = [rs \mid pq]$$
+$$[pq \mid rs] = [qp \mid sr]^* = [rs \mid pq]$$
 
 For **real** orbitals (which is the case for all our examples):
 

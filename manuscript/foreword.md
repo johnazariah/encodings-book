@@ -98,7 +98,7 @@ library:
 - **Web documentation:** https://johnazariah.github.io/encodings/
 
 The library is open-source (MIT license), runs on Windows, macOS,
-and Linux via .NET 10, and has zero runtime dependencies.
+and Linux via .NET 10, and has no third-party dependencies.
 
 ### Acknowledgements
 

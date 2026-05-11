@@ -184,7 +184,7 @@ The minimum is at **99°** with energy **−75.0141 Ha**. The curve is clearly p
 
 ## What Do the Numbers Mean?
 
-The minimum at **99°** in STO-3G is ~5° below the experimental value of 104.52°. The discrepancy comes from the minimal basis set — STO-3G uses only one Slater-type orbital per atomic orbital, which is too inflexible to capture the fine details of electron correlation near the equilibrium geometry. A larger basis set (cc-pVDZ, cc-pVTZ) shifts the minimum toward the experimental value. At the cc-pVTZ level, the computed angle is within 0.5° of experiment.
+The minimum at **99°** in STO-3G is ~5° below the experimental value of 104.52°. The discrepancy comes from the minimal basis set — STO-3G uses only one Slater-type orbital per atomic orbital, which lacks the flexibility (especially polarization functions) to describe the electron density near the equilibrium geometry accurately. A larger basis set (cc-pVDZ, cc-pVTZ) shifts the minimum toward the experimental value — even at the Hartree–Fock level, HF/cc-pVTZ gives ~106°. At the cc-pVTZ FCI level, the computed angle is within 0.5° of experiment.
 
 But the point is not the fourth decimal place. The point is the *method*: we derived a molecular geometry from a quantum simulation pipeline. No one told the code that water should bend. No one parameterised the angle. The pipeline explored the energy landscape and found the bend — the same bend that determines water's polarity, its solvent properties, its ability to form hydrogen bonds, and ultimately, its role in sustaining life on Earth.
 
@@ -192,11 +192,13 @@ But the point is not the fourth decimal place. The point is the *method*: we der
 
 ## Why Does Water Bend?
 
-The energy curve tells us *that* water bends. The density matrix framework from Chapter 6 tells us *why*.
+The energy curve tells us *that* water bends. But what drives the bend?
 
-At 180° (linear geometry), the molecular orbitals have a symmetry that makes certain exchange integrals vanish. The off-diagonal terms in the density matrix — the ones that carry correlation energy — are constrained by symmetry. As the molecule bends, that symmetry breaks, new exchange pathways open up, and the correlation energy drops. The total energy decreases until the cost of nuclear repulsion (the two hydrogen atoms getting closer) balances the gain in electron correlation.
+The answer is already present at the Hartree–Fock level — no electron correlation required. HF, which by definition uses a single Slater determinant and contains zero correlation energy, predicts a bent water molecule at roughly 101° in STO-3G. The bend is fundamentally a mean-field effect: as the molecule departs from linearity, the oxygen lone-pair orbitals hybridise in a way that lowers the kinetic and electron-nuclear attraction energy. VSEPR theory's "lone pair repulsion" is a qualitative cartoon for this mean-field energy landscape.
 
-This is the deeper story: the bond angle is a compromise between nuclear geometry and electronic correlation. VSEPR's "lone pair repulsion" is a cartoon version of this — qualitatively correct, but the real mechanism is a balance of energies that only a full quantum treatment can quantify.
+What correlation adds is a quantitative correction. The FCI minimum occurs at 99° — shifted by about 2° from the HF minimum. Correlation also deepens the energy well (the FCI bending energy from 180° to 99° is ~0.126 Ha, compared to ~0.113 Ha at the HF level). But it does not *cause* the bend. Hartree–Fock already explains roughly 85% of the bending energy.
+
+This distinction matters: it illustrates what quantum simulation adds and what it doesn't. The *qualitative* prediction (water bends) comes from mean-field theory, which any laptop can compute. The *quantitative* refinement (exactly how much it bends, the precise curvature of the potential energy surface, the vibrational frequencies) is where correlated methods — and ultimately quantum simulation — earn their keep.
 
 ---
 
@@ -236,7 +238,7 @@ The potential energy surface scan we performed is the first step in a vibrationa
 - A potential energy surface scan runs the **same pipeline** at many geometries and plots energy versus structural parameter.
 - The **skeleton API** separates structure (encoding-dependent, computed once) from coefficients (geometry-dependent, applied per point), making scans efficient.
 - The energy minimum of the H₂O bond angle scan occurs at **99°** in STO-3G — close to the experimental 104.52°, with the discrepancy due to the minimal basis set.
-- The bond angle emerges from quantum mechanics without empirical input — it's a balance of nuclear repulsion and electronic correlation.
+- The bond angle emerges from quantum mechanics without empirical input — the bend is a mean-field effect already captured by Hartree–Fock, while electron correlation provides a quantitative refinement of ~2°.
 - Water's bent geometry produces its permanent dipole moment, which makes it a greenhouse gas and a universal solvent — properties that follow directly from the energy curve we computed.
 
 ---

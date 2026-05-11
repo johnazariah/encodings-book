@@ -123,8 +123,7 @@ flowchart TD
     TB["Two-body terms:<br/>For each non-zero two-body integral,<br/>encode all four ladder operators,<br/>multiply the Pauli strings,<br/>and scale by half the integral value"]
     OB --> SUM["Combine like terms:<br/>collect Pauli strings with the same signature<br/>and sum their coefficients"]
     TB --> SUM
-    SUM --> NR["Add nuclear repulsion<br/>as a contribution to the identity term"]
-    NR --> HAM["The qubit Hamiltonian"]
+    SUM --> HAM["The qubit Hamiltonian<br/>(purely electronic)"]
     style HAM fill:#d1fae5,stroke:#059669
 ```
 
@@ -210,7 +209,7 @@ The full expansion (which FockMap performs symbolically) yields contributions to
 
 ## The Complete 15-Term Hamiltonian
 
-After processing all 32 non-zero two-body integrals, combining like terms, and adding $V_{nn} = 0.7151$ Ha:
+After processing all 32 non-zero two-body integrals and combining like terms:
 
 | # | Pauli String | Coefficient (Ha) | Character |
 |:---:|:---:|:---:|:---|
@@ -246,7 +245,7 @@ Four terms out of fifteen. They come in two pairs with equal magnitude and oppos
 
 **Delete terms 12–15** and the ground state would be $\lvert 1100\rangle$ with a purely diagonal density matrix — a classical probability distribution, not a quantum state. The quantum advantage vanishes.
 
-**Keep them** and the ground state becomes a superposition with coherences. The energy drops by ~12 kcal/mol — the correlation energy that no classical single-reference method can capture. This is the energy that determines whether a bond breaks, whether a reaction goes forward, whether a drug binds.
+**Keep them** and the ground state becomes a superposition with coherences. The energy drops by ~12 kcal/mol — the correlation energy that no classical single-reference method can capture exactly. This is the energy that refines bond angles, governs dissociation curves, and distinguishes reactive from unreactive geometries.
 
 Four Pauli strings. That's where quantum computing earns its keep.
 
@@ -316,7 +315,7 @@ All four produce different Pauli strings but the **same eigenvalues**. We'll ver
 
 ## Common Mistakes
 
-1. **Forgetting $V_{nn}$.** The nuclear repulsion contributes to the $IIII$ coefficient. Without it, the ground-state energy will be off by 0.7151 Ha.
+1. **Remember to add $V_{nn}$ when computing total energy.** The 15-term Hamiltonian above is the purely electronic Hamiltonian. Its eigenvalues are electronic energies $E_\text{el}$. To get the total molecular energy, add the nuclear repulsion: $E_\text{total} = E_\text{el} + V_{nn}$. (For H₂, $V_{nn} = 0.7151$ Ha.)
 
 2. **Wrong operator ordering.** The annihilation operators in $a_p^\dagger a_q^\dagger a_s a_r$ are in *reverse* order. Writing $a_r a_s$ instead of $a_s a_r$ flips signs on exchange terms.
 
@@ -328,7 +327,7 @@ All four produce different Pauli strings but the **same eigenvalues**. We'll ver
 
 2. **Exchange term sign.** Explain why $XXYY$ has coefficient $-0.1744$ and $XYYX$ has $+0.1744$ in terms of fermionic antisymmetry.
 
-3. **Diagonal-only energy.** Delete terms 12–15. What is the ground-state energy of the remaining diagonal Hamiltonian? Compare with $E_{\text{HF}} = -1.1168$ Ha.
+3. **Diagonal-only energy.** Delete terms 12–15. What is the ground-state energy of the remaining diagonal Hamiltonian? This diagonal-only ground state corresponds to the Hartree–Fock energy. Add $V_{nn}$ to get the total HF energy and compare with your result from Exercise 2 of Chapter 9.
 
 4. **Encoding comparison.** Run the code with all six encodings. Do they all produce the same number of terms for H₂?
 

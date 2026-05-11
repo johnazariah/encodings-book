@@ -35,7 +35,7 @@ But a pipeline is an instrument, not a destination. Here's where the instrument 
 
 ### Circuit Optimisation
 
-FockMap currently produces *unoptimised* gate sequences — each Pauli rotation becomes a CNOT staircase exactly as described in Chapter 16. Real quantum compilers (Qiskit's transpiler, Cambridge Quantum's tket, BQSKit) apply additional transformations:
+FockMap currently produces *unoptimised* gate sequences — each Pauli rotation becomes a CNOT staircase exactly as described in Chapter 16. Real quantum compilers (Qiskit's transpiler, Quantinuum's TKET/pytket, BQSKit) apply additional transformations:
 
 - **Gate cancellation**: adjacent CNOT pairs cancel. Identity-equivalent sequences are removed.
 - **Commutation-based reordering**: Pauli rotations that commute can be reordered to bring cancellable gates adjacent.
@@ -98,7 +98,7 @@ The tapering machinery from Chapters 10–13 is, at its core, stabiliser theory:
 - **Syndrome measurement** detects errors by measuring the stabilisers, exactly as our tapering step measures the Z₂ generators.
 - **Logical operators** act within the code space, just as our tapered Hamiltonian acts within the symmetry sector.
 
-The algebra is the same. The difference is intent: tapering exploits physical symmetries to reduce qubit count, while error correction engineers artificial symmetries to detect and correct errors. A reader who has understood Chapters 10–13 has already learned half of quantum error correction theory.
+The algebra is the same. The difference is intent: tapering exploits physical symmetries to reduce qubit count, while error correction engineers artificial symmetries to detect and correct errors. A reader who has understood Chapters 10–13 has already learned the algebraic foundation — the stabiliser formalism — that quantum error correction builds upon.
 
 ---
 
@@ -120,9 +120,9 @@ Some questions this book doesn't answer — because nobody has yet:
 
 We'll end where we began. Chapter 1 asked: *given a molecule, what is its ground-state energy?* Twenty-two chapters later, we have a complete, tested, open-source pipeline that answers the question — for any fermionic or bosonic system, with six encoding options, symmetry-based tapering, first and second-order Trotterization, and export to every major quantum platform.
 
-The pipeline runs on a laptop for small molecules (H₂, LiH). It produces circuits that near-term hardware can attempt for medium molecules (H₂O, N₂). And it generates the circuits that fault-tolerant hardware will need for the molecules that actually matter (FeMo-co, transition-metal catalysts, photochemical systems).
+The pipeline runs on a laptop for small molecules (H₂, LiH). It produces circuits that near-term hardware can attempt for medium molecules (H₂O, N₂). And it generates the circuits that fault-tolerant hardware would need for the molecules that actually matter (FeMo-co, transition-metal catalysts, photochemical systems).
 
-The H₂ dissociation curve in Chapter 18 showed the pipeline's correctness. The water bond angle scan in Chapter 19 showed its predictive power — we computed a molecular geometry from first principles. The same machinery, with bigger integrals and more qubits, will someday compute the geometry of a catalyst, the spectrum of a photoactive molecule, or the mechanism of nitrogen fixation.
+The H₂ dissociation curve in Chapter 18 showed the pipeline's correctness. The water bond angle scan in Chapter 19 showed its predictive power — we computed a molecular geometry from first principles. The same machinery, with bigger integrals and more qubits, could one day compute the geometry of a catalyst, the spectrum of a photoactive molecule, or the mechanism of nitrogen fixation.
 
 The quantum computer isn't ready yet. The pipeline is.
 

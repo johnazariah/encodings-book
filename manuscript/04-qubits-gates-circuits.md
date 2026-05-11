@@ -34,7 +34,7 @@ where $\alpha$ and $\beta$ are complex amplitudes with $\lvert\alpha\rvert^2 + \
 
 This seems limiting: if measurement destroys the superposition, what good is it? The answer is **interference**. By carefully manipulating the amplitudes before measurement, you can arrange for wrong answers to cancel (destructive interference) and correct answers to reinforce (constructive interference). This is how every quantum algorithm works — not by trying all possibilities, but by engineering interference to amplify the right answer.
 
-For our purposes, the key fact is this: an $n$-qubit register stores $2^n$ complex amplitudes. For 4 qubits: 16 amplitudes — matching the Hilbert space of our H₂ problem. For 100 qubits: $2^{100} \approx 10^{30}$ amplitudes. A classical computer cannot even *store* this state, let alone manipulate it. A quantum computer encodes it naturally in the physical state of 100 two-level systems.
+For our purposes, the key fact is this: an $n$-qubit register stores $2^n$ complex amplitudes. For 4 qubits: 16 amplitudes — containing the 6-dimensional Hilbert space of our H₂ problem (the 6 two-electron configurations are embedded in the larger 16-dimensional qubit space). For 100 qubits: $2^{100} \approx 10^{30}$ amplitudes. A classical computer cannot even *store* this state, let alone manipulate it. A quantum computer encodes it naturally in the physical state of 100 two-level systems.
 
 ---
 
@@ -42,13 +42,13 @@ For our purposes, the key fact is this: an $n$-qubit register stores $2^n$ compl
 
 If a qubit is a vector in a 2D complex space, an operation on a qubit is a $2 \times 2$ unitary matrix. The universe of single-qubit operations is rich — any unitary matrix is a valid gate — but a few show up constantly:
 
-**The Pauli operators** — you've already met them from the chemistry side (Chapter 1's Hamiltonian lives in Pauli space after encoding). Now meet them as gates:
+**The Pauli operators** — you'll soon see them from the chemistry side (after encoding, the Hamiltonian lives in Pauli space — Chapter 5). Now meet them as gates:
 
 - **$X$** (bit-flip): swaps $\lvert 0\rangle$ and $\lvert 1\rangle$. The quantum analogue of a NOT gate.
 - **$Z$** (phase-flip): leaves $\lvert 0\rangle$ alone, applies a minus sign to $\lvert 1\rangle$. This is a purely quantum operation — it changes the *phase* of the superposition without changing the measurement probabilities.
 - **$Y$** = $iXZ$: both a bit-flip and a phase-flip.
 
-Why are the Paulis special? Because they form a **basis** for all $2 \times 2$ Hermitian matrices. Any single-qubit operator — any observable, any Hamiltonian term — can be written as a linear combination of $I$, $X$, $Y$, $Z$. This is why the encoded Hamiltonian is a sum of Pauli strings: it's the natural basis for qubit operators, just as $\{\lvert 0\rangle, \lvert 1\rangle\}$ is the natural basis for qubit states.
+Why are the Paulis special? Because they form a **basis** for all $2 \times 2$ Hermitian matrices. Any single-qubit observable — any Hamiltonian term — can be written as a real-linear combination of $I$, $X$, $Y$, $Z$. (With complex coefficients, they span all $2 \times 2$ matrices.) This is why the encoded Hamiltonian is a sum of Pauli strings: it's the natural basis for qubit operators, just as $\{\lvert 0\rangle, \lvert 1\rangle\}$ is the natural basis for qubit states.
 
 **The Hadamard gate** ($H$) creates superposition from a definite state:
 
@@ -70,7 +70,7 @@ The power of quantum computing comes from **entanglement**: correlations between
 
 Consider two qubits in the state $\frac{1}{\sqrt{2}}(\lvert 00\rangle + \lvert 11\rangle)$. If you measure the first qubit and get 0, the second qubit is *guaranteed* to be 0 — even though, before measurement, neither qubit had a definite value. This correlation cannot be explained by any shared classical information prepared in advance (this is the content of Bell's theorem, which we won't prove but which decades of experiments have confirmed).
 
-Entanglement is what allows a quantum computer to explore the exponentially large Hilbert space *coherently* — maintaining phase relationships between configurations rather than just sampling them independently. And it is what allows the correlation energy (Chapter 5's off-diagonal coherences in the density matrix) to be represented on quantum hardware.
+Entanglement is what allows a quantum computer to explore the exponentially large Hilbert space *coherently* — maintaining phase relationships between configurations rather than just sampling them independently. And it is what allows the correlation energy (the off-diagonal coherences in the density matrix, which we'll see in Chapter 6) to be represented on quantum hardware.
 
 ### The CNOT gate: the entanglement maker
 
@@ -116,7 +116,7 @@ Any unitary operation on $n$ qubits can be decomposed into a sequence of:
 - **Single-qubit rotations** ($R_x(\theta)$, $R_y(\theta)$, $R_z(\theta)$ for arbitrary $\theta$)
 - **CNOT gates**
 
-This is called **universality**. The set $\{R_z, R_x, \text{CNOT}\}$ (or equivalently $\{H, T, \text{CNOT}\}$, where $T$ is a $\pi/8$ rotation) can approximate any quantum operation to arbitrary precision. Every quantum algorithm — Shor's, Grover's, VQE, QPE — can be compiled down to these elementary gates.
+This is called **universality**. The set $\{R_z, R_x, \text{CNOT}\}$ (or equivalently $\{H, T, \text{CNOT}\}$, where $T$ is the $\pi/4$ phase gate, historically called the "$\pi/8$ gate") can approximate any quantum operation to arbitrary precision. Every quantum algorithm — Shor's, Grover's, VQE, QPE — can be compiled down to these elementary gates.
 
 For quantum simulation specifically, we need even less. The Hamiltonian is a sum of Pauli strings, and each Pauli string's time evolution $e^{-i\theta P}$ decomposes into:
 - A few single-qubit gates (to rotate into the right basis)
@@ -159,7 +159,7 @@ The last two rows are the entire argument for encoding choice, in two numbers.
 - The set $\{R_z, R_x, \text{CNOT}\}$ is **universal**: it can implement any quantum operation, including everything we need for quantum simulation.
 - The **CNOT staircase** decomposes a Pauli rotation into $2(w-1)$ CNOTs, where $w$ is the Pauli weight. This is the conversion factor from encoding choice to circuit cost.
 
-> **Multi-qubit states and tensor products:** An $n$-qubit state is described by the **tensor product** (Kronecker product) of individual qubit states: $\lvert\psi\rangle = \lvert q_0\rangle \otimes \lvert q_1\rangle \otimes \cdots \otimes \lvert q_{n-1}\rangle$. A Pauli string like $X_0 Z_1 I_2$ means "apply $X$ to qubit 0, $Z$ to qubit 1, and $I$ to qubit 2" — formally, the $4 \times 4 \times 2 = 8$-dimensional matrix $X \otimes Z \otimes I$. When we say two operators "commute" ($[A, B] = AB - BA = 0$) or "anti-commute" ($\{A, B\} = AB + BA = 0$), we mean these tensor-product matrices. The encoding problem (next chapter) is precisely the challenge of translating anti-commuting fermionic operators into operators built from commuting qubit tensor products.
+> **Multi-qubit states and tensor products:** An $n$-qubit state is described by the **tensor product** (Kronecker product) of individual qubit states: $\lvert\psi\rangle = \lvert q_0\rangle \otimes \lvert q_1\rangle \otimes \cdots \otimes \lvert q_{n-1}\rangle$. A Pauli string like $X_0 Z_1 I_2$ means "apply $X$ to qubit 0, $Z$ to qubit 1, and $I$ to qubit 2" — formally, the $2 \times 2 \times 2 = 8$-dimensional (i.e. $8 \times 8$) matrix $X \otimes Z \otimes I$. When we say two operators "commute" ($[A, B] = AB - BA = 0$) or "anti-commute" ($\{A, B\} = AB + BA = 0$), we mean these tensor-product matrices. The encoding problem (next chapter) is precisely the challenge of translating anti-commuting fermionic operators into operators built from tensor products of qubit Pauli operators.
 
 ## Common Mistakes
 

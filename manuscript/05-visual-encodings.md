@@ -12,6 +12,8 @@ _We have a Hamiltonian written in terms of electrons and orbitals. A quantum com
 
 ## Where We Stand
 
+> **Pauli string convention:** Throughout the rest of this book, a Pauli string like $ABCD$ is ordered as $P_{n-1} \ldots P_1 P_0$ — the rightmost character corresponds to qubit 0. State kets $|n_0 n_1 \ldots\rangle$ have the leftmost digit corresponding to orbital 0.
+
 Let's take stock of what the first three chapters gave us.
 
 **Chapter 1** told us the chemistry: a molecule is a collection of charged particles, and its ground-state energy is the lowest eigenvalue of the electronic Hamiltonian. We introduced a finite basis set (STO-3G) that turned the continuous problem into a finite one: 2 spatial orbitals, 4 spin-orbitals, 6 two-electron configurations.
@@ -99,7 +101,7 @@ $$\lvert 0, 1\rangle_{\text{qubit}} = +\lvert 0, 1\rangle_{\text{qubit}}$$
 
 This minus sign is not optional bookkeeping. It affects interference patterns, bonding energies, and reaction rates. A faithful encoding must reproduce it.
 
-> **The fermion sign, operationally:** Consider the occupation state $\lvert 1010\rangle$ (orbitals 0 and 2 occupied). To create an electron in orbital 3, we apply $a_3^\dagger$. No other occupied orbitals lie between positions 2 and 3 (positions are counted from the right), so the sign is $(-1)^0 = +1$. But to create an electron in orbital 1, we must "pass through" the electron in orbital 2. The anti-commutation rule charges one factor of $-1$ for each occupied orbital we pass: the sign is $(-1)^1 = -1$. This is the **fermion sign** — the net parity of occupied orbitals below the target position. Every encoding must inject this sign into the qubit representation.
+> **The fermion sign, operationally:** Consider the occupation state $\lvert 1010\rangle$ (orbitals 0 and 2 occupied). To create an electron in orbital 3, we apply $a_3^\dagger$. The Z-chain scans all orbitals below 3 (orbitals 0, 1, 2): two are occupied, so the sign is $(-1)^2 = +1$. To create an electron in orbital 1, the Z-chain scans orbitals below 1 (only orbital 0): one is occupied, so the sign is $(-1)^1 = -1$. This is the **fermion sign** — the net parity of all occupied orbitals with index below the target position. Every encoding must inject this sign into the qubit representation.
 
 The mathematical statement is the anti-commutation relation:
 
@@ -295,7 +297,7 @@ A reassuring fact: the **number operator** $n_j = a_j^\dagger a_j$ (which tests 
 
 $$n_j \;\mapsto\; \frac{1}{2}(I - Z_j) \quad \text{under JW}$$
 
-That's Pauli weight 1 — regardless of $n$, regardless of encoding. The Z-chains from the creation and annihilation operators cancel in the product.
+That's Pauli weight 1 under JW — regardless of $n$. The Z-chains from the creation and annihilation operators cancel in the product. Under other encodings (BK, tree), the number operator weight may increase to $O(\log n)$ because the occupation information is distributed across parity qubits, but this is still much cheaper than the creation/annihilation operators.
 
 So while *creating* or *moving* electrons gets expensive under JW (the Z-chains grow), simply *counting* them stays cheap in all encodings. The overhead only hits terms that change the electron configuration — and those are precisely the terms that represent quantum correlations.
 
@@ -322,7 +324,7 @@ In the next chapter, we will use all six encodings to build the complete 15-term
 - **Bravyi–Kitaev** uses a Fenwick tree to pre-compute partial parities: $O(\log_2 n)$ weight.
 - **Ternary tree** encodings go further: $O(\log_3 n)$ weight — the best known scaling.
 - All encodings produce the same physics (same eigenvalues). The choice affects only circuit cost.
-- Number operators are cheap ($O(1)$) in all encodings.
+- Number operators are cheap ($O(1)$ under JW, $O(\log n)$ under tree encodings) — always much lighter than creation/annihilation operators.
 
 ## Common Mistakes
 

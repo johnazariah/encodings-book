@@ -280,7 +280,7 @@ But first, Chapter 4 will introduce the encoding itself: what is a Pauli string,
 
 3. **Blocked indexing.** Rewrite the one-body spin-orbital table using blocked indexing ($0\alpha, 1\alpha, 0\beta, 1\beta$ → indices 0, 1, 2, 3). Which entries of the matrix change? Do the eigenvalues change?
 
-4. **H₂O scale-up.** Water has 7 spatial orbitals in STO-3G (after frozen core), giving 14 spin-orbitals. How many one-body spin-orbital integrals can be non-zero? How many two-body? (Answer: up to $14^2 = 196$ one-body, up to $14^4 = 38{,}416$ two-body — though symmetry reduces these significantly.)
+4. **H₂O scale-up.** Water has 7 spatial orbitals in STO-3G (no frozen core needed — the basis is already minimal), giving 14 spin-orbitals. How many one-body spin-orbital integrals can be non-zero? How many two-body? (Answer: up to $14^2 = 196$ one-body, up to $14^4 = 38{,}416$ two-body — though symmetry reduces these significantly.)
 
 ## Further Reading
 

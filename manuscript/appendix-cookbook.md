@@ -6,6 +6,8 @@ This appendix summarizes the 15-chapter Cookbook that accompanies the main text.
 For full worked examples, see the [Cookbook](../docs/guides/cookbook/index.html) on
 the companion website.
 
+> **Note:** The "Chapter" numbers below refer to the companion Cookbook chapters, not the main text chapters.
+
 ---
 
 ## Type System at a Glance

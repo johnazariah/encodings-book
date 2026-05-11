@@ -99,8 +99,7 @@ namespace FockMap.Generated {
     open Microsoft.Quantum.Canon;
     open Microsoft.Quantum.Intrinsic;
 
-    operation TrotterStep() : Unit {
-        use q = Qubit[2];
+    operation TrotterStep(q : Qubit[]) : Unit {
         H(q[0]);
         CNOT(q[0], q[1]);
         Rz(0.01234567, q[1]);
@@ -119,7 +118,7 @@ type QSharpOptions =
       Precision     : int }     // decimal places for angles
 ```
 
-The generated operation is a pure gate sequence — no measurement, no classical control. The calling code (your VQE or QPE driver) allocates the qubits, calls `TrotterStep()`, and handles measurement.
+The generated operation is a pure gate sequence — no measurement, no classical control, no qubit allocation. The calling code (your VQE or QPE driver) allocates the qubits, calls `TrotterStep(qubits)`, and handles measurement.
 
 ---
 
@@ -251,7 +250,7 @@ Whichever format you choose, verify the output end-to-end:
 5. **Re-simulate** the transpiled circuit and check that the energy is unchanged (within Trotter error)
 6. **Only then** submit to real hardware or a noisy simulator
 
-For H₂, the exact FCI energy is $-1.1373$ Ha (electronic only) or $-1.8572$ Ha (including nuclear repulsion). The Trotterised circuit should produce an energy within $O(\Delta t^2)$ of this — typically within 0.01 Ha at $\Delta t = 0.1$. If the deviation is larger, check the integral convention (Chapter 2) and the encoding consistency (Chapter 9).
+For H₂, the exact FCI energy is $-1.1422$ Ha (total, including nuclear repulsion) or $-1.8573$ Ha (electronic only — the eigenvalue of the qubit Hamiltonian). The Trotterised circuit should produce an energy within $O(\Delta t^2)$ of the electronic value — typically within 0.01 Ha at $\Delta t = 0.1$. Add $V_{nn} = 0.7151$ Ha to recover the total molecular energy. If the deviation is larger, check the integral convention (Chapter 2) and the encoding consistency (Chapter 9).
 
 ---
 

@@ -161,7 +161,7 @@ We will not develop qubitization in this book — it deserves its own treatment 
 |:---|:---|:---|:---|
 | First-order Trotter | $O(t^2/N)$ | Simple: $L$ rotations per step | Learning, small systems |
 | Second-order Trotter | $O(t^3/N^2)$ | Symmetric: $2L$ rotations per step | Most molecular simulations |
-| Qubitization (LCU) | $O(\log(1/\epsilon))$ | Complex: ancilla + walk operator | Large systems, optimal scaling |
+| Qubitization (LCU) | $O(\alpha t + \log(1/\epsilon))$ | Complex: ancilla + walk operator | Large systems, optimal scaling |
 
 > The qubitization paper — G. H. Low and I. L. Chuang, "Hamiltonian Simulation by Qubitization," *Quantum* 3, 163 (2019); original arXiv:1610.06546 (2016) — is one of the foundational results of quantum algorithms for chemistry. It is dedicated, with gratitude, as part of the intellectual lineage that inspired this book.
 
@@ -173,7 +173,7 @@ The Trotter decomposition converts our Hamiltonian into a list of Pauli rotation
 
 $$\text{Hamiltonian } \hat{H} \;\xrightarrow{\text{Trotter}}\; [e^{-i\theta_1 P_1},\; e^{-i\theta_2 P_2},\; \ldots]$$
 
-Each rotation $e^{-i\theta P}$ must then be decomposed into elementary gates (H, CNOT, Rz). That's the **CNOT staircase** — Chapter 15. But first, Chapter 14 will show how FockMap computes the rotation list.
+Each rotation $e^{-i\theta P}$ must then be decomposed into elementary gates (H, CNOT, Rz). That's the **CNOT staircase** — Chapter 16. First, Chapter 15 will show how FockMap computes the rotation list and chooses the time step.
 
 ---
 

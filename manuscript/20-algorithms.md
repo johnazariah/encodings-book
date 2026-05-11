@@ -133,7 +133,7 @@ The cost is dominated by the controlled Trotter steps. Each step requires the sa
 For a target energy precision $\epsilon$:
 
 - **System qubits**: $n$ (from the encoding, after tapering)
-- **Ancilla qubits**: $m = \lceil\log_2(1/\epsilon)\rceil$ (one bit per digit of precision)
+- **Ancilla qubits**: $m = \lceil\log_2(2\pi/\epsilon)\rceil$ (up to $O(1)$ additional qubits for success-probability boosting; the simpler estimate $\lceil\log_2(1/\epsilon)\rceil$ undercounts by ~3 qubits)
 - **Trotter steps per controlled-$U$**: enough to keep the Trotter error below $\epsilon$
 
 ```fsharp

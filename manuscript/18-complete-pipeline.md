@@ -106,7 +106,7 @@ If you've read the preceding chapters, every line should be familiar. But let's 
 
 **`taper defaultTaperingOptions ham`** — Finds Z₂ symmetries (Chapter 11), synthesizes the Clifford rotation (Chapter 12), applies it, and removes the redundant qubits. The default options use the positive sector and Clifford-based tapering. For JW on H₂, this typically removes 2 qubits, leaving a 2-qubit Hamiltonian.
 
-**`firstOrderTrotter 0.1 tapResult.Hamiltonian`** — Decomposes the tapered Hamiltonian into a sequence of Pauli rotations (Chapter 14). Each term $c_k P_k$ becomes a rotation $e^{-i c_k \Delta t P_k / 2}$. The time step $\Delta t = 0.1$ controls the Trotter error.
+**`firstOrderTrotter 0.1 tapResult.Hamiltonian`** — Decomposes the tapered Hamiltonian into a sequence of Pauli rotations (Chapter 14). Each term $c_k P_k$ becomes a rotation $e^{-i c_k \Delta t P_k}$. The time step $\Delta t = 0.1$ controls the Trotter error. (FockMap's `Rz` gate uses the convention $R_z(\theta) = e^{-i\theta Z/2}$, so the rotation parameter passed to the gate is $\theta = 2 c_k \Delta t$.)
 
 **`decomposeTrotterStep step`** — Converts each Pauli rotation into concrete gates via the CNOT staircase (Chapter 16). A weight-$w$ rotation becomes $2(w-1)$ CNOTs plus single-qubit gates.
 
@@ -151,7 +151,7 @@ let qasm = toOpenQasm defaultOpenQasmOptions jwTapered.TaperedQubitCount jwGates
 printfn "%s" qasm
 ```
 
-The output is a valid QASM 3.0 program — qubit declarations, followed by a sequence of `h`, `cx`, `rz`, `s`, and `sdg` instructions. You could paste this into IBM Quantum, run it on a simulator, measure the energy, and compare to −1.8572 Hartrees. Chapter 20 will explore the algorithms that do exactly that.
+The output is a valid QASM 3.0 program — qubit declarations, followed by a sequence of `h`, `cx`, `rz`, `s`, and `sdg` instructions. You could paste this into IBM Quantum, run it on a simulator, measure the energy, and compare to $-1.8573$ Hartrees (the electronic energy; add $V_{nn} = 0.7151$ Ha for the total). Chapter 20 will explore the algorithms that do exactly that.
 
 ---
 

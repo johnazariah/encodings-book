@@ -48,7 +48,7 @@ Vlasov Tree                15 terms
 
 Same number of terms. Same identity coefficient ($-1.0704$ Ha in every case). And if we diagonalize each — as we'll do in Chapter 9 — the eigenvalues agree to machine precision ($< 5 \times 10^{-16}$ Ha).
 
-For H₂ with 4 qubits, the Pauli strings are actually identical across all six encodings. With only 4 qubits, there isn't enough room for the different encodings to diverge — the Z-chain is at most length 3, and BK's tree structure on 4 nodes provides at most a marginal improvement.
+For H₂ with 4 qubits, the Pauli strings may differ in detail across encodings (different encodings store different information in each qubit), but all six produce the same number of terms (15) and the same eigenvalues. With only 4 qubits, there isn't enough room for the different encodings to produce significantly different Pauli weights — the Z-chains are short in every encoding.
 
 This is an important lesson: **for small molecules, encoding choice barely matters.** The differences emerge at scale. But the equivalence — the fact that they all give the same answer — holds at every scale. Let's understand why.
 

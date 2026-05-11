@@ -30,19 +30,19 @@ A quantum computer doesn't enumerate configurations — it represents the quantu
 
 ## The Encoding Crossover
 
-At 4 qubits, all encodings cost the same (Chapter 18). At 14 qubits, the differences appear (Chapter 19). Let's trace the crossover:
+At 4 qubits, the encoding choice barely matters — Chapter 17 shows all encodings produce similar CNOT counts (JW: 36, TT: 40). At 12+ qubits, the differences become dramatic. The following table shows first-order Trotter CNOT counts *without tapering* — the raw encoding comparison:
 
 | Molecule | $n$ | JW CNOTs/step | TT CNOTs/step | Ratio |
 |:---|:---:|:---:|:---:|:---:|
-| H₂ | 4 | 12 | 12 | 1.0× |
-| LiH | 12 | ~400 | ~200 | 2.0× |
-| H₂O | 14 | ~1,800 | ~600 | 3.0× |
-| N₂ | 20 | ~8,000 | ~2,000 | 4.0× |
+| H₂ | 4 | 36 | 40 | 0.9× |
+| LiH | 12 | ~1,200 | ~500 | 2.4× |
+| H₂O (frozen core) | 12 | ~1,800 | ~600 | 3.0× |
+| N₂ | 20 | ~5,000 | ~1,200 | 4.2× |
 | FeMo-co | ~108 | ~$10^7$ | ~$10^5$ | ~100× |
 
 The ratio grows because JW's Pauli weights grow linearly while TT's grow logarithmically. At FeMo-co scale, the difference is roughly two orders of magnitude for the *logical* (pre-transpilation) circuit. After hardware-specific transpilation (qubit routing, native gate decomposition), the absolute gate counts increase for all encodings, but the *relative* advantage of lighter Pauli weights is preserved.
 
-> **Caveat on the estimates:** The CNOT counts in this table are for *unoptimised logical circuits* — the direct output of FockMap's CNOT staircase decomposition. Hardware transpilers typically reduce these by 20–40% through gate cancellation, commutation, and template matching. The estimates for N₂ and FeMo-co are order-of-magnitude projections based on scaling trends, not computed values.
+> **Caveat on the estimates:** The CNOT counts for H₂, LiH, and H₂O are computed values from FockMap (matching the Chapter 17 tables). The estimates for N₂ and FeMo-co are order-of-magnitude projections based on scaling trends. All entries are for *unoptimised logical circuits*; hardware transpilers typically reduce gate counts by 20–40% through gate cancellation and commutation.
 
 ### Why the Ratio Matters
 
@@ -50,7 +50,7 @@ On near-term hardware, each CNOT gate has a finite error rate — typically 0.1�
 
 $$P_\text{success} \approx (1 - \varepsilon)^{C_\text{CNOT}}$$
 
-At $\varepsilon = 0.5\%$ and 1,800 CNOTs (JW for H₂O), $P_\text{success} \approx 0.01\%$. At 600 CNOTs (TT for H₂O), $P_\text{success} \approx 5\%$. Under these typical assumptions, that's roughly a 500× improvement in success probability from encoding choice alone — before error mitigation, before hardware improvements, before anything else. (In practice, error mitigation techniques like zero-noise extrapolation can partially compensate for low success rates, but they impose their own sampling overhead.)
+At $\varepsilon = 0.5\%$ and 1,800 CNOTs (JW for H₂O, untapered), $P_\text{success} \approx 0.01\%$. At 600 CNOTs (TT for H₂O, untapered), $P_\text{success} \approx 5\%$. Under these typical assumptions, that's roughly a 500× improvement in success probability from encoding choice alone — before tapering, before error mitigation, before hardware improvements. (In practice, tapering reduces both CNOT counts further, and error mitigation techniques like zero-noise extrapolation can partially compensate for low success rates.)
 
 This is why the chapters on encoding (5–9), tapering (10–13), and cost analysis (17) matter. They're not academic exercises. They directly determine whether a simulation succeeds or fails on real hardware.
 
@@ -72,18 +72,18 @@ Fewer terms means fewer Pauli rotations per Trotter step. Combined with lower Pa
 
 ## Application: Encoding Choice at H₂O Scale
 
-With 14 spin-orbitals, H₂O is the smallest molecule where encoding choice makes a practical difference. Here's the full comparison after tapering:
+With 14 spin-orbitals (no frozen core), H₂O is the smallest molecule where encoding choice makes a practical difference. Here's the comparison *after tapering* (14→~11 qubits):
 
 | Encoding | Tapered qubits | Max weight | CNOTs/step | Depth estimate |
 |:---|:---:|:---:|:---:|:---:|
-| Jordan–Wigner | ~11 | 11 | ~1,800 | ~3,600 |
-| Bravyi–Kitaev | ~11 | 5 | ~750 | ~1,500 |
-| Parity | ~11 | 11 | ~1,800 | ~3,600 |
-| Binary Tree | ~11 | 5 | ~700 | ~1,400 |
-| Ternary Tree | ~11 | 4 | ~600 | ~1,200 |
-| Vlasov Tree | ~11 | 4 | ~600 | ~1,200 |
+| Jordan–Wigner | ~11 | 11 | ~1,100 | ~2,200 |
+| Bravyi–Kitaev | ~11 | 5 | ~500 | ~1,000 |
+| Parity | ~11 | 11 | ~1,100 | ~2,200 |
+| Binary Tree | ~11 | 5 | ~450 | ~900 |
+| Ternary Tree | ~11 | 4 | ~380 | ~760 |
+| Vlasov Tree | ~11 | 4 | ~380 | ~760 |
 
-The 3× reduction from JW to TT is the difference between a circuit that fries on near-term hardware and one that might just survive. On a device with ~99.5% two-qubit gate fidelity, the TT circuit has roughly a 10× higher success probability per shot. Over millions of VQE shots, that translates directly to better energy estimates.
+The ~3× reduction from JW to TT (tapered) is the difference between a circuit that fries on near-term hardware and one that might just survive. On a device with ~99.5% two-qubit gate fidelity, the TT circuit has roughly a 30× higher success probability per shot — $(0.995)^{380} \approx 15\%$ vs. $(0.995)^{1100} \approx 0.4\%$. Over millions of VQE shots, that translates directly to better energy estimates.
 
 This is the practical answer to "which encoding should I use?" — at H₂O scale and beyond, ternary tree with tapering is the best option in the FockMap toolkit.
 
@@ -93,7 +93,7 @@ This is the practical answer to "which encoding should I use?" — at H₂O scal
 
 The iron-molybdenum cofactor (FeMo-co) of nitrogenase is the molecule that launched a field. It catalyses nitrogen fixation — converting atmospheric N₂ to ammonia — and understanding its mechanism could transform fertiliser production, one of the most energy-intensive industrial processes on Earth.
 
-FeMo-co has ~54 active electrons in ~108 active spin-orbitals. Classical methods cannot accurately compute its electronic structure because the iron centres are **strongly correlated**: many electron configurations contribute comparably to the ground state, defeating perturbation theory and single-reference methods like coupled cluster.
+FeMo-co has ~54 active electrons in ~108 active spin-orbitals (following Reiher et al., *PNAS* 114, 7555, 2017). Classical methods cannot accurately compute its electronic structure because the iron centres are **strongly correlated**: many electron configurations contribute comparably to the ground state, defeating perturbation theory and single-reference methods like coupled cluster.
 
 ### The Numbers
 

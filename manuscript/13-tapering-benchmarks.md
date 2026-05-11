@@ -47,7 +47,7 @@ let h6 =
 | Qubits | 6 | 0 | 100% |
 | Terms | 8 | 1 | 88% |
 | Hilbert space | 64 | 1 | 64× |
-| CNOTs/step | 14 | 0 | 100% |
+| CNOTs/step | 12 | 0 | 100% |
 
 **Interpretation:** All symmetries were diagonal. The entire Hamiltonian collapsed to a scalar — the energy eigenvalue in the +1 sector. This is the extreme case: a fully classical Hamiltonian with no quantum content.
 
@@ -92,7 +92,7 @@ The real payoff of tapering shows in the **CNOT staircase** (Chapter 15). Each P
 
 | System | Terms before | Terms after | CNOTs/step before | CNOTs/step after | Savings |
 |:---|:---:|:---:|:---:|:---:|:---:|
-| 6-qubit diagonal | 8 | 1 | 14 | 0 | 100% |
+| 6-qubit diagonal | 8 | 1 | 12 | 0 | 100% |
 | 4-qubit mixed | 4 | 4 | 8 | 4 | 50% |
 
 These savings multiply across every Trotter step. For a simulation with 1000 Trotter steps, the 50% reduction in the mixed case means 4000 fewer CNOTs total.
@@ -111,7 +111,7 @@ flowchart LR
     style E fill:#d1fae5,stroke:#059669
 ```
 
-For a 14-qubit H₂O system (STO-3G, frozen core):
+For a 14-qubit H₂O system (STO-3G, no frozen core — all 10 electrons and 7 spatial orbitals included):
 
 | Configuration | Qubits | Max weight (JW) | Max weight (TT) | Est. CNOTs/step |
 |:---|:---:|:---:|:---:|:---:|

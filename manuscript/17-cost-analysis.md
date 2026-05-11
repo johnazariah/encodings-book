@@ -81,7 +81,7 @@ This is where the differences become real. H₂O has 7 spatial orbitals (with fr
 |:---|:---:|:---:|:---:|:---:|
 | H₂ | 4 | 36 | 40 | 0.9× |
 | LiH | 12 | ~1200 | ~500 | 2.4× |
-| H₂O | 14 | ~1800 | ~600 | 3× |
+| H₂O (frozen core) | 12 | ~1800 | ~600 | 3× |
 | N₂ | 20 | ~5000 | ~1200 | 4.2× |
 | FeMo-co | ~100 | ~500,000 | ~20,000 | ~25× |
 
