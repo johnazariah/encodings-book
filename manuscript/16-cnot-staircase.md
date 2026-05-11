@@ -87,7 +87,23 @@ Reverse the CNOT staircase (same gates, reversed order), then reverse the basis-
 
 ---
 
-## Worked Example: XXYY Rotation
+## Worked Example: ZZ Rotation (The Cheap Case)
+
+Decompose $e^{-i\theta\, Z_0 Z_1}$:
+
+**Basis change:** Both qubits are already Z — no gates needed.
+
+**CNOT staircase:** CNOT(0→1). One gate.
+
+**Rz:** $R_z(2\theta)$ on qubit 1.
+
+**Reverse staircase:** CNOT(0→1). One gate.
+
+**Total:** 2 CNOTs + 1 single-qubit gate. The entire rotation is five gates — fast, shallow, cheap. This is the Coulomb repulsion term: the "classical" part of the Hamiltonian.
+
+---
+
+## Worked Example: XXYY Rotation (The Expensive Case)
 
 Decompose $e^{-i\theta\, X_0 X_1 Y_2 Y_3}$:
 

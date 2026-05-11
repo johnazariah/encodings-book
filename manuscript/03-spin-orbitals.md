@@ -250,9 +250,9 @@ This is our first substantial code block — the coefficient factory that will f
 
 ## A Preview of What's Coming
 
-The `h2Hamiltonian` produced by the code above is a `PauliRegisterSequence` — a symbolic sum of Pauli strings with complex coefficients. It will have 15 terms (the famous H₂ Hamiltonian that appears in virtually every quantum computing tutorial). We will derive those 15 terms step by step in Chapter 5.
+The `h2Hamiltonian` produced by the code above is a `PauliRegisterSequence` — a symbolic sum of Pauli strings with complex coefficients. It will have 15 terms (the famous H₂ Hamiltonian that appears in virtually every quantum computing tutorial). We will derive those 15 terms step by step in Chapter 6.
 
-But first, Chapter 4 will introduce the encoding itself: what is a Pauli string, why can't we just use the occupation vectors directly, and how does Jordan–Wigner inject the fermion signs that qubits don't naturally produce?
+Before we can encode, we need to understand the target. Chapter 4 introduces the quantum computer's native operations — the language into which we'll translate everything. Without it, phrases like "Pauli weight" and "CNOT cost" are empty.
 
 ---
 

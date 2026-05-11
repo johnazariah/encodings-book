@@ -6,6 +6,16 @@
 
 ---
 
+## 2026-05-11 — Fixes Applied (commit 7003212)
+
+All systemic issues (S1–S4), all HIGH-severity findings, and all MEDIUM-severity findings
+have been addressed. Changes span 22 manuscript files. See commit message for details.
+
+**Remaining**: LOW-severity findings (25 items) — deferred to polish pass.
+**Next**: Style review, then Jupyter Book / MyST setup.
+
+---
+
 ## Severity Summary
 
 | Severity | Count |

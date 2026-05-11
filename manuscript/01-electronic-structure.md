@@ -199,6 +199,8 @@ The nuclear repulsion constant is $V_{nn} = 0.7151$ Ha.
 
 These numbers — the integrals and the nuclear repulsion — are the *output* of this chapter and the *input* to everything that follows. A classical electronic structure code (PySCF, Gaussian, ORCA) computes them from the molecular geometry and basis set. We will treat them as given.
 
+> **What's ahead in Chapters 2–3:** The next two chapters are the notation and bookkeeping layer — getting the integral conventions right, expanding from spatial orbitals to spin-orbitals, and building the complete numerical tables that the encoding pipeline will consume. They are detail-heavy by necessity: get a sign or index wrong here, and every Hamiltonian coefficient downstream is wrong, with no error message to tell you. If you find yourself impatient, remember: these are the numbers the quantum computer will actually process. Chapters 4 and 5 are where the quantum hardware and encoding ideas arrive.
+
 ---
 
 ## Key Takeaways

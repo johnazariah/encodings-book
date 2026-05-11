@@ -90,7 +90,9 @@ FockMap's encoding and tapering infrastructure applies directly to these systems
 
 ---
 
-## Quantum Error Correction
+## The Deepest Connection
+
+We'll end with the most surprising insight of all.
 
 The tapering machinery from Chapters 10–13 is, at its core, stabiliser theory: finding commuting Pauli operators that generate a symmetry group, and using Clifford rotations to diagonalise them. This is precisely the mathematical framework of quantum error-correcting codes.
 
@@ -99,6 +101,8 @@ The tapering machinery from Chapters 10–13 is, at its core, stabiliser theory:
 - **Logical operators** act within the code space, just as our tapered Hamiltonian acts within the symmetry sector.
 
 The algebra is the same. The difference is intent: tapering exploits physical symmetries to reduce qubit count, while error correction engineers artificial symmetries to detect and correct errors. A reader who has understood Chapters 10–13 has already learned the algebraic foundation — the stabiliser formalism — that quantum error correction builds upon.
+
+In other words: this book didn't just teach you how to simulate molecules. It taught you the mathematics of quantum error correction — without ever calling it that. The same Clifford gates, the same symplectic representation, the same sector-selection algebra. When you encounter the surface code or the Steane code in the QEC literature, you will recognise every move.
 
 ---
 

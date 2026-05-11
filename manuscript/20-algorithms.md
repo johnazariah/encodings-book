@@ -1,6 +1,6 @@
 # Chapter 20: Algorithms — VQE and QPE
 
-_Chapters 18 and 19 used exact diagonalisation as a stand-in energy oracle. This chapter replaces that stand-in with the quantum algorithms that run on real hardware._
+_We computed a bond angle from first principles. Now let's replace the one piece of classical scaffolding that made it possible — and see what a quantum computer actually does._
 
 ## In This Chapter
 
@@ -10,11 +10,13 @@ _Chapters 18 and 19 used exact diagonalisation as a stand-in energy oracle. This
 
 ---
 
-## Two Algorithms, One Input
+## From Exact Diagonalisation to Quantum Hardware
 
-In Chapters 18 and 19, we computed ground-state energies by exact diagonalisation — building the Hamiltonian as a matrix and finding its smallest eigenvalue classically. For H₂ ($2^4 = 16$-dimensional matrix) and H₂O in minimal basis ($2^{11} = 2{,}048$-dimensional after tapering), exact diagonalisation is trivially feasible on a laptop. But for larger systems — N₂ (20 qubits → $2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$) — the matrix does not fit in any existing memory.
+Chapter 19 delivered on the book's promise: a molecular geometry, computed from first principles, using our pipeline. The energy curve, the 99° minimum, the greenhouse connection — all real. But one step in that pipeline was classical: we found the ground-state energy by building the full Hamiltonian matrix and computing its smallest eigenvalue. For H₂ ($2^4 = 16$-dimensional matrix) and H₂O in minimal basis ($2^{11} = 2{,}048$-dimensional after tapering), exact diagonalisation is trivially feasible on a laptop.
 
-This is where quantum algorithms enter. Instead of building the exponentially large matrix, a quantum computer prepares the state directly in $n$ qubits and extracts the energy through measurement. The pipeline output — the Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ — is exactly what these algorithms consume.
+This is fine for validation. It is not fine for the molecules that actually matter. For N₂ (20 qubits → $2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$), the matrix does not fit in any existing memory. The pipeline still produces the Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ — but we need a different way to extract its ground-state energy.
+
+This is where quantum algorithms enter. Instead of building the exponentially large matrix, a quantum computer prepares the state directly in $n$ qubits and extracts the energy through measurement. Everything we built — the encoding, the tapering, the Trotter decomposition, the circuit export — feeds directly into these algorithms.
 
 There are two main approaches, and they make very different demands on the hardware.
 
@@ -94,6 +96,18 @@ printfn "Estimated shots for chemical accuracy: %d" shots
 ```
 
 For H₂: $\sum|c_k| \approx 3.7$ Ha, giving ~5 million shots at chemical accuracy. For H₂O: the 1-norm is larger, and the shot count grows accordingly. This is the practical bottleneck of VQE — not circuit depth, but measurement overhead.
+
+### Tracing a VQE Iteration for H₂
+
+Let's make this concrete. For our tapered 2-qubit H₂ Hamiltonian (5 terms after tapering), a single VQE iteration looks like this:
+
+1. **Prepare** $|\psi(\theta)\rangle$ — a single-parameter ansatz: $R_y(\theta)|00\rangle$
+2. **Measure** 5 Pauli terms, grouped into ~3 measurement bases. At 1000 shots per basis, that's 3,000 circuit executions.
+3. **Compute** $\langle H \rangle = \sum_k c_k \langle P_k \rangle$ from the measurement results.
+4. **Update** $\theta$ using a classical optimizer (e.g., COBYLA).
+5. **Repeat** until $|\Delta E| < \epsilon$.
+
+For H₂, convergence typically takes 20–50 iterations — roughly 100,000 total shots for a rough energy, or 5 million for chemical accuracy. The Trotter circuit from Chapter 18, the measurement groups from `groupCommutingTerms`, and the shot budget from `estimateShots` are exactly the objects that feed this loop. FockMap prepares everything up to the dotted line; an execution framework (Qiskit, Cirq, Quokka) runs the loop itself.
 
 ### Where FockMap Fits
 
