@@ -60,8 +60,8 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            manuscript/manuscript.pdf
-            manuscript/sample.pdf
+            manuscript/molecules-to-circuits.pdf
+            manuscript/molecules-to-circuits-sample.pdf
             manuscript/molecules-to-circuits.epub
             labs-${{ github.ref_name }}.tar.gz
           generate_release_notes: true

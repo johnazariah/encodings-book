@@ -43,7 +43,7 @@ make clean && make
 ```
 
 Verify:
-- PDF is produced at `manuscript/manuscript.pdf`
+- PDF is produced at `manuscript/molecules-to-circuits.pdf`
 - Page count is reasonable (~160-170 pages)
 - No LaTeX errors in the build output
 
@@ -104,8 +104,8 @@ gh release view VERSION
 ```
 
 Confirm all four artifacts are attached:
-- `manuscript.pdf`
-- `sample.pdf`
+- `molecules-to-circuits.pdf`
+- `molecules-to-circuits-sample.pdf`
 - `molecules-to-circuits.epub`
 - `labs-VERSION.tar.gz`
 

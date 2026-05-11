@@ -20,8 +20,8 @@ SHELL := /bin/bash
 MS_DIR      := manuscript
 CODE_DIR    := code
 IMG_DIR     := $(MS_DIR)/mermaid-images
-OUT         := $(MS_DIR)/manuscript.pdf
-SAMPLE_OUT  := $(MS_DIR)/sample.pdf
+OUT         := $(MS_DIR)/molecules-to-circuits.pdf
+SAMPLE_OUT  := $(MS_DIR)/molecules-to-circuits-sample.pdf
 
 # ── Source files ──
 CHAPTERS     := $(shell cat $(MS_DIR)/Book.txt | sed 's|^|$(MS_DIR)/|')
