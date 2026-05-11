@@ -1,0 +1,72 @@
+# See docs at: https://mystmd.org/guide/frontmatter
+version: 1
+project:
+  id: 8f2a4c3e-b917-4d5a-a6f3-9e8d1c7b5a02
+  title: From Molecules to Quantum Circuits
+  subtitle: A Computational Guide to Fermion-to-Qubit Encodings
+  authors:
+    - name: John S Azariah
+      affiliation: Centre for Quantum Software & Information, University of Technology Sydney
+  keywords:
+    - quantum computing
+    - quantum chemistry
+    - fermion-to-qubit encoding
+    - Jordan-Wigner
+    - Bravyi-Kitaev
+    - qubit tapering
+    - Trotterization
+  exclude:
+    - README.md
+    - CITATION.cff
+    - jose/**
+    - springer/**
+    - arxiv-submission/**
+    - docs/**
+  toc:
+    - file: manuscript/foreword.md
+    - title: "Part I: The Molecule"
+      children:
+        - file: manuscript/01-electronic-structure.md
+        - file: manuscript/02-notation.md
+        - file: manuscript/03-spin-orbitals.md
+    - title: "Part II: The Machine"
+      children:
+        - file: manuscript/04-qubits-gates-circuits.md
+    - title: "Part III: Encoding"
+      children:
+        - file: manuscript/05-visual-encodings.md
+        - file: manuscript/06-building-hamiltonian.md
+        - file: manuscript/07-six-encodings.md
+        - file: manuscript/08-building-vlasov.md
+        - file: manuscript/09-verification.md
+    - title: "Part IV: Tapering"
+      children:
+        - file: manuscript/10-why-tapering.md
+        - file: manuscript/11-diagonal-z2.md
+        - file: manuscript/12-clifford-tapering.md
+        - file: manuscript/13-tapering-benchmarks.md
+    - title: "Part V: Circuits"
+      children:
+        - file: manuscript/14-time-evolution.md
+        - file: manuscript/15-trotter-formulas.md
+        - file: manuscript/16-cnot-staircase.md
+        - file: manuscript/17-cost-analysis.md
+    - title: "Part VI: The Pipeline"
+      children:
+        - file: manuscript/18-complete-pipeline.md
+        - file: manuscript/19-bond-angle.md
+        - file: manuscript/20-algorithms.md
+        - file: manuscript/21-circuit-export.md
+    - title: "Part VII: Horizons"
+      children:
+        - file: manuscript/22-scaling.md
+        - file: manuscript/23-whats-next.md
+    - title: "Appendices"
+      children:
+        - file: manuscript/appendix-cookbook.md
+        - file: manuscript/appendix-theory.md
+
+site:
+  template: book-theme
+  options:
+    logo_text: From Molecules to Quantum Circuits

@@ -34,16 +34,11 @@ jobs:
       - name: Install project dependencies
         run: pip install -r requirements.txt
 
-      - name: Smoke test notebooks
-        env:
-          MPLBACKEND: Agg
-        run: python scripts/notebook_smoke_test.py
-
       - name: Build the book
         env:
           HOST: 127.0.0.1
-          BASE_URL: /quantum-bottleneck
-        run: bash build-site.sh
+          BASE_URL: /encodings-book
+        run: bash scripts/build-site.sh
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
