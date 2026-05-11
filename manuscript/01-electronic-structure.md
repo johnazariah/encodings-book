@@ -80,7 +80,7 @@ The nuclear repulsion energy becomes a constant for a given geometry:
 
 $$V_{nn} = \frac{Z_A Z_B e^2}{R}$$
 
-For H₂ at the equilibrium bond length $R = 0.7414$ Å (= 1.401 Bohr): $V_{nn} = 0.7151$ Ha. We add this constant back at the end.
+For H₂ at bond length $R = 0.74$ Å (= 1.398 Bohr), close to the experimental equilibrium of 0.7414 Å: $V_{nn} = 1/R = 0.7151$ Ha. We add this constant back at the end.
 
 What remains is a problem in the electronic coordinates alone. Solve it for one nuclear geometry, and you get the electronic energy $E_\text{el}(R)$. Repeat for many geometries, and you trace out the **potential energy surface** — the curve that tells you bond lengths, bond angles, and vibrational frequencies.
 

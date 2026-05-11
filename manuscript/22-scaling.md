@@ -118,7 +118,7 @@ For FeMo-co at chemical accuracy via QPE:
 - **CNOTs per Trotter step** (TT): ~$10^5$
 - **Total CNOTs**: ~$10^9$
 
-At current error rates, this requires full quantum error correction — perhaps 1,000–10,000 physical qubits per logical qubit, depending on the code and hardware. That puts the total physical qubit count at $10^5$–$10^6$.
+At current error rates, this requires full quantum error correction — perhaps 1,000–10,000 physical qubits per logical qubit, depending on the code and hardware (see Gidney and Fowler, *Quantum* 5, 433, 2021, for concrete surface-code estimates). That puts the total physical qubit count at $10^5$–$10^6$.
 
 No device available today can do this. But the same pipeline we developed for H₂ (4 qubits, 15 terms, 12 CNOTs) is the *same code* that would generate the FeMo-co circuit. The bottleneck is hardware, not software. When the hardware arrives, the pipeline is ready.
 
@@ -129,7 +129,7 @@ No device available today can do this. But the same pipeline we developed for H�
 It's worth being honest about the landscape. Quantum simulation has a theoretical advantage for strongly correlated systems, but classical methods are formidable:
 
 - **Density functional theory (DFT)** handles hundreds of atoms routinely. It's not exact, but it's remarkably accurate for weakly correlated systems and costs $O(n^3)$.
-- **Coupled cluster CCSD(T)** — the "gold standard" of quantum chemistry — handles up to ~50 atoms with chemical accuracy for single-reference systems.
+- **Coupled cluster CCSD(T)** — the "gold standard" of quantum chemistry — handles systems of tens of atoms (depending on basis set) with chemical accuracy for single-reference systems. Local approximations extend this to hundreds of atoms, but canonical CCSD(T) scales as $O(N^7)$.
 - **DMRG and tensor network methods** exploit the entanglement structure of 1D and quasi-1D systems, often matching quantum simulation accuracy for those geometries.
 
 Quantum simulation's niche is the strongly correlated regime: transition-metal complexes, open-shell systems, conical intersections, and exotic electronic states where no classical method converges reliably. FeMo-co is the poster child, but the real impact may be in catalysis design, high-temperature superconductors, and photochemistry — areas where electron correlation defies classical approximation.

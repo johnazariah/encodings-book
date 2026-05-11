@@ -52,7 +52,7 @@ cx q[0], q[1];
 h q[0];
 ```
 
-Each Pauli rotation from Chapter 16 becomes a CNOT staircase bracketed by basis-change gates. The angle in `rz()` is the rotation parameter $\theta = c_k \Delta t$.
+Each Pauli rotation from Chapter 16 becomes a CNOT staircase bracketed by basis-change gates. The angle in `rz()` is the rotation parameter — OpenQASM's `rz(θ)` implements $e^{-i\theta Z/2}$, so FockMap passes $\theta = 2 c_k \Delta t$ to produce the intended rotation $e^{-i c_k \Delta t Z}$.
 
 ### Gate Mapping
 
@@ -96,8 +96,8 @@ The output:
 
 ```qsharp
 namespace FockMap.Generated {
-    open Microsoft.Quantum.Canon;
-    open Microsoft.Quantum.Intrinsic;
+    import Std.Intrinsic.*;
+    import Std.Canon.*;
 
     operation TrotterStep(q : Qubit[]) : Unit {
         H(q[0]);

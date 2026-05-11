@@ -178,7 +178,7 @@ The 50× jump from H₂ to H₂O is driven by two factors: more qubits (more ter
 |:---|:---|:---|
 | **Hardware** | Near-term (noisy) | Fault-tolerant |
 | **Circuit depth** | Short (one ansatz layer) | Deep (many Trotter steps) |
-| **Measurements** | Many ($\sim 10^6$ shots) | Few (one readout) |
+| **Measurements** | Many ($\sim 10^6$ shots) | Few ($O(1)$ readouts) |
 | **Classical cost** | Optimisation loop | QFT + readout |
 | **Bottleneck** | Shot count, barren plateaus | Circuit depth, error correction |
 | **FockMap provides** | Hamiltonian + measurement groups | Hamiltonian + Trotter circuits |

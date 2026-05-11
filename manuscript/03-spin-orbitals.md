@@ -151,8 +151,8 @@ For reference, here are all the inputs to the encoding pipeline.
 
 | Parameter | Value |
 |:---|:---|
-| Bond length $R$ | 0.7414 Å = 1.401 Bohr |
-| Nuclear repulsion $V_{nn}$ | 0.7151043391 Ha |
+| Bond length $R$ | 0.74 Å = 1.398 Bohr (near equilibrium) |
+| Nuclear repulsion $V_{nn}$ | 0.7151043391 Ha (= $1/R$ in atomic units) |
 | Spatial orbitals | 2 ($\sigma_g$, $\sigma_u$) |
 | Spin-orbitals | 4 |
 | Electrons | 2 |

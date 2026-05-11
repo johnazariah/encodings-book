@@ -100,7 +100,7 @@ For the same target accuracy, second-order Trotter typically needs $\sqrt{N}$ fe
 
 The time step $\Delta t$ is the key knob in Trotterization. Too large → bad approximation. Too small → too many steps → too deep a circuit.
 
-A practical rule of thumb: $\Delta t \leq 1 / \lVert\hat{H}\rVert_1$, where the 1-norm is $\lVert\hat{H}\rVert_1 = \sum_k |c_k|$.
+A practical rule of thumb (see Childs et al., *PRL* 120, 250503, 2018, §II for tighter commutator-based bounds): $\Delta t \leq 1 / \lVert\hat{H}\rVert_1$, where the 1-norm is $\lVert\hat{H}\rVert_1 = \sum_k |c_k|$.
 
 For H₂: $\lVert\hat{H}\rVert_1 \approx 3.7$ Ha, giving $\Delta t \lesssim 0.27$. Our choice of $\Delta t = 0.1$ is comfortably within this bound.
 

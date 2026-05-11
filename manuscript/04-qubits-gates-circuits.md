@@ -6,7 +6,7 @@ _We've spent three chapters learning what the molecule wants to say. Now we need
 
 - **What you'll learn:** What qubits are and why they're powerful, what operations you can perform on them, why creating entanglement is the hard part, and why Pauli operators and CNOT gates are sufficient for everything we need.
 - **Why this matters:** The encoding (next chapter) translates fermionic operators into qubit operations. If you don't understand the target language, you can't evaluate the translation.
-- **Prerequisites:** Chapters 1–3 (you have the molecular Hamiltonian). Basic familiarity with 2×2 matrices is helpful but not essential.
+- **Prerequisites:** Chapters 1–3 (you have the molecular Hamiltonian). Basic familiarity with 2×2 matrices is assumed.
 
 ---
 
@@ -45,7 +45,7 @@ If a qubit is a vector in a 2D complex space, an operation on a qubit is a $2 \t
 **The Pauli operators** — you'll soon see them from the chemistry side (after encoding, the Hamiltonian lives in Pauli space — Chapter 5). Now meet them as gates:
 
 - **$X$** (bit-flip): swaps $\lvert 0\rangle$ and $\lvert 1\rangle$. The quantum analogue of a NOT gate.
-- **$Z$** (phase-flip): leaves $\lvert 0\rangle$ alone, applies a minus sign to $\lvert 1\rangle$. This is a purely quantum operation — it changes the *phase* of the superposition without changing the measurement probabilities.
+- **$Z$** (phase-flip): leaves $\lvert 0\rangle$ alone, applies a minus sign to $\lvert 1\rangle$. This is a purely quantum operation — it changes the *phase* of the superposition without changing the computational-basis measurement probabilities.
 - **$Y$** = $iXZ$: both a bit-flip and a phase-flip.
 
 Why are the Paulis special? Because they form a **basis** for all $2 \times 2$ Hermitian matrices. Any single-qubit observable — any Hamiltonian term — can be written as a real-linear combination of $I$, $X$, $Y$, $Z$. (With complex coefficients, they span all $2 \times 2$ matrices.) This is why the encoded Hamiltonian is a sum of Pauli strings: it's the natural basis for qubit operators, just as $\{\lvert 0\rangle, \lvert 1\rangle\}$ is the natural basis for qubit states.

@@ -163,7 +163,7 @@ Let's see this happen explicitly.
 
 ### One exchange term, fully expanded
 
-Consider $\frac{1}{2}\langle 02 \mid 20\rangle\; a_0^\dagger a_2^\dagger a_2 a_0$, with integral value $\langle 02 \mid 20\rangle = 0.1809$ Ha. This is an exchange integral — electron 1 scatters from orbital 0 to orbital 2, electron 2 scatters from orbital 2 to orbital 0.
+Consider $\frac{1}{2}\langle 02 \mid 20\rangle\; a_0^\dagger a_2^\dagger a_0 a_2$, with integral value $\langle 02 \mid 20\rangle = 0.1809$ Ha. This is an exchange integral — electrons swap between orbitals 0 and 2. Note the annihilation operators $a_0 a_2$ are in a different order from the creation operators $a_0^\dagger a_2^\dagger$ (in the Hamiltonian $a_p^\dagger a_q^\dagger a_s a_r$, with $p{=}0, q{=}2, r{=}2, s{=}0$, we get $a_0 a_2$, not $a_2 a_0$).
 
 **Encode under Jordan–Wigner:**
 
@@ -179,23 +179,9 @@ Note: $a_2^\dagger$ has a Z-chain of length 2 ($Z_0 Z_1$), not length 1.
 
 **Multiply.**
 
-$$a_0^\dagger a_2^\dagger a_2 a_0 = \frac{1}{16}(X_0 - iY_0)\,Z_0 Z_1(X_2 - iY_2)\,Z_0 Z_1(X_2 + iY_2)\,(X_0 + iY_0)$$
-
-**Simplify.** The Z-chains cancel on qubits 0 and 1: $Z_0 Z_0 = I$, $Z_1 Z_1 = I$. The qubit-2 pair simplifies as before: $(X_2 - iY_2)(X_2 + iY_2) = 2(I - Z_2)$. But now qubit 0 has something new:
-
-$$(X_0 - iY_0) \cdot (X_0 + iY_0) = 2(I - Z_0)$$
-
-Wait — that's the same identity as the Coulomb case. So where do the XX/YY terms come from?
-
-They come from a *different* index combination. Consider instead:
-
-$$\frac{1}{2}\langle 02 \mid 02\rangle\; a_0^\dagger a_2^\dagger a_0 a_2$$
-
-Here the operator ordering is $a_0^\dagger a_2^\dagger a_0 a_2$ — note the annihilation operators are $a_0 a_2$, not $a_2 a_0$. When we encode and multiply:
-
 $$a_0^\dagger a_2^\dagger a_0 a_2 = \frac{1}{16}(X_0 - iY_0)\,Z_0 Z_1(X_2 - iY_2)\,(X_0 + iY_0)\,Z_0 Z_1(X_2 + iY_2)$$
 
-Now the Z-chains don't cancel cleanly — the $(X_0 + iY_0)$ sits *between* the two Z₀ factors instead of outside them. Expanding qubit 0:
+**Simplify.** Now the Z-chains don't cancel cleanly — the $(X_0 + iY_0)$ sits *between* the two $Z_0$ factors instead of outside them. Expanding qubit 0:
 
 $$(X_0 - iY_0)\,Z_0\,(X_0 + iY_0)\,Z_0$$
 

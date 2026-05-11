@@ -150,6 +150,20 @@ The Z-chain grows linearly: for orbital $j$, we need $j$ extra Z operations. Thi
 
 For a molecule with $n$ spin-orbitals, the worst-case Pauli weight under JW is $n$. For FeMo-co (the iron-molybdenum cofactor of nitrogenase — the enzyme that fixes atmospheric nitrogen) with ~100 spin-orbitals, that's a chain of 99 Z gates for the last orbital — a very deep circuit on quantum hardware.
 
+You can see this directly in FockMap:
+
+```fsharp
+open Encodings
+
+// Encode creation operator for orbital 2 under JW (4 qubits)
+let a2_dag = jordanWignerTerms.CreationOperator 2u 4u
+printfn "a₂† = %A" a2_dag
+// Output: a₂† = 0.5 ZZXI + (-0.5i) ZZYI
+// Weight 3: two Z-chain qubits + one X/Y flip
+```
+
+The output shows $a_2^\dagger$ as a sum of two Pauli strings, each with weight 3 — two Z gates for the parity chain and one X (or Y) for the orbital flip. This is the cost of creating an electron in orbital 2 under JW.
+
 ### When JW is the right choice
 
 Despite the linear scaling, JW excels when interactions are **local** — between neighboring orbitals. A hopping term $a_2^\dagger a_3 + a_3^\dagger a_2$ only needs a short Z-chain because the two orbitals are adjacent. For 1D molecular chains or systems with sequential orbital numbering, JW often has the lowest *average* weight even if its worst case is high.

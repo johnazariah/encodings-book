@@ -31,8 +31,8 @@ open Encodings
 (**
 ## Molecular Integrals
 
-These are the STO-3G integrals for H₂ at the equilibrium bond length
-R = 0.7414 Å, computed from standard quantum chemistry packages.
+These are the STO-3G integrals for H₂ at bond length
+R = 0.74 Å, matching the manuscript's Chapter 3 tables.
 
 ### Spin-Orbital Indexing
 
@@ -54,10 +54,10 @@ let nSpinOrbitals = 4u
 
 let oneBodyIntegrals = Map.ofList [
     // Diagonal elements (same spatial orbital)
-    ("0,0", Complex(-1.2563390730032498, 0.0))  // h₀₀ = ⟨σg↑|h|σg↑⟩
-    ("1,1", Complex(-1.2563390730032498, 0.0))  // h₁₁ = ⟨σg↓|h|σg↓⟩
-    ("2,2", Complex(-0.4718960244306283, 0.0))  // h₂₂ = ⟨σu↑|h|σu↑⟩
-    ("3,3", Complex(-0.4718960244306283, 0.0))  // h₃₃ = ⟨σu↓|h|σu↓⟩
+    ("0,0", Complex(-1.2563390730, 0.0))  // h₀₀ = ⟨σg↑|h|σg↑⟩
+    ("1,1", Complex(-1.2563390730, 0.0))  // h₁₁ = ⟨σg↓|h|σg↓⟩
+    ("2,2", Complex(-0.4718960244, 0.0))  // h₂₂ = ⟨σu↑|h|σu↑⟩
+    ("3,3", Complex(-0.4718960244, 0.0))  // h₃₃ = ⟨σu↓|h|σu↓⟩
 ]
 
 (**
@@ -68,35 +68,45 @@ Symmetries reduce the number of unique values significantly.
 *)
 
 let twoBodyIntegrals = Map.ofList [
-    // Direct Coulomb: electrons in same orbital
-    ("0,0,0,0", Complex(0.6744887663049631, 0.0))
-    ("1,1,1,1", Complex(0.6744887663049631, 0.0))
-    ("2,2,2,2", Complex(0.6973979494693556, 0.0))
-    ("3,3,3,3", Complex(0.6973979494693556, 0.0))
+    // Same-spin αα-αα
+    ("0,0,0,0", Complex(0.6744887663, 0.0))
+    ("2,2,2,2", Complex(0.6973979495, 0.0))
+    ("0,2,2,0", Complex(0.1809312700, 0.0))
+    ("2,0,0,2", Complex(0.1809312700, 0.0))
+    ("0,2,0,2", Complex(0.6975782469, 0.0))
+    ("2,0,2,0", Complex(0.6975782469, 0.0))
+    ("0,0,2,2", Complex(0.6636340479, 0.0))
+    ("2,2,0,0", Complex(0.6636340479, 0.0))
 
-    // Coulomb: σg-σg interactions
-    ("0,0,1,1", Complex(0.6744887663049631, 0.0))
-    ("1,1,0,0", Complex(0.6744887663049631, 0.0))
+    // Same-spin ββ-ββ
+    ("1,1,1,1", Complex(0.6744887663, 0.0))
+    ("3,3,3,3", Complex(0.6973979495, 0.0))
+    ("1,3,3,1", Complex(0.1809312700, 0.0))
+    ("3,1,1,3", Complex(0.1809312700, 0.0))
+    ("1,3,1,3", Complex(0.6975782469, 0.0))
+    ("3,1,3,1", Complex(0.6975782469, 0.0))
+    ("1,1,3,3", Complex(0.6636340479, 0.0))
+    ("3,3,1,1", Complex(0.6636340479, 0.0))
 
-    // Coulomb: σg-σu interactions
-    ("0,0,2,2", Complex(0.6636340478615040, 0.0))
-    ("2,2,0,0", Complex(0.6636340478615040, 0.0))
-    ("0,0,3,3", Complex(0.6636340478615040, 0.0))
-    ("3,3,0,0", Complex(0.6636340478615040, 0.0))
-    ("1,1,2,2", Complex(0.6636340478615040, 0.0))
-    ("2,2,1,1", Complex(0.6636340478615040, 0.0))
-    ("1,1,3,3", Complex(0.6636340478615040, 0.0))
-    ("3,3,1,1", Complex(0.6636340478615040, 0.0))
+    // Cross-spin αβ-αβ
+    ("0,1,0,1", Complex(0.6744887663, 0.0))
+    ("0,3,0,3", Complex(0.6636340479, 0.0))
+    ("2,1,2,1", Complex(0.6636340479, 0.0))
+    ("2,3,2,3", Complex(0.6973979495, 0.0))
+    ("0,1,2,3", Complex(0.6975782469, 0.0))
+    ("2,3,0,1", Complex(0.6975782469, 0.0))
+    ("0,3,2,1", Complex(0.1809312700, 0.0))
+    ("2,1,0,3", Complex(0.1809312700, 0.0))
 
-    // Coulomb: σu-σu interactions
-    ("2,2,3,3", Complex(0.6973979494693556, 0.0))
-    ("3,3,2,2", Complex(0.6973979494693556, 0.0))
-
-    // Exchange integrals
-    ("0,2,2,0", Complex(0.1809312433852046, 0.0))
-    ("2,0,0,2", Complex(0.1809312433852046, 0.0))
-    ("1,3,3,1", Complex(0.1809312433852046, 0.0))
-    ("3,1,1,3", Complex(0.1809312433852046, 0.0))
+    // Cross-spin βα-βα
+    ("1,0,1,0", Complex(0.6744887663, 0.0))
+    ("1,2,1,2", Complex(0.6636340479, 0.0))
+    ("3,0,3,0", Complex(0.6636340479, 0.0))
+    ("3,2,3,2", Complex(0.6973979495, 0.0))
+    ("1,0,3,2", Complex(0.6975782469, 0.0))
+    ("3,2,1,0", Complex(0.6975782469, 0.0))
+    ("1,2,3,0", Complex(0.1809312700, 0.0))
+    ("3,0,1,2", Complex(0.1809312700, 0.0))
 ]
 
 (**

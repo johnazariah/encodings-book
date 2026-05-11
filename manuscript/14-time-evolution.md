@@ -107,7 +107,7 @@ The exponential of a sum is *not* the product of exponentials for non-commuting 
 
 The Trotter–Suzuki product formula says that for small $\Delta t$:
 
-$$e^{-i(A + B)\Delta t} \approx e^{-iA\Delta t} \cdot e^{-iB\Delta t} + O(\Delta t^2)$$
+$$e^{-i(A + B)\Delta t} = e^{-iA\Delta t} \cdot e^{-iB\Delta t} + O(\Delta t^2)$$
 
 The error is proportional to $\Delta t^2$ — so if we break the total time $t$ into $N$ small steps of size $\Delta t = t/N$:
 

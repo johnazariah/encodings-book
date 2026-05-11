@@ -12,11 +12,25 @@ _The Hamiltonian is correct and verified. But it may be bigger than it needs to 
 
 ## The Observation
 
-Look again at the 15-term H₂ Hamiltonian from Chapter 6. Focus on the Pauli operators at each qubit position:
+Look again at the 15-term H₂ Hamiltonian from Chapter 6. Focus on the Pauli operators at each qubit position (recall: in our notation $ABCD$, the rightmost character is qubit 0):
 
-| Qubit 0 | Qubit 1 | Qubit 2 | Qubit 3 |
-|:---:|:---:|:---:|:---:|
-| I, I, I, I, I, I, I, I, I, Z, Z, X, X, Y, Y | I, I, I, Z, Z, I, Z, Z, I, I, Z, X, Y, X, Y | I, I, I, I, I, Z, I, Z, Z, Z, I, Y, Y, X, X | I, Z, Z, I, I, Z, Z, I, Z, I, I, Y, X, Y, X |
+| Term | String | q0 | q1 | q2 | q3 |
+|:---:|:---:|:---:|:---:|:---:|:---:|
+| 1 | $IIII$ | I | I | I | I |
+| 2 | $IIIZ$ | **Z** | I | I | I |
+| 3 | $IIZI$ | I | **Z** | I | I |
+| 4 | $IZII$ | I | I | **Z** | I |
+| 5 | $ZIII$ | I | I | I | **Z** |
+| 6 | $IIZZ$ | **Z** | **Z** | I | I |
+| 7 | $IZIZ$ | **Z** | I | **Z** | I |
+| 8 | $IZZI$ | I | **Z** | **Z** | I |
+| 9 | $ZIIZ$ | **Z** | I | I | **Z** |
+| 10 | $ZIZI$ | I | **Z** | I | **Z** |
+| 11 | $ZZII$ | I | I | **Z** | **Z** |
+| 12 | $XXYY$ | **Y** | **Y** | **X** | **X** |
+| 13 | $XYYX$ | **X** | **Y** | **Y** | **X** |
+| 14 | $YXXY$ | **Y** | **X** | **X** | **Y** |
+| 15 | $YYXX$ | **X** | **X** | **Y** | **Y** |
 
 Every qubit has at least some terms with X or Y — no qubit is purely diagonal (I/Z only) across all 15 terms. So H₂ under JW has **no diagonal Z₂ symmetries** at first glance.
 

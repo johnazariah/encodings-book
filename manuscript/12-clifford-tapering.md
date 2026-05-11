@@ -65,7 +65,7 @@ commutes a b  // true — XX and ZZ commute
 
 ## Finding All Symmetry Generators
 
-A Pauli string $g$ is a Z₂ symmetry of $\hat{H}$ if it commutes with every term and squares to the identity. Since every Pauli string squares to $\pm I$, the squaring condition is automatic.
+A Pauli string $g$ is a Z₂ symmetry of $\hat{H}$ if it commutes with every term and squares to the identity. Since every phase-free Pauli string (a tensor product of $\{I, X, Y, Z\}$, which is how this book represents them) squares to $I$, the squaring condition is automatic.
 
 The commutation condition $\text{crosswise dot product} = 0$ for all terms $t_k$ is a system of linear equations where the arithmetic is binary (0 and 1, with addition meaning XOR). The solution set — the **null space** of the commutation check matrix — gives all Z₂ generators.
 
@@ -78,7 +78,7 @@ let indep = independentGenerators generators
 // The number of independent generators = max qubits taperable
 ```
 
-The null space computation uses Gaussian elimination with XOR instead of subtraction — the same row-reduction you learned in linear algebra, but in binary arithmetic. It runs in $O(n^3)$ time in the number of qubits $n$, where the matrix has $L$ rows (one per Hamiltonian term) and $2n$ columns (the symplectic vector length). In practice, this is dominated by the $O(n^4)$ cost of integral processing and is never the bottleneck. See Bravyi et al. (arXiv:1701.08213, §III) for the formal analysis.
+The null space computation uses Gaussian elimination with XOR instead of subtraction — the same row-reduction you learned in linear algebra, but in binary arithmetic. It runs in $O(L \cdot n^2)$ time, where $L$ is the number of Hamiltonian terms and $n$ is the number of qubits. In practice, this is dominated by the $O(n^4)$ cost of integral processing and is never the bottleneck. See Bravyi et al. (arXiv:1701.08213, §III) for the formal analysis.
 
 ---
 
@@ -103,7 +103,7 @@ This rotates each multi-qubit generator onto a single-qubit $Z$, making the syst
 > 5. **Conjugate** every term $P_k$ by the collected Clifford gates (symbolically — substitution rules on symplectic vectors).
 > 6. **Fix** each target qubit $q_i$ to eigenvalue $\pm 1$ (the sector choice) and remove it.
 >
-> **Complexity:** Step 3 is $O(n^3)$; step 5 is $O(Lm)$ where $L$ is the number of terms. Total is dominated by Hamiltonian construction, not tapering.
+> **Complexity:** Step 3 is $O(L \cdot n^2)$; step 5 is $O(Lm)$ where $L$ is the number of terms. Total is dominated by Hamiltonian construction, not tapering.
 
 FockMap synthesizes this circuit using three elementary gates:
 
@@ -209,15 +209,17 @@ Under this gate, $Z_0 Z_1 \to Z_0 \cdot (Z_0 Z_1) = Z_0^2 Z_1 = Z_1$ — we've i
 
 **Step 4: Apply the CNOT to every Hamiltonian term.**
 
-Under CNOT(0,1) conjugation, each term transforms:
+Under CNOT(0,1) conjugation, recall the full propagation rules: $Z_0 \to Z_0$, $Z_1 \to Z_0 Z_1$ (Z propagates from target to control), $X_0 \to X_0 X_1$ (X propagates from control to target), $X_1 \to X_1$. Applying these to each Heisenberg term:
 
-| Original | After CNOT(0,1) |
-|:---:|:---:|
-| $X_0 X_1$ | $X_0 X_1$ → actually transforms to $X_0 I_1 \cdot I_0 X_1 = X_0 X_1$... |
+| Original | Propagation | Result |
+|:---:|:---|:---:|
+| $X_0 X_1$ | $X_0 \to X_0 X_1$, $X_1 \to X_1$ | $(X_0 X_1)(X_1) = X_0 I_1 = X_0$ |
+| $Y_0 Y_1$ | $Y = iXZ$: use $X_0 \to X_0 X_1$, $Z_0 \to Z_0$, $X_1 \to X_1$, $Z_1 \to Z_0 Z_1$ | $Y_0 Y_1 \to (iX_0 X_1 Z_0)(iX_1 Z_0 Z_1) = -X_0 X_1 Z_0 X_1 Z_0 Z_1 = -Z_1$ |
+| $Z_0 Z_1$ | $Z_0 \to Z_0$, $Z_1 \to Z_0 Z_1$ | $Z_0 (Z_0 Z_1) = Z_1$ |
 
-Actually, let's let FockMap do this — the gate-by-gate algebra is fiddly by hand. The point is that after applying the Clifford, one of the qubits (the target of the rotation) now has only I or Z across all terms — it has become diagonally taperable.
+After the CNOT rotation, the Hamiltonian becomes: $X_0 - Z_1 + Z_1 = X_0$. Qubit 1 now has only $I$ or $Z$ across all terms — it is diagonally taperable!
 
-**Step 5: Diagonal taper.** Fix the newly-diagonal qubit to sector $+1$, remove it. The result is a 1-qubit Hamiltonian.
+**Step 5: Diagonal taper.** Fix qubit 1 to sector $+1$ (replacing $Z_1 \to +1$), remove it. The result is a 1-qubit Hamiltonian: $H_\text{tapered} = X_0$. Its eigenvalues are $\pm 1$, matching the original Heisenberg model's eigenspectrum (which you can verify by direct diagonalisation of the $4 \times 4$ matrix).
 
 ```fsharp
 let heis =
