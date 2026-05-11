@@ -114,6 +114,11 @@ The ratio grows monotonically because JW's worst-case weight scales as $O(n)$ wh
 
 3. **Run it.** Use the companion script `code/ch07-six-encodings.fsx` to compute the weight scaling table for $n = 4, 8, 16, 32, 64$. At what $n$ does the ternary tree first beat JW?
 
+## Further Reading
+
+- Tranter, A., Sofia, S., Sherrill, C. D., and Sherrill, C. D. "The Bravyi–Kitaev Transformation: Properties and Applications." *Int. J. Quantum Chem.* 115, 1431 (2015). Systematic comparison of encoding costs that informs the analysis in this chapter.
+- The cost models in this chapter build directly on the encoding definitions (Chapter 7), tapering benchmarks (Chapter 13), and CNOT staircase decomposition (Chapter 16) developed earlier in this book.
+
 ---
 
 **Previous:** [Chapter 16 — The CNOT Staircase](16-cnot-staircase.html)

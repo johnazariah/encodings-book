@@ -154,6 +154,10 @@ The 6× ratio between JW and TT at $n=32$ is entirely due to the CNOT staircase 
 - Total CNOTs per Trotter step: $\sum_k 2(w_k - 1)$ — the single most important number for circuit feasibility.
 - Encoding choice and tapering both reduce $w_k$ and therefore CNOT cost.
 
+## Further Reading
+
+- Whitfield, J. D., Biamonte, J., and Aspuru-Guzik, A. "Simulation of electronic structure Hamiltonians using quantum computers." *Mol. Phys.* 109, 735 (2011). Introduces the CNOT staircase decomposition of Pauli rotations used throughout this chapter.
+
 ---
 
 **Previous:** [Chapter 15 — Trotterization in Practice](15-trotter-formulas.html)

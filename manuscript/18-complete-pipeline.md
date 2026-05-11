@@ -251,6 +251,11 @@ In the next chapter, we'll do exactly that — but instead of scanning a bond le
 - The H₂ dissociation curve — equilibrium bond length, dissociation energy, vibrational frequency — emerges from the pipeline without empirical input.
 - The pipeline is **composable**: swap the integrals and qubit count to compute any molecule.
 
+## Further Reading
+
+- McArdle, S., Endo, S., Aspuru-Guzik, A., Benjamin, S. C., and Yuan, X. "Quantum computational chemistry." *Rev. Mod. Phys.* 92, 015003 (2020). Comprehensive review of the quantum chemistry simulation pipeline from problem specification to circuit execution.
+- Bauer, B., Bravyi, S., Motta, M., and Chan, G. K.-L. "Quantum Algorithms for Quantum Chemistry and Quantum Materials Science." *Chem. Rev.* 120, 12685 (2020). Surveys algorithmic building blocks and resource estimates for end-to-end quantum simulation.
+
 ---
 
 **Previous:** [Chapter 17 — Cost Analysis](17-cost-analysis.html)

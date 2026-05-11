@@ -140,6 +140,11 @@ The quantum computer isn't ready yet. The pipeline is.
 - **Quantum error correction** uses the same stabiliser theory as tapering — different intent, same mathematics.
 - The pipeline works at every scale. The bottleneck is hardware, not software.
 
+## Further Reading
+
+- Gottesman, D. "Stabilizer Codes and Quantum Error Correction." PhD thesis, California Institute of Technology (1997). The stabiliser formalism that underpins both tapering and quantum error correction.
+- Campbell, E. T. "Early fault-tolerant simulations of the Hubbard model." *Quantum Sci. Technol.* 7, 015007 (2022). Explores the bridge between NISQ-era techniques and early fault-tolerant quantum simulation.
+
 ---
 
 **Previous:** [Chapter 22 — Scaling: From H₂ to FeMo-co](22-scaling.html)

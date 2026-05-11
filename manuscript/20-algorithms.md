@@ -240,6 +240,11 @@ FockMap's scope ends at circuit generation. It is important to be clear about wh
 - **Measurement grouping** reduces the number of distinct circuits by combining qubit-wise commuting terms. FockMap does this automatically.
 - Both algorithms consume the same input — the Pauli Hamiltonian — but make different demands on the hardware. Encoding and tapering choices help both.
 
+## Further Reading
+
+- Peruzzo, A., McClean, J., Shadbolt, P., Yung, M.-H., Zhou, X.-Q., Love, P. J., Aspuru-Guzik, A., and O'Brien, J. L. "A variational eigenvalue solver on a photonic quantum processor." *Nat. Commun.* 5, 4213 (2014). The original VQE paper.
+- Kitaev, A. Yu. "Quantum measurements and the Abelian Stabilizer Problem." arXiv:quant-ph/9511026 (1995). Introduces quantum phase estimation, the foundation of QPE-based chemistry algorithms.
+
 ---
 
 **Previous:** [Chapter 19 — The Water Bond Angle](19-bond-angle.html)

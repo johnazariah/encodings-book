@@ -213,6 +213,10 @@ for s0 in [+1; -1] do
 
 3. **Forgetting to combine like terms after tapering.** Removing qubits can make previously distinct Pauli strings identical. The terms must be re-accumulated.
 
+## Further Reading
+
+- Bravyi, S., Gambetta, J. M., Mezzacapo, A., and Temme, K. "Tapering off qubits to simulate fermionic Hamiltonians." arXiv:1701.08213 (2017). The foundational paper on exploiting Z₂ symmetries to reduce qubit count.
+
 ---
 
 **Previous:** [Chapter 10 — Why Tapering?](10-why-tapering.html)

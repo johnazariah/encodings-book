@@ -11,8 +11,19 @@
 All systemic issues (S1–S4), all HIGH-severity findings, and all MEDIUM-severity findings
 have been addressed. Changes span 22 manuscript files. See commit message for details.
 
-**Remaining**: LOW-severity findings (25 items) — deferred to polish pass.
-**Next**: Style review, then Jupyter Book / MyST setup.
+## 2026-05-11 — Style Fixes Applied (commit 425d054)
+
+Structural: Ch19→Ch20 transition rewritten, Ch20 VQE walkthrough added.
+Pacing: Ch1 bridge paragraph, Ch16 ZZ worked example, Ch23 QEC climax restructured.
+
+## 2026-05-11 — Full Cleanup (commit d42acf0)
+
+All LOW findings fixed. Bond length corrected (0.74 Å, not 0.7414 Å). Lab 02 integral
+table regenerated with correct spin conservation. Ch5 code snippet added. Ch6 exchange
+derivation fixed. Ch10 Pauli table regenerated. Ch12 Heisenberg Step 4 completed.
+Q# updated to modern SDK. Citations added for heuristics and resource estimates.
+
+**Remaining**: Further Reading normalization (in progress). Then: MyST/Jupyter Book setup.
 
 ---
 

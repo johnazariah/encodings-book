@@ -202,6 +202,11 @@ The tighter commutator-based bounds (Childs and Su, PRL 2019) typically improve 
 
 3. **CNOT scaling.** If every term in a Hamiltonian has weight 5 (ternary tree on a 27-orbital system), and there are 200 non-identity terms, what is the CNOT count per first-order step?
 
+## Further Reading
+
+- Childs, A. M., Su, Y., Tran, M. C., Wiebe, N., and Zhu, S. "Theory of Trotter Error with Commutator Scaling." *Phys. Rev. X* 11, 011020 (2021). The modern tight analysis of Trotter error bounds using nested commutators.
+- Suzuki, M. "General Decomposition Theory of Ordered Exponentials of Time-Dependent Operators." *J. Math. Phys.* 32, 400 (1991). The original higher-order decomposition formulas used throughout this chapter.
+
 ---
 
 **Previous:** [Chapter 14 — From Hamiltonian to Time Evolution](14-time-evolution.html)

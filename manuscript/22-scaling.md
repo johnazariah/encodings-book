@@ -144,6 +144,11 @@ Quantum simulation's niche is the strongly correlated regime: transition-metal c
 - **FeMo-co** (~108 qubits) is the grand challenge: classically intractable, but requiring fault-tolerant hardware that doesn't yet exist.
 - The same pipeline code works at every scale — from H₂ to FeMo-co. The bottleneck is hardware, not software.
 
+## Further Reading
+
+- Reiher, M., Wiebe, N., Svore, K. M., Wecker, D., and Troyer, M. "Elucidating Reaction Mechanisms on Quantum Computers." *PNAS* 114, 7555 (2017). The landmark resource estimate for simulating FeMo-co on a fault-tolerant quantum computer.
+- Lee, J., Berry, D. W., Gidney, C., Huggins, W. J., McClean, J. R., Wiebe, N., and Babbush, R. "Even More Efficient Quantum Computations of Chemistry Through Tensor Hypercontraction." *PRX Quantum* 2, 030305 (2021). Dramatically reduces the resource estimates for large-molecule simulation using tensor factorisation techniques.
+
 ---
 
 **Previous:** [Chapter 21 — Speaking the Hardware's Language](21-circuit-export.html)

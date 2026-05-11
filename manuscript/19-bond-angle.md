@@ -241,6 +241,11 @@ The potential energy surface scan we performed is the first step in a vibrationa
 - The bond angle emerges from quantum mechanics without empirical input — the bend is a mean-field effect already captured by Hartree–Fock, while electron correlation provides a quantitative refinement of ~2°.
 - Water's bent geometry produces its permanent dipole moment, which makes it a greenhouse gas and a universal solvent — properties that follow directly from the energy curve we computed.
 
+## Further Reading
+
+- Szabo, A. and Ostlund, N. S. *Modern Quantum Chemistry: Introduction to Advanced Electronic Structure Theory.* Dover, 1996. The standard reference for potential energy surface scans and the Hartree–Fock method used in this chapter.
+- Hehre, W. J., Radom, L., Schleyer, P. v. R., and Pople, J. A. *Ab Initio Molecular Orbital Theory.* Wiley, 1986. Definitive source for STO-3G basis set benchmarks and molecular geometry optimisation.
+
 ---
 
 **Previous:** [Chapter 18 — The Complete Pipeline](18-complete-pipeline.html)

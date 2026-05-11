@@ -165,6 +165,11 @@ In practice, Z₂ tapering removes 2 qubits from H₂ (4 → 2), 3 from H₂O (1
 - The real metric is **CNOTs per Trotter step** — tapering can reduce this by 50% or more.
 - At large scale, encoding choice dominates; tapering provides a smaller but free additional reduction.
 
+## Further Reading
+
+- Bravyi, S., Gambetta, J. M., Mezzacapo, A., and Temme, K. "Tapering off qubits to simulate fermionic Hamiltonians." arXiv:1701.08213 (2017). The original tapering paper, including the benchmarks that motivate this chapter.
+- Setia, K., Bravyi, S., Mezzacapo, A., and Whitfield, J. D. "Reducing qubit requirements for quantum simulations using molecular point group symmetries." *J. Chem. Theory Comput.* 16, 6091 (2020). Extends tapering to exploit molecular point group symmetries for further qubit reductions.
+
 ---
 
 **Previous:** [Chapter 12 — General Clifford Tapering](12-clifford-tapering.html)
