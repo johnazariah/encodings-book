@@ -6,9 +6,9 @@
 Centre for Quantum Software and Information, University of Technology Sydney
 
 [![DOI](https://zenodo.org/badge/1176397444.svg)](https://doi.org/10.5281/zenodo.18917465)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/johnazariah/encodings-book)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/johnazariah/molecules-to-circuits)
 
-**[📖 Read Online](https://johnazariah.github.io/encodings-book)** · **[📥 Download PDF](https://github.com/johnazariah/encodings-book/releases/latest)**
+**[📖 Read Online](https://johnazariah.github.io/molecules-to-circuits)** · **[📥 Download PDF](https://github.com/johnazariah/molecules-to-circuits/releases/latest)**
 
 ---
 

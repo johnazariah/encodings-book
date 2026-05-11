@@ -9,36 +9,49 @@ permissions:
 
 jobs:
   release:
-    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install pandoc + LaTeX
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y -qq pandoc texlive-xetex texlive-latex-extra lmodern texlive-fonts-recommended
+          sudo apt-get install -y -qq \
+            pandoc \
+            texlive-xetex \
+            texlive-latex-extra \
+            texlive-fonts-extra \
+            texlive-fonts-recommended \
+            lmodern \
+            librsvg2-bin
 
       - name: Install Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
-      - name: Install mermaid-cli + Playwright
+      - name: Install mermaid-cli
         run: |
-          sudo npm install -g @mermaid-js/mermaid-cli
-          pip install playwright
-          python -m playwright install --with-deps chromium
+          npm install -g @mermaid-js/mermaid-cli
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '10.0.x'
-
-      - name: Build manuscript
+      - name: Build PDF (full manuscript)
         run: make
 
-      - name: Build sample
+      - name: Build PDF (sample)
         run: make sample
+
+      - name: Build EPUB
+        run: |
+          pandoc $(cat manuscript/Book.txt | sed 's|^|manuscript/|') \
+            -o manuscript/molecules-to-circuits.epub \
+            --toc --toc-depth=2 \
+            --lua-filter=manuscript/mermaid.lua \
+            --highlight-style=tango \
+            --metadata title="From Molecules to Quantum Circuits" \
+            --metadata subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
+            --metadata author="John S Azariah" \
+            --top-level-division=chapter \
+            --mathml
 
       - name: Package labs
         run: tar czf labs-${{ github.ref_name }}.tar.gz labs/ code/ README.md
@@ -49,5 +62,6 @@ jobs:
           files: |
             manuscript/manuscript.pdf
             manuscript/sample.pdf
+            manuscript/molecules-to-circuits.epub
             labs-${{ github.ref_name }}.tar.gz
           generate_release_notes: true

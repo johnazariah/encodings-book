@@ -7,7 +7,7 @@ Centre for Quantum Software and Information, University of Technology Sydney
 
 ---
 
-[📥 Download PDF](https://github.com/johnazariah/encodings-book/releases/latest) · [💻 FockMap Library](https://github.com/johnazariah/encodings)
+[📥 Download PDF](https://github.com/johnazariah/molecules-to-circuits/releases/latest) · [💻 FockMap Library](https://github.com/johnazariah/encodings)
 
 ---
 
@@ -73,11 +73,11 @@ Every formula has a corresponding executable computation in the companion [FockM
   title     = {From Molecules to Quantum Circuits: A Computational Guide to Fermion-to-Qubit Encodings},
   year      = {2026},
   doi       = {10.5281/zenodo.18917465},
-  url       = {https://github.com/johnazariah/encodings-book}
+  url       = {https://github.com/johnazariah/molecules-to-circuits}
 }
 ```
 
 ## License
 
-Code: [MIT](https://github.com/johnazariah/encodings-book/blob/main/LICENSE).
+Code: [MIT](https://github.com/johnazariah/molecules-to-circuits/blob/main/LICENSE).
 Manuscript text: © 2026 John S Azariah. All rights reserved.

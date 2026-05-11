@@ -37,7 +37,7 @@ jobs:
       - name: Build the book
         env:
           HOST: 127.0.0.1
-          BASE_URL: /encodings-book
+          BASE_URL: /molecules-to-circuits
         run: bash scripts/build-site.sh
 
       - name: Upload artifact
