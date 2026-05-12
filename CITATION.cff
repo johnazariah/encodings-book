@@ -1,7 +1,7 @@
 cff-version: 1.2.0
 message: "If you use this book in your research or teaching, please cite it as below."
 type: software
-title: "From Molecules to Quantum Circuits: A Practical Guide to Fermion-to-Qubit Encodings"
+title: "From Molecules to Quantum Circuits: A Computational Guide to Fermion-to-Qubit Encodings"
 authors:
   - family-names: Azariah
     given-names: John S
@@ -10,10 +10,10 @@ identifiers:
   - type: doi
     value: 10.5281/zenodo.18917465
     description: Zenodo archive
-version: "1.0.0"
-date-released: "2026-03-09"
-url: "https://github.com/johnazariah/encodings-book"
-repository-code: "https://github.com/johnazariah/encodings-book"
+version: "0.9.0"
+date-released: "2026-05-13"
+url: "https://github.com/johnazariah/molecules-to-circuits"
+repository-code: "https://github.com/johnazariah/molecules-to-circuits"
 license: "MIT"
 keywords:
   - quantum computing

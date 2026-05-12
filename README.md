@@ -55,16 +55,16 @@ Two running examples — H₂ (the simplest molecule) and H₂O (the most import
 
 ---
 
-- **23 chapters + 2 appendices** (~47,000 words, 166 pages)
+- **23 chapters + 2 appendices** (~48,500 words)
 - **Two running examples**: H₂ (the teacher) and H₂O (the real test)
-- **Computed results**: H₂ dissociation curve, H₂O bond angle scan (99° in STO-3G)
+- **Computed results**: H₂ dissociation curve, H₂O bond angle scan (99° in STO-3G, 104° in cc-pVTZ)
 - **FockMap library**: 6 encodings, Z₂ tapering, Trotterization, circuit export
 
 ## At a Glance
 
 | | |
 |---|---|
-| **Words** | ~47,000 |
+| **Words** | ~48,500 |
 | **Pages** | 166 |
 | **Chapters** | 23 + 2 appendices |
 | **Mermaid diagrams** | 25 |
