@@ -4,7 +4,7 @@ set -e
 echo "Setting up the book development environment..."
 
 # Python packages for integral generation and plotting
-pip install --quiet --break-system-packages pyscf matplotlib numpy
+pip install --quiet --break-system-packages -r requirements-data.txt
 
 # Mermaid CLI for diagram rendering
 sudo npm install -g @mermaid-js/mermaid-cli
@@ -22,7 +22,7 @@ dotnet tool restore 2>/dev/null || true
 
 echo ""
 echo "✓ Environment ready!"
-echo "  make              — build manuscript.pdf"
-echo "  make sample       — build sample.pdf"
+echo "  make              — build molecules-to-circuits.pdf"
+echo "  make sample       — build molecules-to-circuits-sample.pdf"
 echo "  make word-count   — chapter word counts"
 echo "  dotnet fsi labs/01-first-encoding.fsx  — run a lab"

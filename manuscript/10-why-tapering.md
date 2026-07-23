@@ -12,25 +12,25 @@ _The Hamiltonian is correct and verified. But it may be bigger than it needs to 
 
 ## The Observation
 
-Look again at the 15-term H₂ Hamiltonian from Chapter 6. Focus on the Pauli operators at each qubit position (recall: in our notation $ABCD$, the rightmost character is qubit 0):
+Look again at the H₂ Hamiltonian from Chapter 6. Focus on the Pauli operators at each qubit position (in FockMap notation $ABCD$, the leftmost character is qubit 0):
 
 | Term | String | q0 | q1 | q2 | q3 |
 |:---:|:---:|:---:|:---:|:---:|:---:|
 | 1 | $IIII$ | I | I | I | I |
-| 2 | $IIIZ$ | **Z** | I | I | I |
-| 3 | $IIZI$ | I | **Z** | I | I |
-| 4 | $IZII$ | I | I | **Z** | I |
-| 5 | $ZIII$ | I | I | I | **Z** |
-| 6 | $IIZZ$ | **Z** | **Z** | I | I |
-| 7 | $IZIZ$ | **Z** | I | **Z** | I |
+| 2 | $IIIZ$ | I | I | I | **Z** |
+| 3 | $IIZI$ | I | I | **Z** | I |
+| 4 | $IZII$ | I | **Z** | I | I |
+| 5 | $ZIII$ | **Z** | I | I | I |
+| 6 | $IIZZ$ | I | I | **Z** | **Z** |
+| 7 | $IZIZ$ | I | **Z** | I | **Z** |
 | 8 | $IZZI$ | I | **Z** | **Z** | I |
 | 9 | $ZIIZ$ | **Z** | I | I | **Z** |
-| 10 | $ZIZI$ | I | **Z** | I | **Z** |
-| 11 | $ZZII$ | I | I | **Z** | **Z** |
-| 12 | $XXYY$ | **Y** | **Y** | **X** | **X** |
+| 10 | $ZIZI$ | **Z** | I | **Z** | I |
+| 11 | $ZZII$ | **Z** | **Z** | I | I |
+| 12 | $XXYY$ | **X** | **X** | **Y** | **Y** |
 | 13 | $XYYX$ | **X** | **Y** | **Y** | **X** |
 | 14 | $YXXY$ | **Y** | **X** | **X** | **Y** |
-| 15 | $YYXX$ | **X** | **X** | **Y** | **Y** |
+| 15 | $YYXX$ | **Y** | **Y** | **X** | **X** |
 
 Every qubit has at least some terms with X or Y — no qubit is purely diagonal (I/Z only) across all 15 terms. So H₂ under JW has **no diagonal Z₂ symmetries** at first glance.
 
@@ -69,7 +69,7 @@ flowchart TD
 | Pauli weight | often reduces | Shorter Z-chains after qubit removal |
 | Term count | often reduces | Some terms collapse to identity |
 
-And these savings **compound** with encoding choice. A ternary-tree encoding on a tapered Hamiltonian gets both the $O(\log_3 n)$ weight advantage *and* the reduced qubit count.
+And these savings **compound** with encoding choice. A ternary-tree encoding can combine logarithmic-weight operators with a smaller, correctly tapered register.
 
 ---
 
@@ -97,13 +97,13 @@ We'll work through the diagonal case in Chapter 11, the Clifford generalization 
 
 ---
 
-## Why Tapering Is Free
+## When Tapering Is Exact
 
-It's worth emphasizing: tapering does not approximate. It does not truncate. It does not discard information.
+With a verified symmetry generator and the correct sector, tapering does not approximate or truncate the Hamiltonian in that sector.
 
 When we remove a tapered qubit, we are removing a degree of freedom whose value was *already determined* — fixed by a conservation law (like particle number or spin parity) that the Hamiltonian respects. The qubit was never free to vary in the first place; it was constrained by symmetry to a single eigenvalue in the sector we're studying. Removing it simply acknowledges this constraint explicitly.
 
-The eigenvalues of the tapered Hamiltonian are a *subset* of the eigenvalues of the original — specifically, the eigenvalues in the chosen symmetry sector. No eigenvalue is lost; we just stop tracking the ones that belong to other sectors.
+The eigenvalues of the tapered Hamiltonian are a *subset* of the eigenvalues of the original — specifically, the eigenvalues in the chosen symmetry sector. Eigenvalues in other sectors are intentionally excluded. Choosing the wrong sector therefore changes the physical problem rather than giving a harmless approximation.
 
 This is why we taper *before* Trotterization, not after: the circuit should operate on the physically relevant Hilbert space from the start, not carry redundant qubits through every gate layer.
 
@@ -112,13 +112,15 @@ This is why we taper *before* Trotterization, not after: the circuit should oper
 ## Key Takeaways
 
 - Encoded Hamiltonians often have Z₂ symmetries — qubits whose value is determined by conservation laws rather than dynamics.
-- Removing these qubits is free: it preserves the physics exactly while reducing every downstream cost.
+- Removing a qubit with a verified generator and physical sector preserves that sector's spectrum exactly while reducing downstream Hamiltonian-simulation cost.
 - Diagonal Z₂ symmetries (single-qubit Z generators) are the simplest case. General Z₂ symmetries require Clifford rotation.
-- Tapering compounds with encoding choice: taper first, then the encoding operates on a smaller system.
+- Encoding and tapering compound, but in a fixed order: encode the fermionic Hamiltonian, identify symmetries in that qubit representation, select the physical sector, taper, then compile.
 
 ## Common Mistakes
 
-1. **Assuming H₂ has taperable qubits under JW.** It doesn't — the exchange terms (XXYY) put X/Y on every qubit. Tapering is most effective for larger molecules with more conservation laws.
+1. **Confusing diagonal candidates with all symmetries.** H₂/JW has no
+   single-qubit diagonal candidate because the coupling terms put X/Y on every
+   qubit, but multi-qubit symmetries may still exist.
 
 2. **Confusing tapering with truncation.** Truncation (e.g., active-space reduction) discards orbitals and loses information. Tapering removes redundant *qubits* without losing any information — the eigenvalues are exactly preserved.
 
@@ -128,9 +130,13 @@ This is why we taper *before* Trotterization, not after: the circuit should oper
 
 1. **Conservation laws.** For a molecule with $N$ electrons, what conservation laws might produce Z₂ symmetries? (Hint: total electron number, spin projection $S_z$, point-group symmetry.)
 
-2. **Parity encoding advantage.** Under the Parity encoding, the last qubit stores the total electron-number parity. Show that this qubit is always diagonally taperable for any Hamiltonian that conserves particle number.
+2. **Parity encoding candidate.** Under the Parity encoding, identify the qubit
+   storing total electron-number parity for a particle-conserving Hamiltonian.
+   Derive its eigenvalue for the target electron number before tapering it.
 
-3. **Scaling impact.** If tapering removes 3 qubits from a 14-qubit H₂O system, by what factor does the Hilbert space shrink? How many fewer CNOT gates does each Trotter step require (approximately)?
+3. **Scaling impact.** A hypothetical 14-to-11 reduction shrinks the Hilbert
+   space by what factor? Explain why the CNOT reduction cannot be inferred
+   without the post-taper term and weight distribution.
 
 ## Further Reading
 

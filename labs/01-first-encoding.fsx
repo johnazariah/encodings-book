@@ -16,8 +16,9 @@ that can be executed on a quantum computer.
 First, we reference the Encodings library and open the namespace:
 *)
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 open Encodings
+open Encodings.JordanWigner
 
 (**
 ## Encoding Your First Operator

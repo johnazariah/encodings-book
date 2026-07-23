@@ -6,7 +6,7 @@ _The circuit exists in FockMap's type system. To run it on real hardware, we nee
 
 - **What you'll learn:** How to export FockMap gate sequences as OpenQASM (universal), Q# (Azure Quantum), or JSON (Python ecosystem) — and when to use which.
 - **Why this matters:** A gate sequence that only exists in memory is a theoretical result. An exported circuit is an experiment you can run.
-- **Prerequisites:** Chapter 18 (the complete pipeline).
+- **Prerequisites:** Chapter 18 (the circuit-construction pipeline).
 
 ---
 
@@ -23,6 +23,15 @@ The three main targets:
 | **JSON** | Python SDKs | Qiskit, Cirq, Quokka |
 
 FockMap can export to all three from the same gate array. The structure is always the same: take the Trotter step, decompose it to gates, export.
+
+### The ordering boundary
+
+Numeric gate operands keep their index: FockMap qubit 0 exports as `q[0]`.
+String labels need separate treatment. FockMap displays a Pauli signature as
+$P_0P_1\ldots$, while Qiskit-style Pauli labels display qubit 0
+at the rightmost character. Reverse the signature when crossing that API
+boundary, and test the resulting matrix on labelled basis states. Equal
+eigenvalues do not prove that amplitudes or occupations use the right order.
 
 ---
 
@@ -185,28 +194,36 @@ The JSON format is deliberately simple — flat list of gates, no nested structu
 
 ---
 
-## Same Circuit, Three Formats
+## Same Verified Circuit, Three Formats
 
-Here is the full pipeline for H₂, exporting to all three formats:
+Until a physical tapering sector passes the post-fix audit, export the verified
+untapered H₂ circuit:
 
 ```fsharp
-let ham = computeHamiltonianWith ternaryTreeTerms factory 4u
-let tapered = taper defaultTaperingOptions ham
-let step = firstOrderTrotter 0.1 tapered.Hamiltonian
+let ham =
+    computeHamiltonianWith
+        ternaryTreeTerms rawPhysicistFactory 4u
+let nonzeroHam =
+    ham.DistributeCoefficient.SummandTerms
+    |> Array.filter (fun term -> Complex.Abs term.Coefficient > 1e-12)
+    |> PauliRegisterSequence
+let step = firstOrderTrotter 0.1 nonzeroHam
 let gates = decomposeTrotterStep step
-let n = tapered.TaperedQubitCount
+let n = 4u
+let outputDir = "_build/exports"
+System.IO.Directory.CreateDirectory(outputDir) |> ignore
 
 // OpenQASM 3.0
 let qasm = toOpenQasm defaultOpenQasmOptions n gates
-System.IO.File.WriteAllText("h2.qasm", qasm)
+System.IO.File.WriteAllText(System.IO.Path.Combine(outputDir, "h2.qasm"), qasm)
 
 // Q#
 let qs = toQSharp defaultQSharpOptions n gates
-System.IO.File.WriteAllText("h2.qs", qs)
+System.IO.File.WriteAllText(System.IO.Path.Combine(outputDir, "h2.qs"), qs)
 
 // JSON (for Python/Qiskit)
 let json = toCircuitJson n Map.empty gates
-System.IO.File.WriteAllText("h2.json", json)
+System.IO.File.WriteAllText(System.IO.Path.Combine(outputDir, "h2.json"), json)
 
 printfn "Exported %d gates to 3 formats" gates.Length
 ```
@@ -233,8 +250,8 @@ The gate array is the same in all three cases. Only the serialisation differs.
 FockMap's circuit export produces *logical* circuits — abstract sequences of ideal gates. Before a logical circuit can run on real hardware, several additional steps are required. These are handled by platform-specific compilers (Qiskit transpiler, tket, Q# resource estimator), not by FockMap:
 
 - **Native gate lowering**: hardware devices implement a small native gate set (e.g., $\{\sqrt{X}, R_z, \text{CZ}\}$ for IBM, $\{R_{xx}, GPI, GPI2\}$ for IonQ). The logical gates must be decomposed into the native set.
-- **Qubit routing**: physical qubits have limited connectivity (e.g., heavy-hex topology on IBM devices). SWAP gates must be inserted to bring non-adjacent qubits together for two-qubit gates. This can increase CNOT count by 2–5×.
-- **Circuit optimisation**: transpilers cancel redundant gates, commute operations to reduce depth, and apply template-matching identities. This typically reduces gate count by 20–40% beyond FockMap's unoptimised output.
+- **Qubit routing**: physical qubits have limited connectivity. SWAPs or native routing operations may be needed to bring non-adjacent logical qubits together; the overhead is device- and circuit-dependent.
+- **Circuit optimisation**: transpilers cancel redundant gates, commute operations to reduce depth, and apply target-specific identities. Measure the result for the pinned compiler rather than assuming a generic percentage.
 - **Verification after import**: hardware compilers may reorder or decompose gates. Always verify that the transpiled circuit still produces the correct expectation values on a simulator before submitting to hardware.
 
 ---
@@ -244,13 +261,19 @@ FockMap's circuit export produces *logical* circuits — abstract sequences of i
 Whichever format you choose, verify the output end-to-end:
 
 1. **Import** the circuit into the target platform (Qiskit, Q#, Cirq)
-2. **Simulate** with a statevector backend (zero noise, exact amplitudes)
-3. **Compute** $\langle\hat{H}\rangle$ from the statevector and compare against the exact eigenvalue from Chapter 9
-4. **Transpile** to the target hardware's native gate set
-5. **Re-simulate** the transpiled circuit and check that the energy is unchanged (within Trotter error)
-6. **Only then** submit to real hardware or a noisy simulator
+2. **Construct** the intended product-formula unitary from the same ordered Pauli rotations
+3. **Compare** the imported circuit unitary (or its action on a complete labelled test basis) with that product, including the declared $R_z$ convention and Pauli-label reversal
+4. **Compare** the product formula with $e^{-iHt}$ separately; this measures Trotter error rather than serialization error
+5. **Transpile** to the target hardware's native gate set and repeat the unitary comparison
+6. **Only then** use the circuit inside an explicit state-preparation, VQE, or QPE workflow
 
-For H₂, the exact FCI energy is $-1.1422$ Ha (total, including nuclear repulsion) or $-1.8573$ Ha (electronic only — the eigenvalue of the qubit Hamiltonian). The Trotterised circuit should produce an energy within $O(\Delta t^2)$ of the electronic value — typically within 0.01 Ha at $\Delta t = 0.1$. Add $V_{nn} = 0.7151$ Ha to recover the total molecular energy. If the deviation is larger, check the integral convention (Chapter 2) and the encoding consistency (Chapter 9).
+For the canonical H₂ reference, the exact electronic FCI energy is
+$-1.8523881736$ Ha and the total is $-1.1372838345$ Ha after adding
+$V_{nn}=0.7151043391$ Ha. A time-evolution circuit should not be expected to
+return either value from an arbitrary input state: exact evolution preserves the
+input state's energy expectation. Energy validation requires a prepared trial
+state plus Hamiltonian measurements (VQE) or eigenstate overlap plus controlled
+evolution and phase decoding (QPE).
 
 ---
 
@@ -259,7 +282,7 @@ For H₂, the exact FCI energy is $-1.1422$ Ha (total, including nuclear repulsi
 - FockMap exports to **three formats** from the same gate array: OpenQASM (universal), Q# (Azure), JSON (Python).
 - The gate sequence is platform-independent; only the serialisation differs.
 - **OpenQASM** for portability, **Q#** for Azure integration, **JSON** for Python workflows.
-- Always verify by comparing simulated expectation values against known eigenvalues.
+- Verify serialization against the intended unitary; verify energies only inside a complete VQE or QPE workflow.
 
 ## Further Reading
 
@@ -270,4 +293,4 @@ For H₂, the exact FCI energy is $-1.1422$ Ha (total, including nuclear repulsi
 
 **Previous:** [Chapter 20 — Algorithms: VQE and QPE](20-algorithms.html)
 
-**Next:** [Chapter 22 — Scaling: From H₂ to FeMo-co](22-scaling.html)
+**Next:** [Chapter 22 — Scaling — From H₂ to FeMo-co](22-scaling.html)

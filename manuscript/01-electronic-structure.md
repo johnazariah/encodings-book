@@ -20,7 +20,7 @@ The ground-state energy determines whether a chemical reaction will happen, how 
 
 Classical computational chemistry has developed an extraordinary arsenal of approximation methods — Hartree–Fock, density functional theory, coupled cluster, configuration interaction — each trading accuracy for tractability in a different way. These methods have transformed chemistry and earned multiple Nobel Prizes. But they share a fundamental limitation: while methods like CCSD(T) capture most correlation energy at steep but polynomial cost (O(N⁷)), they break down for strongly correlated systems. And the cost of capturing the *exact* correlation energy — full configuration interaction — grows exponentially with the number of electrons.
 
-This is where quantum simulation enters the picture. A quantum computer can, in principle, represent the quantum state of the electrons directly — using qubits in place of orbitals — and extract the ground-state energy without the exponential cost. The catch is that translating the molecular problem into a form that a quantum computer can execute requires a specific sequence of mathematical transformations, each with its own conventions, sign choices, and opportunities for error.
+This is where quantum simulation enters the picture. An $n$-qubit register can represent amplitudes over $2^n$ occupation states without storing those amplitudes one by one in classical memory. That compact representation is necessary, but it is not an algorithmic guarantee: preparing a useful molecular state and estimating its ground-state energy can still be hard. Quantum algorithms may offer better scaling for structured chemistry problems when the Hamiltonian can be implemented efficiently, the trial state has adequate overlap with the target, and the required precision and fault-tolerant resources are available (Kempe, Kitaev & Regev, 2006; Reiher et al., 2017). Translating the molecular problem into that form requires a specific sequence of mathematical transformations, each with its own conventions, sign choices, and opportunities for error.
 
 This chapter covers the first transformation: turning the continuous, infinite-dimensional molecular problem into a finite-dimensional matrix problem. The result will be a set of numbers — the **molecular integrals** — that encode everything we need to know about the molecule.
 
@@ -56,7 +56,7 @@ $$
          + \underbrace{\sum_{i<j} \frac{e^2}{\lvert\mathbf{r}_i - \mathbf{r}_j\rvert}}_{\text{electron repulsion}}
 $$
 
-This is exact. No approximations. If we could solve this equation, we would have the exact energy of any molecule.
+This is exact within the non-relativistic, point-charge Coulomb model. Relativistic, quantum-electrodynamic, finite-nuclear-size, and other corrections are outside that model. If we could solve this equation, we would have its exact molecular energy.
 
 We can't. Not for H₂, not for anything with more than one electron. The electron–electron repulsion term couples the coordinates of every pair of electrons, making the equation non-separable.
 
@@ -164,7 +164,7 @@ This 1% sounds small. It isn't. The correlation energy often determines whether 
 
 > **A hint of what's coming:** Those occupation vectors $\lvert n_0 n_1 n_2 n_3\rangle$ look exactly like qubit computational basis states $\lvert q_0 q_1 q_2 q_3\rangle$. Four spin-orbitals → four qubits. Six configurations → a 16-dimensional Hilbert space (of which 6 states have two electrons). A quantum computer can represent superpositions of these configurations natively.
 >
-> The mapping is less straightforward than it appears, though — we'll see why in Chapter 4.
+> The mapping is less straightforward than it appears, though — we'll see why in Chapter 5.
 
 ---
 
@@ -172,7 +172,7 @@ This 1% sounds small. It isn't. The correlation energy often determines whether 
 
 At this point we could write down the $6 \times 6$ Hamiltonian matrix in the configuration basis and diagonalize it. For H₂, that would work fine. But it wouldn't scale — for H₂O with 14 spin-orbitals, the configuration space has $\binom{14}{10} = 1001$ states, and for larger molecules the dimension grows combinatorially.
 
-There is a more compact way to write the Hamiltonian — using **creation and annihilation operators** rather than wavefunctions. We will develop this formalism properly in Chapter 4, where we'll need it to understand encoding. For now, the key result is that the electronic Hamiltonian can be written as:
+There is a more compact way to write the Hamiltonian — using **creation and annihilation operators** rather than wavefunctions. We will develop this formalism properly in Chapter 5, where we'll need it to understand encoding. For now, the key result is that the electronic Hamiltonian can be written as:
 
 $$\hat{H} = \sum_{pq} h_{pq}\, a_p^\dagger a_q + \frac{1}{2}\sum_{pqrs} \langle pq \mid rs\rangle\, a_p^\dagger a_q^\dagger a_s a_r + V_{nn}$$
 

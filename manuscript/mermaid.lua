@@ -11,6 +11,7 @@
 -- instead of its own (which may be the wrong architecture).
 
 local puppeteer_config = nil
+local mmdc = os.getenv("MMDC") or "mmdc"
 local img_counter = 0
 local img_dir = "manuscript/mermaid-images"
 
@@ -86,7 +87,7 @@ function CodeBlock(block)
         return pandoc.Para({pandoc.Image({}, out_file)})
     end
 
-    local cmd = "mmdc -i " .. src_file .. " -o " .. out_file .. " -b white -s 3 -w 1600"
+    local cmd = mmdc .. " -i " .. src_file .. " -o " .. out_file .. " -b white -s 3 -w 1600"
     if config and config ~= "" then
         cmd = cmd .. " -p " .. config
     end

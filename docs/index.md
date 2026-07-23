@@ -52,7 +52,7 @@ Every formula has a corresponding executable computation in the companion [FockM
 
 ### Part VI — The Pipeline
 18. [The Question We Can Now Answer](18-complete-pipeline)
-19. [The Water Bond Angle](19-bond-angle)
+19. [A Fixed-Bond Water Angle Scan](19-bond-angle)
 20. [Algorithms — VQE and QPE](20-algorithms)
 21. [Speaking the Hardware's Language](21-circuit-export)
 
@@ -62,6 +62,8 @@ Every formula has a corresponding executable computation in the companion [FockM
 
 ### Appendices
 - [Library Cookbook Reference](appendix-cookbook)
+- [Mathematical Background](appendix-theory)
+- [References](references)
 
 ---
 
@@ -79,5 +81,5 @@ Every formula has a corresponding executable computation in the companion [FockM
 
 ## License
 
-Code: [MIT](https://github.com/johnazariah/molecules-to-circuits/blob/main/LICENSE).
+Code: MIT-licensed as described in the repository [README](https://github.com/johnazariah/molecules-to-circuits#license).
 Manuscript text: © 2026 John S Azariah. All rights reserved.

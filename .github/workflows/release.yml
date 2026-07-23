@@ -41,20 +41,12 @@ jobs:
         run: make sample
 
       - name: Build EPUB
-        run: |
-          pandoc $(cat manuscript/Book.txt | sed 's|^|manuscript/|') \
-            -o manuscript/molecules-to-circuits.epub \
-            --toc --toc-depth=2 \
-            --lua-filter=manuscript/mermaid.lua \
-            --highlight-style=tango \
-            --metadata title="From Molecules to Quantum Circuits" \
-            --metadata subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
-            --metadata author="John S Azariah" \
-            --top-level-division=chapter \
-            --mathml
+        run: make epub
 
       - name: Package labs
-        run: tar czf labs-${{ github.ref_name }}.tar.gz labs/ code/ README.md
+        run: |
+          tar czf labs-${{ github.ref_name }}.tar.gz \
+            labs/ code/ scripts/ README.md LICENSE-CODE MANUSCRIPT-RIGHTS
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2

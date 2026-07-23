@@ -1,13 +1,14 @@
 // ══════════════════════════════════════════════════════════════
 // Chapter 12 Companion: General Clifford Tapering
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch12-clifford-tapering.fsx
+// Run with: dotnet fsi code/ch12-clifford-tapering.fsx
 // Prereq:   dotnet build --configuration Release
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 
 open System.Numerics
 open Encodings
+open Encodings.Tapering
 
 printfn ""
 printfn "Chapter 12: General Clifford Tapering"
@@ -48,9 +49,7 @@ printfn "  Diagonal Z₂ qubits: %d" diagCount
 printfn "  General Z₂ symmetries: %d" fullCount
 printfn ""
 
-// ── Unified taper pipeline ──
-let result = taper defaultTaperingOptions heis
-printfn "  After Clifford tapering: %d → %d qubits" result.OriginalQubitCount result.TaperedQubitCount
-printfn "  Generators found: %d" result.Generators.Length
-printfn "  Clifford gates applied: %d" result.CliffordGates.Length
-printfn "  Tapered Hamiltonian: %s" (result.Hamiltonian.ToString())
+// ── Full tapering remains sector-explicit ──
+printfn "  FullClifford application is withheld here."
+printfn "  Select generator eigenvalues from the target physical sector,"
+printfn "  then compare all tapered sector spectra with the untapered matrix."

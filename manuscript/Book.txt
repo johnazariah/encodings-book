@@ -23,3 +23,5 @@ foreword.md
 22-scaling.md
 23-whats-next.md
 appendix-cookbook.md
+appendix-theory.md
+references.md

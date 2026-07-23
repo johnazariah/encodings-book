@@ -20,15 +20,22 @@ making this analysis crucial for choosing the right encoding.
 |-------------------|--------------|---------------|
 | Jordan-Wigner     | O(n)         | O(n)          |
 | Parity            | O(n)         | O(n)          |
-| Bravyi-Kitaev     | O(log₂ n)    | O(log n)      |
-| Binary Tree       | O(log₂ n)    | O(log n)      |
-| Ternary Tree      | O(log₃ n)    | O(log n)      |
-| Vlasov Tree       | O(log₃ n)    | O(log n)      |
+| Bravyi-Kitaev     | Θ(log n)     | O(log n)      |
+| Binary Tree       | Θ(log n)     | O(log n)      |
+| Ternary Tree      | Θ(log n)     | O(log n)      |
+| Vlasov Tree       | Θ(log n)     | O(log n)      |
+
+Binary and ternary trees share one asymptotic class. Ternary branching changes
+the depth constant and finite-size weights.
 *)
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 
 open Encodings
+open Encodings.BravyiKitaev
+open Encodings.JordanWigner
+open Encodings.MajoranaEncoding
+open Encodings.TreeEncoding
 open System
 
 (**
@@ -87,8 +94,8 @@ for (name, encode) in encodings do
     let scaling =
         match name with
         | "Jordan-Wigner" | "Parity" -> "O(n)"
-        | "Bravyi-Kitaev" | "Binary Tree" -> "O(log₂ n)"
-        | _ -> "O(log₃ n)"
+        | "Bravyi-Kitaev" | "Binary Tree" -> "Θ(log n)"
+        | _ -> "Θ(log n)"
     printfn "║ %-15s │ %5d   %5d   %5d   %5d   %-10s ║"
         name weights.[0] weights.[1] weights.[2] weights.[3] scaling
 
@@ -112,8 +119,8 @@ for n in systemSizes do
 
 The difference becomes dramatic at scale:
 
-| n       | O(n)   | O(log₂ n) | O(log₃ n) |
-|---------|--------|-----------|-----------|
+| n       | Linear | Binary depth | Ternary depth |
+|---------|--------|--------------|---------------|
 | 100     | 100    | 7         | 5         |
 | 1,000   | 1,000  | 10        | 7         |
 | 10,000  | 10,000 | 14        | 9         |
@@ -123,7 +130,7 @@ can reduce circuit depth by orders of magnitude.
 *)
 
 printfn "\n=== Projected Scaling for Large Systems ==="
-printfn "%-10s  %8s  %12s  %12s" "n" "O(n)" "O(log₂ n)" "O(log₃ n)"
+printfn "%-10s  %8s  %12s  %12s" "n" "linear" "binary depth" "ternary depth"
 printfn "%s" (String.replicate 46 "-")
 
 for n in [100; 1000; 10000] do
@@ -140,11 +147,11 @@ Key takeaways:
 1. **Jordan-Wigner and Parity** scale linearly—fine for small systems
    but impractical for large molecules.
 
-2. **Bravyi-Kitaev and Binary Tree** achieve O(log₂ n) scaling,
+2. **Bravyi-Kitaev and Binary Tree** achieve Θ(log n) scaling,
    reducing 1000-mode circuits from depth 1000 to depth ~10.
 
-3. **Ternary Tree (Bonsai)** is theoretically optimal at O(log₃ n),
-   providing an additional ~37% reduction over binary trees.
+3. **Ternary Tree (Bonsai)** is also Θ(log n), with a smaller idealized
+   tree-depth constant than a binary tree.
 
 Choose your encoding based on your specific constraints:
 - Small systems (n < 20): Jordan-Wigner for simplicity

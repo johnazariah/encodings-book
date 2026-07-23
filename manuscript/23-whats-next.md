@@ -1,6 +1,6 @@
 # Chapter 23: What Comes Next
 
-_The pipeline is complete. The book is almost over. But the field is just getting started._
+_The translation layer is assembled. The book is almost over. The algorithms and hardware story is not._
 
 ## In This Chapter
 
@@ -12,7 +12,8 @@ _The pipeline is complete. The book is almost over. But the field is just gettin
 
 ## What We Built
 
-Let's take a final inventory. Over twenty-three chapters, we constructed a complete pipeline:
+Let's take a final inventory. Over twenty-three chapters, we constructed the
+translation and circuit-compilation layer:
 
 ```mermaid
 flowchart LR
@@ -102,7 +103,7 @@ The tapering machinery from Chapters 10–13 is, at its core, stabiliser theory:
 
 The algebra is the same. The difference is intent: tapering exploits physical symmetries to reduce qubit count, while error correction engineers artificial symmetries to detect and correct errors. A reader who has understood Chapters 10–13 has already learned the algebraic foundation — the stabiliser formalism — that quantum error correction builds upon.
 
-In other words: this book didn't just teach you how to simulate molecules. It taught you the mathematics of quantum error correction — without ever calling it that. The same Clifford gates, the same symplectic representation, the same sector-selection algebra. When you encounter the surface code or the Steane code in the QEC literature, you will recognise every move.
+This book didn't just teach you how to simulate molecules. It taught you the mathematics of quantum error correction — without ever calling it that. The same Clifford gates, the same symplectic representation, the same sector-selection algebra. When you encounter the surface code or the Steane code in the QEC literature, you will recognise every move.
 
 ---
 
@@ -110,7 +111,7 @@ In other words: this book didn't just teach you how to simulate molecules. It ta
 
 Some questions this book doesn't answer — because nobody has yet:
 
-1. **Optimal encoding**: is there a provably optimal encoding for a given Hamiltonian? The ternary tree encoding achieves $O(\log_3 n)$ worst-case weight, which matches a known lower bound for balanced trees. But the best encoding might depend on the Hamiltonian's structure (sparsity, symmetry, locality), not just $n$.
+1. **Optimal encoding**: is there a provably optimal encoding for a given Hamiltonian? Binary and ternary tree constructions both have $\Theta(\log n)$ worst-case weight, with different constants and finite-size bounds. The best encoding may depend on the Hamiltonian's sparsity, symmetry, orbital ordering, and hardware connectivity rather than on $n$ alone.
 
 2. **Tapering beyond Z₂**: our tapering removes symmetries that square to the identity (Z₂ symmetries). What about higher-order symmetries — U(1) particle number conservation, SU(2) spin symmetry? These could remove more qubits, but the Clifford rotation synthesis is harder.
 
@@ -120,15 +121,15 @@ Some questions this book doesn't answer — because nobody has yet:
 
 ---
 
-## The Pipeline Is Ready
+## What the Pipeline Provides
 
-We'll end where we began. Chapter 1 asked: *given a molecule, what is its ground-state energy?* Twenty-two chapters later, we have a complete, tested, open-source pipeline that answers the question — for any fermionic or bosonic system, with six encoding options, symmetry-based tapering, first and second-order Trotterization, and export to every major quantum platform.
+We'll end where we began. Chapter 1 asked: *given a molecule, what is its ground-state energy?* The machinery in this book addresses the translation layer: molecular integrals become encoded Pauli Hamiltonians, symmetry reductions, product-formula circuits, and portable circuit descriptions. That toolchain does not by itself prepare a molecular ground state or guarantee an efficient energy estimate; those tasks still require a validated VQE, QPE, or other state-preparation and measurement workflow.
 
-The pipeline runs on a laptop for small molecules (H₂, LiH). It produces circuits that near-term hardware can attempt for medium molecules (H₂O, N₂). And it generates the circuits that fault-tolerant hardware would need for the molecules that actually matter (FeMo-co, transition-metal catalysts, photochemical systems).
+Small systems such as H₂ let us validate each translation against direct matrices and classical reference energies. Larger systems expose the real costs: state overlap, circuit depth, measurement, error correction, and comparison with improving classical methods.
 
-The H₂ dissociation curve in Chapter 18 showed the pipeline's correctness. The water bond angle scan in Chapter 19 showed its predictive power — we computed a molecular geometry from first principles. The same machinery, with bigger integrals and more qubits, could one day compute the geometry of a catalyst, the spectrum of a photoactive molecule, or the mechanism of nitrogen fixation.
+The H₂ reference data in Chapter 18 test the construction at a scale where every matrix element can be checked. The water calculation in Chapter 19 is a PySCF angular scan at fixed O–H length; it shows how geometry changes the electronic problem without pretending that circuit construction alone solved the molecular structure. With validated algorithms and sufficient hardware, the same translation machinery could support studies of catalysts, photoactive molecules, and strongly correlated reaction mechanisms.
 
-The quantum computer isn't ready yet. The pipeline is.
+The translation layer is necessary. It is not the whole computation.
 
 ---
 
@@ -138,7 +139,7 @@ The quantum computer isn't ready yet. The pipeline is.
 - **Bosonic simulation** extends the same pipeline to electron-phonon systems, vibrations, and photochemistry.
 - **Lattice models** use the same operator algebra and encoding infrastructure.
 - **Quantum error correction** uses the same stabiliser theory as tapering — different intent, same mathematics.
-- The pipeline works at every scale. The bottleneck is hardware, not software.
+- Scaling requires more than adding qubits: state preparation, algorithms, software validation, and hardware all remain bottlenecks.
 
 ## Further Reading
 
@@ -147,6 +148,6 @@ The quantum computer isn't ready yet. The pipeline is.
 
 ---
 
-**Previous:** [Chapter 22 — Scaling: From H₂ to FeMo-co](22-scaling.html)
+**Previous:** [Chapter 22 — Scaling — From H₂ to FeMo-co](22-scaling.html)
 
 **Back to:** [Table of Contents](foreword.html)

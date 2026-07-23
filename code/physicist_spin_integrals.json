@@ -1,0 +1,267 @@
+{
+  "metadata": {
+    "description": "H2/STO-3G interleaved-spin PHYSICIST spin-orbital integrals, deterministically expanded from the chemist spatial integrals. Canonical cross-repo fixture (library + book + research).",
+    "source": "papers/results/h2_sto3g/integrals.json (chemist [pq|rs])",
+    "generator": "research/tools/generate_physicist_spin_integrals.py",
+    "notation": "single-bar NON-antisymmetrised physicist <pq|rs> = [pr|qs]",
+    "spin_orbital_order": "interleaved 0a,0b,1a,1b (spatial = j//2, spin = j%2)",
+    "chemist_to_physicist_formula": "<pq|rs> = [ (p//2)(r//2) | (q//2)(s//2) ]_chem * delta(p%2,r%2) * delta(q%2,s%2)",
+    "zero_tolerance": 1e-15,
+    "tensor_contains_operator_prefactor": false,
+    "required_hamiltonian_term": "(1/2) <pq|rs> a+_p a+_q a_s a_r",
+    "one_body_hamiltonian_term": "h_pq a+_p a_q",
+    "nuclear_repulsion_excluded": true,
+    "counts": {
+      "one_body": 4,
+      "two_body": 32
+    }
+  },
+  "one_body_spin": [
+    {
+      "p": 0,
+      "q": 0,
+      "value": -1.2533097866459773
+    },
+    {
+      "p": 1,
+      "q": 1,
+      "value": -1.2533097866459773
+    },
+    {
+      "p": 2,
+      "q": 2,
+      "value": -0.4750688487721783
+    },
+    {
+      "p": 3,
+      "q": 3,
+      "value": -0.4750688487721783
+    }
+  ],
+  "two_body_spin_physicist": [
+    {
+      "p": 0,
+      "q": 0,
+      "r": 0,
+      "s": 0,
+      "value": 0.6747559268144484
+    },
+    {
+      "p": 0,
+      "q": 0,
+      "r": 2,
+      "s": 2,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 0,
+      "q": 1,
+      "r": 0,
+      "s": 1,
+      "value": 0.6747559268144484
+    },
+    {
+      "p": 0,
+      "q": 1,
+      "r": 2,
+      "s": 3,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 0,
+      "q": 2,
+      "r": 0,
+      "s": 2,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 0,
+      "q": 2,
+      "r": 2,
+      "s": 0,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 0,
+      "q": 3,
+      "r": 0,
+      "s": 3,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 0,
+      "q": 3,
+      "r": 2,
+      "s": 1,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 1,
+      "q": 0,
+      "r": 1,
+      "s": 0,
+      "value": 0.6747559268144484
+    },
+    {
+      "p": 1,
+      "q": 0,
+      "r": 3,
+      "s": 2,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 1,
+      "q": 1,
+      "r": 1,
+      "s": 1,
+      "value": 0.6747559268144484
+    },
+    {
+      "p": 1,
+      "q": 1,
+      "r": 3,
+      "s": 3,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 1,
+      "q": 2,
+      "r": 1,
+      "s": 2,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 1,
+      "q": 2,
+      "r": 3,
+      "s": 0,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 1,
+      "q": 3,
+      "r": 1,
+      "s": 3,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 1,
+      "q": 3,
+      "r": 3,
+      "s": 1,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 2,
+      "q": 0,
+      "r": 0,
+      "s": 2,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 2,
+      "q": 0,
+      "r": 2,
+      "s": 0,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 2,
+      "q": 1,
+      "r": 0,
+      "s": 3,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 2,
+      "q": 1,
+      "r": 2,
+      "s": 1,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 2,
+      "q": 2,
+      "r": 0,
+      "s": 0,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 2,
+      "q": 2,
+      "r": 2,
+      "s": 2,
+      "value": 0.6976515044904612
+    },
+    {
+      "p": 2,
+      "q": 3,
+      "r": 0,
+      "s": 1,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 2,
+      "q": 3,
+      "r": 2,
+      "s": 3,
+      "value": 0.6976515044904612
+    },
+    {
+      "p": 3,
+      "q": 0,
+      "r": 1,
+      "s": 2,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 3,
+      "q": 0,
+      "r": 3,
+      "s": 0,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 3,
+      "q": 1,
+      "r": 1,
+      "s": 3,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 3,
+      "q": 1,
+      "r": 3,
+      "s": 1,
+      "value": 0.6637114013508132
+    },
+    {
+      "p": 3,
+      "q": 2,
+      "r": 1,
+      "s": 0,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 3,
+      "q": 2,
+      "r": 3,
+      "s": 2,
+      "value": 0.6976515044904612
+    },
+    {
+      "p": 3,
+      "q": 3,
+      "r": 1,
+      "s": 1,
+      "value": 0.18121046201519672
+    },
+    {
+      "p": 3,
+      "q": 3,
+      "r": 3,
+      "s": 3,
+      "value": 0.6976515044904612
+    }
+  ]
+}

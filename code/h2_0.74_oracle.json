@@ -1,0 +1,98 @@
+{
+  "source_fixture": "code/h2_0.74_fixture.json",
+  "source_spin_integrals_sha256": "d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c",
+  "canonical_source": {
+    "repo": "johnazariah/encodings-research",
+    "commit": "1e000bbc9664b8e5cfef48608d07364279c0a54f",
+    "path": "papers/results/h2_sto3g/physicist_spin_integrals.json",
+    "git_blob_sha1": "e0477e70c0dfd35b865000bb23b7b31882b062d3",
+    "file_sha256": "6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812"
+  },
+  "pyscf_version": "2.13.0",
+  "bond_length_angstrom": 0.74,
+  "signature_order": "P0 P1 P2 P3, qubit 0 leftmost",
+  "matrix_order": "reverse displayed signature: P3 outermost, P0 innermost",
+  "occupation_integer": "sum_j n_j * 2^j",
+  "coefficients_Ha": {
+    "IIII": -0.8121706072487134,
+    "IIIZ": -0.2234315369081336,
+    "IIZI": -0.22343153690813358,
+    "IIZZ": 0.17441287612261536,
+    "IZII": 0.17141282644776903,
+    "IZIZ": 0.12062523483390411,
+    "IZZI": 0.16592785033770333,
+    "XXYY": -0.04530261550379918,
+    "XYYX": 0.04530261550379918,
+    "YXXY": 0.04530261550379918,
+    "YYXX": -0.04530261550379918,
+    "ZIII": 0.17141282644776906,
+    "ZIIZ": 0.16592785033770335,
+    "ZIZI": 0.12062523483390411,
+    "ZZII": 0.1686889817036122
+  },
+  "acceptance_anchors": {
+    "trace_over_16_identity_Ha": -0.8121706072487134,
+    "hf_electronic_matrix_diagonal_row_3_Ha": -1.831863646477506,
+    "xx_yy_magnitude_Ha": 0.04530261550379918,
+    "input_one_body_entries": 4,
+    "input_two_body_entries": 32,
+    "input_threshold": 1e-15,
+    "combined_pauli_threshold": 1e-12
+  },
+  "spectra_Ha_by_particle_number": {
+    "0": [
+      0.0
+    ],
+    "1": [
+      -1.2533097866459773,
+      -1.2533097866459773,
+      -0.4750688487721783,
+      -0.4750688487721783
+    ],
+    "2": [
+      -1.8523881735695826,
+      -1.2458776960825393,
+      -1.2458776960825393,
+      -1.245877696082539,
+      -0.8834567720521458,
+      -0.23196166596181889
+    ],
+    "3": [
+      -1.1607201545632546,
+      -1.1607201545632546,
+      -0.3595836390134429,
+      -0.3595836390134429
+    ],
+    "4": [
+      0.20807484184145802
+    ]
+  },
+  "energies_Ha": {
+    "nuclear_repulsion": 0.7151043390810812,
+    "hf_total": -1.1167593073964255,
+    "fci_electronic": -1.852388173569583,
+    "fci_total": -1.137283834488502,
+    "correlation": -0.020524527092076417
+  },
+  "norms": {
+    "nonzero_terms_threshold_1e-12": 15,
+    "coefficient_l1_Ha": 2.699277824145158,
+    "nonidentity_measurement_l1_Ha": 1.8871072168964445,
+    "first_order_commutator_sum_Ha2": 0.2861997180312773,
+    "anticommuting_pairs": 16
+  },
+  "ordering_anchor": {
+    "hf_displayed_ket": "1100",
+    "hf_occupation_integer": 3,
+    "hf_matrix_row": 3,
+    "ground_hf_amplitude_squared": 0.9873338735229794,
+    "fockmap_a2_dagger_labels": [
+      "ZZXI",
+      "ZZYI"
+    ],
+    "external_a2_dagger_labels": [
+      "IXZZ",
+      "IYZZ"
+    ]
+  }
+}

@@ -4,7 +4,8 @@ _We have fifteen Pauli strings and fifteen coefficients. How do we know they're 
 
 ## In This Chapter
 
-- **What you'll learn:** How to verify an encoded Hamiltonian by exact diagonalization, how to interpret the eigenspectrum by particle-number sector, and how to confirm that all six encodings produce the same physics.
+- **What you'll learn:** How to verify an encoded Hamiltonian against a direct
+  matrix, particle-number sectors, labelled states, and spectral invariants.
 - **Why this matters:** Algebraic validation (Chapter 8) guarantees the encoding is correct in isolation. But the full pipeline — integrals, coefficient assembly, like-term combination — has many other places where bugs can hide. Eigenvalue comparison catches them all. If you skip this step, you will eventually publish a wrong number.
 - **Prerequisites:** Chapters 1–8 (you have the 15-term Hamiltonian from all six encodings and understand both algebraic and numerical verification).
 
@@ -14,11 +15,13 @@ _We have fifteen Pauli strings and fifteen coefficients. How do we know they're 
 
 Here is a sobering fact about fermion-to-qubit encoding: **most bugs produce plausible output.**
 
-A wrong-convention Hamiltonian (Chapter 2, Error #1) has 15 terms with real coefficients and the right Pauli symmetries. A missing cross-spin block (Chapter 3, Mistake #1) has fewer exchange terms but still looks like a valid Hamiltonian. A reversed operator ordering (Chapter 6, Mistake #2) flips some signs but leaves the structure intact.
+A wrong-convention Hamiltonian (Chapter 2, Error #1) can have real coefficients and plausible Pauli symmetries. A missing cross-spin block (Chapter 3, Mistake #1) can lose configuration-coupling terms while still looking like a valid Hamiltonian. A reversed operator ordering (Chapter 6, Mistake #2) flips signs but leaves much of the structure intact.
 
 None of these errors will crash your code. All of them will give wrong eigenvalues. The only way to catch them is to compute those eigenvalues and compare with a known reference.
 
-For H₂ in STO-3G, we have exact classical reference values. For larger molecules, we can still cross-check between encodings — if all six give the same spectrum, we can be confident in the pipeline (though not in the integrals, which must be checked separately).
+For H₂ in STO-3G, we have an independent direct reference. Cross-encoding
+agreement is a useful consistency check, but all implementations can agree on
+the same bad tensor or basis permutation.
 
 ---
 
@@ -36,6 +39,21 @@ $$H = \sum_{\alpha=1}^{15} c_\alpha \cdot (\text{tensor product of } \sigma_{\al
 
 For 4 qubits, this is a $16 \times 16$ Hermitian matrix. Diagonalizing it gives 16 eigenvalues.
 
+Dense matrix rows use the occupation integer $b=\sum_jn_j2^j$. Because
+FockMap displays signatures as $P_0P_1P_2P_3$, the matrix builder reverses
+the displayed signature and forms
+$P_3\otimes P_2\otimes P_1\otimes P_0$. The displayed HF ket
+$\lvert1100\rangle$ therefore has occupation integer and matrix row 3
+(`0b0011`). The verifier applies every number operator to every labelled basis
+state; spectrum equality alone cannot detect a basis permutation.
+
+For JW, the reconstructed Pauli matrix equals the direct occupation-basis
+matrix element-wise to $2.8\times10^{-16}$ in the repaired source test. The
+two-electron ground state's HF determinant amplitude squared is
+$0.9873339$. Other encodings may use a different qubit basis: require the
+explicit basis transform before comparing their matrix elements with JW, even
+when spectra agree.
+
 > **Why 16 and not 6?** The 4-qubit Hilbert space has $2^4 = 16$ basis states, but H₂ has only 2 electrons — so only 6 of those states ($\binom{4}{2} = 6$) have the right particle number. The remaining 10 eigenvalues belong to the 0-electron, 1-electron, 3-electron, and 4-electron sectors. They are physically meaningful (they represent the spectrum with different electron counts) but they are not the ground state we are looking for.
 
 ---
@@ -47,16 +65,19 @@ Diagonalizing the 15-term JW Hamiltonian gives eigenvalues grouped by particle-n
 | Sector ($N_e$) | States | Eigenvalues $E_\text{el}$ (Ha) |
 |:---:|:---:|:---|
 | 0 | 1 | $0$ |
-| 1 | 4 | $-1.2563,\; -1.2563,\; -0.4719,\; -0.4719$ |
-| **2** | **6** | $\mathbf{-1.8573},\; -1.3390,\; -0.9032,\; -0.9032,\; -0.6753,\; 0.0$ |
-| 3 | 4 | $-1.7282,\; -1.7282,\; -0.9438,\; -0.9438$ |
-| 4 | 1 | $-2.2001$ |
+| 1 | 4 | $-1.2533097866,\; -1.2533097866,\; -0.4750688488,\; -0.4750688488$ |
+| **2** | **6** | $\mathbf{-1.8523881736},\; -1.2458776961,\; -1.2458776961,\; -1.2458776961,\; -0.8834567721,\; -0.2319616660$ |
+| 3 | 4 | $-1.1607201546,\; -1.1607201546,\; -0.3595836390,\; -0.3595836390$ |
+| 4 | 1 | $0.2080748418$ |
 
-The ground state of the physical 2-electron sector is $E_0^\text{el} = -1.8573$ Ha. Adding nuclear repulsion:
+The ground state of the physical 2-electron sector is $E_0^\text{el} = -1.8523881736$ Ha. Adding nuclear repulsion:
 
-$$\boxed{E_0^\text{total} = E_0^\text{el} + V_{nn} = -1.8573 + 0.7151 = -1.1422 \text{ Ha}}$$
+$$\boxed{E_0^\text{total} = E_0^\text{el} + V_{nn} = -1.8523881736 + 0.7151043391 = -1.1372838345 \text{ Ha}}$$
 
-This is the **exact** ground-state energy of H₂ in the STO-3G basis — not an approximation, not a truncation, but the answer you'd get from full configuration interaction (Full CI). A quantum computer running VQE or QPE on this Hamiltonian should converge to this value.
+This is the Full CI ground-state energy for the stated non-relativistic
+Hamiltonian, finite STO-3G orbital basis, 0.74 Å geometry, and two-electron
+sector. The value comes from the committed PySCF/direct-matrix artifact
+(Sun et al., 2020), not from cross-encoding agreement.
 
 ---
 
@@ -66,40 +87,39 @@ Let's put the number in context by comparing with simpler approximations:
 
 | Method | $E_\text{total}$ (Ha) | Error (kcal/mol) | What it captures |
 |:---|:---:|:---:|:---|
-| Hartree–Fock | $-1.1230$ | $12.0$ | Mean-field (no correlation) |
-| MP2 | $-1.1381$ | $2.6$ | Perturbative correlation |
-| Full CI (= our result) | $-1.1422$ | $0$ | Exact (within basis) |
+| Hartree–Fock | $-1.1167593074$ | $12.88$ | Mean-field (no correlation) |
+| MP2 | $-1.1298973810$ | $4.64$ | Perturbative correlation |
+| Full CI (= our result) | $-1.1372838345$ | $0$ | Exact (within basis) |
 | Chemical accuracy target | — | $< 1.0$ | The goal for quantum chemistry |
 
-The Hartree–Fock error of ~12 kcal/mol is substantial — it would mispredict reaction barriers and dissociation energies. Our Full CI result captures the entire correlation energy within the STO-3G basis. In the language of Chapter 6, this ~12 kcal/mol is exactly the energy contribution of the off-diagonal terms in $\text{Tr}(\rho H)$ — the coherences in the density matrix, generated by the 4 exchange Pauli strings, that Hartree–Fock's diagonal $\rho$ cannot capture.
+The Hartree–Fock error is $12.88$ kcal/mol for this model. Our Full CI result captures the entire correlation energy within the STO-3G basis. As Chapter 6 showed, configuration coupling makes the lower variational energy possible, but the final correlation energy contains both a change in diagonal populations and an off-diagonal interference contribution.
 
 Of course, STO-3G is a minimal basis — the absolute energy is still far from the true Born–Oppenheimer value. But within the model space we've defined, our answer is exact.
 
-> **The point of quantum simulation is not to replace the basis set** — it's to solve the electronic problem *exactly* within whatever basis the user chooses, even for molecules where Full CI is classically intractable. For H₂ in STO-3G (6 configurations), any laptop can do Full CI. For a molecule with 50 electrons in 100 spin-orbitals ($\binom{100}{50} \approx 10^{29}$ configurations), only a quantum computer can.
+> **The point of quantum simulation is not to replace the basis set.** It offers a different route to the finite-basis electronic problem when explicit Full CI is intractable. For H₂ in STO-3G (6 configurations), any laptop can do Full CI. For 50 electrons in 100 spin-orbitals, explicitly storing roughly $10^{29}$ configuration amplitudes is impossible. A quantum register avoids that storage, but a useful calculation still needs state preparation, adequate target-state overlap, Hamiltonian simulation, and precise measurement. Whether a quantum algorithm wins depends on those costs and on the best classical method for the particular molecule.
 
 ---
 
 ## Cross-Encoding Verification
 
-The most powerful check: build the Hamiltonian with all six encodings and verify that they produce the **same eigenspectrum**.
+After each implementation matches the independent fermionic matrix and state
+order, compare all six spectra as an additional consistency check.
 
 ```fsharp
 for (name, encoder) in encoders do
-    let ham = computeHamiltonianWith encoder h2Factory 4u
+    let ham =
+        computeHamiltonianWith
+            encoder h2RawPhysicistFactory 4u
     // ... build 16×16 matrix, diagonalize ...
     printfn "%-25s  E₀ = %.10f Ha" name groundStateEnergy
 ```
 
 | Encoding | $E_0^\text{el}$ (Ha) | $\lvert\Delta E\rvert$ from JW |
 |:---|:---:|:---:|
-| Jordan–Wigner | $-1.8572750302$ | — |
-| Bravyi–Kitaev | $-1.8572750302$ | $< 10^{-15}$ |
-| Parity | $-1.8572750302$ | $< 10^{-15}$ |
-| Balanced Binary Tree | $-1.8572750302$ | $< 10^{-15}$ |
-| Balanced Ternary Tree | $-1.8572750302$ | $< 10^{-15}$ |
-| Vlasov Tree | $-1.8572750302$ | $< 10^{-15}$ |
+| Direct fermionic matrix | $-1.8523881736$ | reference |
+| Jordan–Wigner Pauli matrix | $-1.8523881736$ | $< 10^{-12}$ |
 
-**Agreement to $5 \times 10^{-16}$ Ha** — the limit of 64-bit floating-point precision. The eigenvalues are identical to machine epsilon.
+The direct fermionic and independently derived JW Pauli matrices agree to numerical precision. The pinned FockMap build must reproduce this full spectrum under all six encodings before the six-row package table is restored; agreement among encodings alone cannot validate a shared bad input.
 
 This is not a coincidence. It is a mathematical guarantee: every valid encoding preserves the canonical anti-commutation relations, and therefore preserves the operator algebra, and therefore preserves every eigenvalue. FockMap's test suite verifies the anti-commutation relations symbolically (no eigenvalues needed), but the eigenvalue comparison provides an independent numerical cross-check.
 
@@ -114,11 +134,12 @@ When building and verifying an encoded Hamiltonian, check these in order:
 | 1 | Term count | Count Pauli strings | Missing/extra integrals |
 | 2 | Identity coefficient | Read $IIII$ coefficient | Wrong $V_{nn}$ or integral sum |
 | 3 | Diagonal symmetry | All Z-only terms come in pairs ($IIIZ/IIZI$, etc.) | Broken spin symmetry |
-| 4 | Exchange terms present | Look for XX/YY terms | Missing cross-spin integrals |
+| 4 | Coupling terms present | Look for the expected XX/YY strings | Missing cross-spin integrals |
 | 5 | Cross-encoding agreement | Build with 2+ encodings, compare spectra | Encoding bug |
 | 6 | Known reference | Compare $E_0$ against published value | Convention error |
+| 7 | State-resolved order | Check number operators, HF integer/row, and a labelled eigenvector | Basis permutation hidden by equal spectra |
 
-If check 4 fails (no exchange terms), the most likely cause is the cross-spin bug from Chapter 3. If check 5 fails (different eigenvalues from different encodings), there is a bug in the encoding implementation itself — which, if you're using FockMap, should not happen.
+If check 4 fails, the most likely cause is the cross-spin bug from Chapter 3. If check 5 fails, there is a bug in at least one encoding or in the comparison pipeline. A passing check 5 still needs check 6: all encodings can agree on the same bad input.
 
 ---
 
@@ -139,7 +160,7 @@ flowchart LR
     style NEXT fill:#fde68a,stroke:#d97706
 ```
 
-The Hamiltonian is correct. It is the exact qubit representation of H₂ in STO-3G for any of six encodings. It has 15 Pauli terms, its ground-state energy is $-1.1422$ Ha, and it captures all the electron correlation that a quantum computer would extract.
+The canonical direct matrix and the 15-term JW matrix now agree for H₂/STO-3G at 0.74 Å, with total ground-state energy $-1.1372838345$ Ha. Cross-encoding package parity remains a separate test: every implementation must reproduce this reference before its result is trusted.
 
 But can we make it *smaller*? Can we remove qubits without losing physics? That's what tapering does — and it's where we go next.
 
@@ -148,8 +169,8 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 ## Key Takeaways
 
 - Chapter 8 established **algebraic verification** (CAR checks). This chapter adds **numerical verification** (eigenvalue comparison). Both are necessary: algebraic checks validate the encoding; numerical checks validate the full pipeline.
-- The H₂/STO-3G ground-state energy is $E_0 = -1.1422$ Ha (Full CI, exact within basis).
-- All six encodings produce eigenvalues that agree to $< 5 \times 10^{-16}$ Ha — machine precision.
+- The H₂/STO-3G ground-state energy at 0.74 Å is $E_0 = -1.1372838345$ Ha (Full CI, exact within basis).
+- The direct fermionic matrix and independent JW Pauli matrix agree; all six package encodings must be checked against that external reference.
 - Encoding bugs produce structurally plausible but numerically wrong Hamiltonians. Check eigenvalues early and often.
 - Matrix diagonalization is used *only* for verification. The actual quantum simulation operates on the symbolic Pauli sum.
 
@@ -165,9 +186,9 @@ But can we make it *smaller*? Can we remove qubits without losing physics? That'
 
 1. **Sector analysis.** The 0-electron sector has eigenvalue 0. Why? (Hint: what does the Hamiltonian do to the vacuum state $\lvert 0000\rangle$?)
 
-2. **Correlation energy.** Compute the Hartree–Fock energy of H₂ by hand: $E_\text{HF} = h_{00} + h_{11} + [00\mid00] + V_{nn}$ (one-body energy for each spin-orbital in $\sigma_g$, plus Coulomb repulsion, plus nuclear repulsion). Verify that $E_\text{corr} = E_\text{FCI} - E_\text{HF} \approx -0.019$ Ha $\approx -12$ kcal/mol. This is exactly the contribution of the off-diagonal exchange terms from Chapter 6.
+2. **Correlation energy.** Compute the Hartree–Fock energy of H₂ by hand: $E_\text{HF} = h_{00} + h_{11} + [00\mid00] + V_{nn}$. Verify that $E_\text{corr} = E_\text{FCI} - E_\text{HF} = -0.0205245271$ Ha, about $-12.88$ kcal/mol. Then reproduce Chapter 6's separate diagonal and off-diagonal expectation contributions.
 
-3. **Cross-encoding lab.** Run the [Compare Encodings lab](../labs/03-compare-encodings.html) and verify 6-encoding eigenvalue agreement for yourself.
+3. **Independent reference.** Run `make verify-data` and inspect the full sector spectrum. Then compare each pinned FockMap encoding against that matrix rather than only against another encoding.
 
 ## Further Reading
 

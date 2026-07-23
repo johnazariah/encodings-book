@@ -65,6 +65,7 @@ project:
       children:
         - file: manuscript/appendix-cookbook.md
         - file: manuscript/appendix-theory.md
+    - file: manuscript/references.md
 
 site:
   template: book-theme

@@ -1,6 +1,6 @@
 # Chapter 20: Algorithms — VQE and QPE
 
-_We computed a bond angle from first principles. Now let's replace the one piece of classical scaffolding that made it possible — and see what a quantum computer actually does._
+_The previous chapter produced a fixed-bond PySCF reference scan. Now we ask what a complete quantum energy-estimation workflow would require._
 
 ## In This Chapter
 
@@ -12,11 +12,16 @@ _We computed a bond angle from first principles. Now let's replace the one piece
 
 ## From Exact Diagonalisation to Quantum Hardware
 
-Chapter 19 delivered on the book's promise: a molecular geometry, computed from first principles, using our pipeline. The energy curve, the 99° minimum, the greenhouse connection — all real. But one step in that pipeline was classical: we found the ground-state energy by building the full Hamiltonian matrix and computing its smallest eigenvalue. For H₂ ($2^4 = 16$-dimensional matrix) and H₂O in minimal basis ($2^{11} = 2{,}048$-dimensional after tapering), exact diagonalisation is trivially feasible on a laptop.
+Chapter 19 used PySCF RHF/FCI to produce a classical energy reference along one
+angular coordinate at fixed O–H length. It did not run FockMap, taper a
+14-qubit Hamiltonian, or prepare a quantum state. A quantum replacement would
+need to reproduce the same electron/spin sector and energy at every geometry,
+including state preparation, Hamiltonian measurement or controlled evolution,
+and a complete error budget.
 
 This is fine for validation. It is not fine for the molecules that actually matter. For N₂ (20 qubits → $2^{20} \approx 10^6$) or FeMo-co (108 qubits → $2^{108} \approx 10^{32}$), the matrix does not fit in any existing memory. The pipeline still produces the Pauli Hamiltonian $\hat{H} = \sum_k c_k P_k$ — but we need a different way to extract its ground-state energy.
 
-This is where quantum algorithms enter. Instead of building the exponentially large matrix, a quantum computer prepares the state directly in $n$ qubits and extracts the energy through measurement. Everything we built — the encoding, the tapering, the Trotter decomposition, the circuit export — feeds directly into these algorithms.
+Quantum algorithms take a different route. Instead of building the exponentially large matrix, a quantum computer prepares the state directly in $n$ qubits and extracts the energy through measurement. Everything we built — the encoding, the tapering, the Trotter decomposition, the circuit export — feeds directly into these algorithms.
 
 There are two main approaches, and they make very different demands on the hardware.
 
@@ -56,15 +61,15 @@ The yellow box is where FockMap's output matters most. Measuring $\langle P_k \r
 
 Not every Pauli term needs its own circuit. Two Pauli operators can be measured simultaneously if they **qubit-wise commute** — that is, if they commute on every individual qubit position. For example, $ZI$ and $ZZ$ qubit-wise commute (both have $Z$ or $I$ at each position), so a single $Z$-basis measurement of all qubits yields both expectation values.
 
-FockMap groups the Hamiltonian terms automatically:
+For a declared **qubit-wise-commuting** (QWC) strategy, every group must use one
+compatible local basis on each qubit. Any grouping API must state whether it
+uses QWC or the broader notion of general commutation (Yen, Verteletskyi &
+Izmaylov, 2020).
 
-```fsharp
-let program = groupCommutingTerms hamiltonian
-printfn "Total terms: %d" program.TotalTerms
-printfn "Measurement groups: %d" program.GroupCount
-```
-
-For the 15-term H₂ Hamiltonian, this typically produces 5 measurement groups — a 3× reduction in the number of distinct circuits needed.
+The corrected 15-term H₂ Hamiltonian has a simple five-basis QWC partition: all
+10 non-identity Z-only terms share the computational basis, while each of the
+four full-support X/Y strings needs its own local basis. The identity needs no
+shots and may be assigned to any group for bookkeeping.
 
 The grouping matters because each distinct circuit must be run many times (to accumulate statistics), and each additional group multiplies the total measurement time. Fewer groups = faster VQE iterations.
 
@@ -88,35 +93,53 @@ $$N_\text{total} \geq \frac{1}{\epsilon^2}\left(\sum_k \lvert c_k\rvert\right)^2
 
 This is the shot-count formula. The key quantity is the **1-norm** $\sum_k |c_k|$ — it determines the measurement cost because terms with larger coefficients contribute more variance and demand more shots. This estimate assumes each Pauli term is measured independently (or in qubit-wise commuting groups) and that the dominant error source is finite sampling. In practice, correlated measurement strategies (classical shadows, derandomisation) can improve the scaling, but the 1-norm estimate provides a useful and widely-cited baseline (Wecker et al., Phys. Rev. A 92, 042303, 2015).
 
-Tapering reduces this norm (fewer terms, smaller coefficients), which is yet another benefit that compounds with the qubit reduction.
+The identity coefficient is known exactly and contributes no sampling variance,
+so omit it from the measurement norm. Tapering can change the term list and
+coefficients, but it does not guarantee that this 1-norm decreases; compute it
+for the actual physical sector.
 
 ```fsharp
-let shots = estimateShots 0.0016 hamiltonian  // chemical accuracy = 1.6 mHa
-printfn "Estimated shots for chemical accuracy: %d" shots
+let epsilon = 0.0016
+let measurementNorm = 1.8871072169
+let independentTermBound =
+    ceil (measurementNorm * measurementNorm / (epsilon * epsilon))
 ```
 
-For H₂: $\sum|c_k| \approx 3.7$ Ha, giving ~5 million shots at chemical accuracy. For H₂O: the 1-norm is larger, and the shot count grows accordingly. This is the practical bottleneck of VQE — not circuit depth, but measurement overhead.
+For the corrected, untapered H₂ Hamiltonian,
+$\lambda_{\mathrm{meas}}=\sum_{k\ne I}|c_k|=1.8871072169$ Ha. The full
+coefficient 1-norm is
+$\lambda_{\mathrm{coeff}}=2.6992778241$ Ha when the known identity term is
+included. The independent-term bound uses $\lambda_{\mathrm{meas}}$ and gives
+about $1.39\times10^6$ shots at $\epsilon=1.6$ mHa. This is a worst-case
+variance bound under the stated measurement model, not a prediction of the
+shots required by every estimator. Neither quantity is the commutator sum
+$\Lambda_{\mathrm{comm}}=0.2861997180$ Ha$^2$ from Chapter 15.
 
 ### Tracing a VQE Iteration for H₂
 
-Let's make this concrete. For our tapered 2-qubit H₂ Hamiltonian (5 terms after tapering), a single VQE iteration looks like this:
+For H₂, a VQE iteration has the following structure:
 
-1. **Prepare** $|\psi(\theta)\rangle$ — a single-parameter ansatz: $R_y(\theta)|00\rangle$
-2. **Measure** 5 Pauli terms, grouped into ~3 measurement bases. At 1000 shots per basis, that's 3,000 circuit executions.
+1. **Prepare** a sector-appropriate trial state $\lvert\psi(\boldsymbol{\theta})\rangle$
+2. **Measure** the Hamiltonian in the five QWC bases above, allocating shots according to the chosen estimator
 3. **Compute** $\langle H \rangle = \sum_k c_k \langle P_k \rangle$ from the measurement results.
 4. **Update** $\theta$ using a classical optimizer (e.g., COBYLA).
 5. **Repeat** until $|\Delta E| < \epsilon$.
 
-For H₂, convergence typically takes 20–50 iterations — roughly 100,000 total shots for a rough energy, or 5 million for chemical accuracy. The Trotter circuit from Chapter 18, the measurement groups from `groupCommutingTerms`, and the shot budget from `estimateShots` are exactly the objects that feed this loop. FockMap prepares everything up to the dotted line; an execution framework (Qiskit, Cirq, Quokka) runs the loop itself.
+The number of optimizer iterations is ansatz-, optimizer-, noise-, and
+initialization-dependent; there is no universal 20–50 iteration guarantee.
+FockMap can provide the Hamiltonian and circuit primitives, while an execution
+framework runs state preparation, sampling, and optimization.
 
 ### Where FockMap Fits
 
-FockMap's contribution to VQE is everything *before* the measurement loop:
+The confirmed FockMap contribution to VQE is before the measurement loop:
 
 1. **The Hamiltonian** $\{c_k, P_k\}$ — the list of Pauli terms and coefficients
-2. **The measurement program** — which terms to group and measure together
-3. **The shot budget** — how many measurements each group needs
-4. **The Trotter circuit** — used as the ansatz or as part of the state preparation
+2. **Pauli-rotation circuits** — possible building blocks for state preparation
+3. **Circuit export** — a bridge to the execution framework
+
+Grouping and shot-allocation helpers are useful only after their exact
+commutation model and variance assumptions are documented and tested.
 
 The actual VQE loop — parameter optimisation, circuit execution, shot collection — is handled by execution frameworks like Qiskit, Cirq, or Quokka. FockMap produces the input they consume.
 
@@ -126,49 +149,65 @@ The actual VQE loop — parameter optimisation, circuit execution, shot collecti
 
 ### The Idea
 
-QPE doesn't optimise — it *reads out* the ground-state energy directly, like a quantum spectrometer. The key insight: if we can implement the time-evolution operator $e^{-i\hat{H}t}$ as a quantum circuit, then phase kickback extracts the eigenvalue.
+QPE does not optimize a variational objective. Given controlled time evolution
+and an input state with overlap on an eigenstate, phase kickback estimates that
+eigenstate's energy. It returns the ground-state energy only to the extent that
+the prepared state overlaps the ground state and the resulting phase is selected
+(Kitaev, 1995; Reiher et al., 2017).
 
-This is where Trotterization becomes essential. The operator $e^{-i\hat{H}t}$ is approximated by a product of Pauli rotations — exactly the Trotter step from Chapter 15. QPE applies this operation repeatedly, controlled by ancilla qubits, and reads the energy from the ancilla register.
+One way to implement the required controlled evolution is a product formula
+using the Pauli rotations from Chapter 15. Qubitization and other Hamiltonian-
+simulation methods are alternatives; QPE requires controlled evolution, not
+Trotterization specifically.
 
 ### The Circuit
 
-The QPE circuit has two registers. The **ancilla register** ($m$ qubits, initialised to $\lvert 0\rangle$, each put into superposition with a Hadamard gate) controls repeated applications of the time-evolution operator on the **system register** (which holds the trial state $\lvert\psi\rangle$):
+Choose a reference shift $E_{\mathrm{shift}}$, an evolution time $t_0$, and
+a known energy interval narrow enough that its width $W$ satisfies
+$Wt_0<2\pi$. Define
 
-1. Ancilla qubit $j$ controls the application of $U^{2^j}$ to the system register, where $U = e^{-i\hat{H}t}$ is one Trotter step.
+$$U=e^{-i(\hat H-E_{\mathrm{shift}})t_0}.$$
+
+For an eigenstate $\lvert E\rangle$,
+
+$$U|E\rangle=e^{2\pi i\phi}|E\rangle,\qquad
+\phi=-\frac{(E-E_{\mathrm{shift}})t_0}{2\pi}\pmod 1.$$
+
+The QPE circuit has an ancilla register and a system register holding a trial
+state $\lvert\psi\rangle=\sum_E a_E\lvert E\rangle$:
+
+1. Ancilla qubit $j$ controls an approximation to $U^{2^j}$.
 2. After all controlled operations, an inverse QFT on the ancilla register converts the accumulated phases into a binary representation of the energy eigenvalue.
-3. Measuring the ancilla register yields $m$ bits of the energy.
+3. Measuring the ancilla register yields an $m$-bit phase estimate associated
+   with eigenvalue $E$ with probability approximately $\lvert a_E\rvert^2$, before
+   finite-precision and simulation errors.
 
-The controlled-$U^{2^j}$ operation applies $2^j$ Trotter steps — so the highest ancilla qubit controls $2^{m-1}$ steps. This is where the circuit depth comes from — and why QPE demands fault-tolerant hardware.
+A naive implementation repeats a base circuit $2^j$ times for $U^{2^j}$;
+more advanced simulation methods organize the long-time evolution differently.
+Either way, the largest controlled evolution drives the precision cost.
 
-The cost is dominated by the controlled Trotter steps. Each step requires the same gates as a regular Trotter step (Chapter 16), plus control logic — roughly doubling the CNOT count per step.
+The cost is dominated by controlled Hamiltonian simulation at exponentially
+increasing times. A controlled Pauli rotation is not obtained by universally
+"doubling the CNOT count"; the overhead depends on the decomposition, controls,
+ancilla strategy, target gate set, and error budget.
 
 ### Resource Estimation
 
-For a target energy precision $\epsilon$:
+For target energy resolution $\epsilon$, ignoring confidence overhead:
 
 - **System qubits**: $n$ (from the encoding, after tapering)
-- **Ancilla qubits**: $m = \lceil\log_2(2\pi/\epsilon)\rceil$ (up to $O(1)$ additional qubits for success-probability boosting; the simpler estimate $\lceil\log_2(1/\epsilon)\rceil$ undercounts by ~3 qubits)
-- **Trotter steps per controlled-$U$**: enough to keep the Trotter error below $\epsilon$
+- **Resolution qubits**:
+  $m\ge\left\lceil\log_2\!\left(2\pi/(\epsilon t_0)\right)\right\rceil$
+- **Additional repetitions or ancillas**: enough to reach the stated confidence
+- **Controlled-simulation accuracy**: budgeted so phase-estimation error,
+  Hamiltonian-simulation error, and state-preparation error meet the final
+  energy target
 
-```fsharp
-let resources = qpeResources 10 hamiltonian 0.1
-printfn "System qubits:  %d" resources.SystemQubits
-printfn "Ancilla qubits: %d" resources.AncillaQubits
-printfn "Total CNOTs:    %d" resources.TotalCnots
-printfn "Circuit depth:  %d" resources.CircuitDepth
-```
-
-For H₂ at chemical accuracy (~10 bits of precision):
-- System: 2–4 qubits (depending on tapering)
-- Ancilla: 10 qubits
-- Total: ~14 qubits, ~10,000 CNOTs
-
-For H₂O at chemical accuracy:
-- System: ~11 qubits (after tapering)
-- Ancilla: 10 qubits
-- Total: ~21 qubits, ~500,000 CNOTs
-
-The 50× jump from H₂ to H₂O is driven by two factors: more qubits (more terms, heavier strings) and more Trotter steps (to keep the error small for a larger Hamiltonian norm). This is why encoding choice and tapering matter — they reduce both factors.
+For H₂ with $t_0=1$ atomic unit and $\epsilon=1.6$ mHa, the formula gives
+12 resolution qubits, not 10, before confidence overhead. This arithmetic is
+meaningful only after specifying an energy shift and range that prevent
+aliasing. The book does not quote a total controlled-gate count for H₂ or H₂O
+until a complete, reproducible simulation and confidence model is provided.
 
 ---
 
@@ -177,43 +216,38 @@ The 50× jump from H₂ to H₂O is driven by two factors: more qubits (more ter
 | | VQE | QPE |
 |:---|:---|:---|
 | **Hardware** | Near-term (noisy) | Fault-tolerant |
-| **Circuit depth** | Short (one ansatz layer) | Deep (many Trotter steps) |
-| **Measurements** | Many ($\sim 10^6$ shots) | Few ($O(1)$ readouts) |
+| **Circuit depth** | Ansatz-dependent | Deep controlled evolution |
+| **Measurements** | Many (estimator-dependent) | Repeated phase samples for confidence and state-overlap filtering |
 | **Classical cost** | Optimisation loop | QFT + readout |
 | **Bottleneck** | Shot count, barren plateaus | Circuit depth, error correction |
 | **FockMap provides** | Hamiltonian + measurement groups | Hamiltonian + Trotter circuits |
 
-For the bond angle scan in Chapter 19, we used exact diagonalisation to obtain the same target quantity that an ideal QPE calculation would produce: the ground-state energy at each geometry. On real near-term hardware, you would use VQE at each angle, accumulating enough shots to estimate the energy to chemical accuracy. The structure of the scan is the same; only the energy-evaluation subroutine changes.
+Chapter 19 uses PySCF FCI to supply a classical reference energy at each point
+of a fixed-bond angular scan. Replacing that backend with VQE or QPE would
+require a sector-appropriate state-preparation and error budget at every
+geometry; it is not a drop-in substitution of one function call.
 
 ---
 
 ## The Measurement Program in Practice
 
-Let's look at the measurement infrastructure for H₂ in detail. The 15-term Hamiltonian groups into measurement bases:
+Let's look at the QWC measurement infrastructure for the corrected direct H₂
+Hamiltonian in detail.
 
-```fsharp
-let ham = computeHamiltonianWith jordanWignerTerms h2Factory 4u
-let program = groupCommutingTerms ham
-
-for i in 0 .. program.Bases.Length - 1 do
-    let basis = program.Bases.[i]
-    printfn "Group %d: %d terms  (basis: %s)"
-        (i + 1)
-        basis.Terms.Length
-        (basis.BasisRotation |> Array.map string |> String.concat "")
-```
-
-A typical grouping might look like:
+A valid QWC grouping for the corrected H₂ Hamiltonian is:
 
 | Group | Terms | Measurement basis |
 |:---:|:---:|:---|
-| 1 | 5 | ZZZZ (computational basis) |
-| 2 | 3 | XXXX |
-| 3 | 3 | XXYY |
-| 4 | 2 | YXXY |
-| 5 | 2 | YYXX |
+| 1 | 10 non-identity Z terms (+ optional identity) | ZZZZ (computational basis) |
+| 2 | 1 | XXYY |
+| 3 | 1 | XYYX |
+| 4 | 1 | YXXY |
+| 5 | 1 | YYXX |
 
-Group 1 contains all the diagonal (Z-only) terms — they can all be measured in the standard computational basis. The off-diagonal groups each require basis rotations (Hadamard and S gates) before measurement.
+Group 1 contains all Z-only terms. Each full-support X/Y string requires its own
+local basis under QWC grouping. A general-commuting strategy may combine terms
+differently but needs an entangling measurement circuit and must be labelled as
+such.
 
 This is the bridge between FockMap's algebraic output and the experimental reality of a quantum computer: each group becomes a circuit variant, each circuit runs thousands of times, and the statistics are combined to estimate the energy.
 
@@ -247,6 +281,6 @@ FockMap's scope ends at circuit generation. It is important to be clear about wh
 
 ---
 
-**Previous:** [Chapter 19 — The Water Bond Angle](19-bond-angle.html)
+**Previous:** [Chapter 19 — A Fixed-Bond Water Angle Scan](19-bond-angle.html)
 
 **Next:** [Chapter 21 — Speaking the Hardware's Language](21-circuit-export.html)

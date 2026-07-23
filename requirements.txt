@@ -5,7 +5,4 @@
 # Publishing
 jupyter-book>=1.0
 
-# Data generation (optional — only needed to regenerate CSV/plot data)
-# pyscf>=2.0
-# matplotlib>=3.7
-# numpy>=1.24
+# Chemistry-data dependencies are kept separately in requirements-data.txt.

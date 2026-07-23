@@ -12,7 +12,20 @@ _We have a Hamiltonian written in terms of electrons and orbitals. A quantum com
 
 ## Where We Stand
 
-> **Pauli string convention:** Throughout the rest of this book, a Pauli string like $ABCD$ is ordered as $P_{n-1} \ldots P_1 P_0$ — the rightmost character corresponds to qubit 0. State kets $|n_0 n_1 \ldots\rangle$ have the leftmost digit corresponding to orbital 0.
+> **Ordering convention:** In `PauliRegister.Signature`, character position
+> $i$ is qubit $i$, so qubit 0 is leftmost: `ABCD` means
+> $A_0B_1C_2D_3$. For example,
+> $a_2^\dagger=\tfrac12\,\mathrm{ZZXI}-\tfrac{i}{2}\,\mathrm{ZZYI}$.
+> Separately, this book displays occupation labels as
+> $\lvert n_0n_1n_2n_3\rangle$, also with index 0 leftmost. An occupation
+> integer is different: mode $j$ has place value $2^j$. Thus the H₂ HF occupation is
+> displayed as $\lvert1100\rangle$ but has integer value
+> $2^0+2^1=3$, conventionally printed `0b0011`. To make dense matrix rows use
+> that same occupation integer, reverse a displayed signature when forming the
+> Kronecker product: $P_{n-1}\otimes\cdots\otimes P_0$. The displayed HF ket
+> is therefore matrix row 3. Qiskit-style Pauli labels likewise put
+> qubit 0 at the rightmost character; reverse FockMap signatures explicitly at
+> that boundary. Always name the index and place-value rule explicitly.
 
 Let's take stock of what the first three chapters gave us.
 
@@ -148,15 +161,19 @@ The Z-chain grows linearly: for orbital $j$, we need $j$ extra Z operations. Thi
 | $a_2^\dagger$ | Z | Z | **X/Y** | I | 3 |
 | $a_3^\dagger$ | Z | Z | Z | **X/Y** | 4 |
 
-For a molecule with $n$ spin-orbitals, the worst-case Pauli weight under JW is $n$. For FeMo-co (the iron-molybdenum cofactor of nitrogenase — the enzyme that fixes atmospheric nitrogen) with ~100 spin-orbitals, that's a chain of 99 Z gates for the last orbital — a very deep circuit on quantum hardware.
+For $n$ spin-orbitals, the worst-case JW ladder operator has weight $n$.
+At $n=100$, the last mode carries a 99-qubit parity chain. That is an
+operator-level worst case; a molecular circuit cost still depends on which
+terms occur and how they compile.
 
 You can see this directly in FockMap:
 
 ```fsharp
 open Encodings
+open Encodings.JordanWigner
 
 // Encode creation operator for orbital 2 under JW (4 qubits)
-let a2_dag = jordanWignerTerms.CreationOperator 2u 4u
+let a2_dag = jordanWignerTerms Raise 2u 4u
 printfn "a₂† = %A" a2_dag
 // Output: a₂† = 0.5 ZZXI + (-0.5i) ZZYI
 // Weight 3: two Z-chain qubits + one X/Y flip
@@ -243,17 +260,27 @@ Every answer in BK involves at most $\log_2 n$ qubits. That's the advantage.
 | 64 | 64 | 7 | 9× |
 | 100 | 100 | 7 | 14× |
 
-At 100 spin-orbitals, BK's worst-case operator touches 7 qubits while JW's touches 100. On noisy hardware, this is the difference between a feasible and an infeasible circuit.
+At 100 spin-orbitals, the reproduced operator-level maxima are much smaller for
+BK than JW. Full circuit and hardware feasibility still require the molecular
+term distribution and a compiled backend-specific model.
 
 ---
 
-## Tree Encodings: Going Below $\log_2 n$
+## Tree Encodings: Improving the Logarithmic Constant
 
 ### Beyond binary
 
 The Fenwick tree is a *binary* tree — each node has at most two children. What if we used a **ternary** tree instead? Each internal node would have three children, the tree would be shallower, and the path lengths (and hence Pauli weights) would be shorter.
 
-This is the insight behind the ternary tree encoding (Jiang et al., 2020). It achieves worst-case Pauli weight $O(\log_3 n)$ — the best known asymptotic scaling for any fermion-to-qubit encoding.
+This is the insight behind the ternary tree encoding (Jiang et al., 2020). Binary- and ternary-tree depths are both $\Theta(\log n)$ because changing the logarithm's base changes only a constant:
+
+$$\log_3 n = \frac{\log_2 n}{\log_2 3}.$$
+
+The ternary construction improves that depth constant and the corresponding exact weight bound; it does not define a smaller asymptotic class.
+
+Jiang, Kalev, Mruczkiewicz, and Neven construct mapped Majorana operators of
+weight $\lceil\log_3(2n+1)\rceil$ and prove that no Pauli mapping can have
+average Majorana weight below $\log_3(2n)$ [Jiang et al., 2020].
 
 ```mermaid
 graph TD
@@ -277,7 +304,10 @@ graph TD
 
 The three edges emerging from each node are labelled with the three non-identity Pauli operators: X, Y, and Z. This labelling is what gives the encoding its structure — the Pauli string for each orbital is read off by collecting edge labels on the path from root to leaf.
 
-FockMap supports both balanced binary and balanced ternary tree encodings, plus **arbitrary** tree topologies — you can define your own tree shape and derive a valid encoding from it.
+FockMap's path-based API supports labelled tree shapes with at most three
+children per node, including its balanced binary and ternary helpers. Custom
+candidates still require CAR and matrix validation; a four-child tree is
+outside the implemented contract.
 
 ---
 
@@ -289,8 +319,8 @@ flowchart TD
     MO --> HAM["Second-quantized Hamiltonian<br/>H = Σ hₚₑ a†ₚaₑ + ½Σ ⟨pq|rs⟩ a†ₚa†ₑaₛaᵣ"]
     HAM --> ENC{"Choose an encoding"}
     ENC -->|"Simple / small n"| JW["Jordan-Wigner<br/>O(n) weight"]
-    ENC -->|"General purpose"| BK["Bravyi-Kitaev<br/>O(log₂ n) weight"]
-    ENC -->|"Best scaling"| TT["Ternary Tree<br/>O(log₃ n) weight"]
+    ENC -->|"General purpose"| BK["Bravyi-Kitaev<br/>Θ(log n) weight"]
+    ENC -->|"Smaller tree-depth constant"| TT["Ternary Tree<br/>Θ(log n) weight"]
     JW --> PAULI["Pauli Hamiltonian<br/>H = Σ cₖ Pₖ"]
     BK --> PAULI
     TT --> PAULI
@@ -301,7 +331,10 @@ flowchart TD
     style PAULI fill:#d1fae5,stroke:#059669
 ```
 
-All six encodings in FockMap (JW, BK, Parity, balanced binary tree, balanced ternary tree, Vlasov tree) produce the same output type: a `PauliRegisterSequence`. They all give the same eigenvalues — the same physics. They differ only in how many qubits each Pauli string touches, which determines circuit depth and measurement cost.
+All six FockMap interfaces produce `PauliRegisterSequence`. When an
+implementation passes CAR, direct-matrix, and state-order tests, its Hamiltonian
+must preserve the physical spectrum. The Pauli strings, state representation,
+weights, measurement bases, and compiled costs can still differ.
 
 ---
 
@@ -323,11 +356,12 @@ So while *creating* or *moving* electrons gets expensive under JW (the Z-chains 
 |:---|:---|:---|
 | Small molecule ($n \leq 20$) | Jordan–Wigner | Simplest, and the weight overhead is manageable |
 | 1D chain / local Hamiltonian | Jordan–Wigner | Adjacent orbitals have short Z-chains |
-| Medium molecule ($20 < n \leq 100$) | Bravyi–Kitaev | $O(\log_2 n)$ weight saves significant circuit depth |
-| Large molecule / all-to-all interactions | Ternary Tree | $O(\log_3 n)$ — the best known scaling |
-| Research / exploring custom topologies | Custom tree | FockMap supports arbitrary tree shapes |
+| Medium molecule ($20 < n \leq 100$) | Bravyi–Kitaev | Well-studied $\Theta(\log n)$ weight |
+| Large molecule / all-to-all interactions | Ternary Tree | $\Theta(\log n)$ weight with a smaller tree-depth constant |
+| Research / custom topologies | Validated path-based tree | Current API supports labelled trees with at most three children per node; verify CAR |
 
-In the next chapter, we will use all six encodings to build the complete 15-term H₂ Hamiltonian — and see that they all agree.
+In the next chapter, we use all six interfaces and require each to reproduce the
+independent H₂ matrix and labelled-state oracle.
 
 ---
 
@@ -335,9 +369,9 @@ In the next chapter, we will use all six encodings to build the complete 15-term
 
 - Electrons anti-commute; qubits don't. An encoding bridges this gap by injecting fermion signs into the qubit representation.
 - **Jordan–Wigner** uses a linear Z-chain: simple but $O(n)$ weight.
-- **Bravyi–Kitaev** uses a Fenwick tree to pre-compute partial parities: $O(\log_2 n)$ weight.
-- **Ternary tree** encodings go further: $O(\log_3 n)$ weight — the best known scaling.
-- All encodings produce the same physics (same eigenvalues). The choice affects only circuit cost.
+- **Bravyi–Kitaev** uses a Fenwick tree to pre-compute partial parities: $\Theta(\log n)$ weight.
+- **Ternary tree** encodings remain $\Theta(\log n)$ but improve the tree-depth constant and exact weight bound.
+- A valid encoding preserves the operator after the basis map is accounted for; verify matrices and labelled states, not only eigenvalues.
 - Number operators are cheap ($O(1)$ under JW, $O(\log n)$ under tree encodings) — always much lighter than creation/annihilation operators.
 
 ## Common Mistakes
@@ -362,7 +396,7 @@ In the next chapter, we will use all six encodings to build the complete 15-term
 - Aspuru-Guzik, A., Dutoi, A. D., Love, P. J., and Head-Gordon, M. "Simulated Quantum Computation of Molecular Energies." *Science* 309, 1704 (2005). The paper that launched quantum computational chemistry: showed that the Jordan–Wigner encoding could be plugged into a quantum phase estimation algorithm to compute molecular ground-state energies. Before this work, JW was a mathematical curiosity; after it, an entire field was born.
 - Seeley, J. T., Richard, M. J., and Love, P. J. "The Bravyi–Kitaev transformation for quantum computation of electronic structure." *J. Chem. Phys.* 137, 224109 (2012). Formalized the **index-set framework** — the three set-valued functions (Update, Parity, Occupation) that unify JW, BK, and Parity under a single abstraction. This is the framework that FockMap's `EncodingScheme` type directly implements.
 - Bravyi, S. B. and Kitaev, A. Yu. "Fermionic Quantum Computation." *Ann. Phys.* 298, 210 (2002). The logarithmic-weight encoding using Fenwick trees.
-- Jiang, Z. et al. "Optimal fermion-to-qubit mapping via ternary trees." *PRX Quantum* 1, 010306 (2020). The ternary tree encoding with optimal asymptotic scaling.
+- Jiang, Z., Kalev, A., Mruczkiewicz, W., and Neven, H. "Optimal fermion-to-qubit mapping via ternary trees with applications to reduced quantum states learning." *Quantum* 4, 276 (2020). DOI: 10.22331/q-2020-06-04-276.
 
 ---
 

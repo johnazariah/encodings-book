@@ -11,15 +11,22 @@ in the library and compares their Pauli weight scaling.
 | Jordan-Wigner | O(n) | `jordanWignerTerms` |
 | Bravyi-Kitaev | O(log n) | `bravyiKitaevTerms` |
 | Parity | O(n) | `parityTerms` |
-| Binary Tree | O(log₂ n) | `balancedBinaryTreeTerms` |
-| Ternary Tree | O(log₃ n) | `ternaryTreeTerms` |
-| Vlasov Tree | O(log₃ n) | `vlasovTreeTerms` |
+| Binary Tree | Θ(log n) | `balancedBinaryTreeTerms` |
+| Ternary Tree | Θ(log n) | `ternaryTreeTerms` |
+| Vlasov Tree | Θ(log n) | `vlasovTreeTerms` |
 
 ## Setup
 *)
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
+#load "../code/ch03-spin-orbitals.fsx"
+#load "PauliMatrix.fsx"
 open Encodings
+open Encodings.BravyiKitaev
+open Encodings.Hamiltonian
+open Encodings.JordanWigner
+open Encodings.MajoranaEncoding
+open Encodings.TreeEncoding
 
 (**
 ## Test Configuration
@@ -94,8 +101,8 @@ for (name, encode) in encodings do
     let scaling =
         match name with
         | "Jordan-Wigner" | "Parity" -> "O(n)"
-        | "Bravyi-Kitaev" | "Binary Tree" -> "O(log₂ n)"
-        | _ -> "O(log₃ n)"
+        | "Bravyi-Kitaev" | "Binary Tree" -> "Θ(log n)"
+        | _ -> "Θ(log n)"
     printfn "  %-16s  %5d        %s" name weight scaling
 
 (**
@@ -118,12 +125,12 @@ for (name, encode) in encodings do
 
 ### Binary Tree
 - **Best for**: Large systems with power-of-2 mode counts
-- **Pros**: Clean O(log₂ n) structure
+- **Pros**: Clean Θ(log n) structure
 - **Cons**: Less literature than Bravyi-Kitaev
 
 ### Ternary Tree
 - **Best for**: Maximum efficiency on NISQ hardware
-- **Pros**: Optimal O(log₃ n) worst-case weight
+- **Pros**: Θ(log n) worst-case weight with a smaller tree-depth constant
 - **Cons**: Newest approach, fewer reference implementations
 
 ## Key Insight
@@ -134,10 +141,27 @@ printfn "═══════════════════════�
 printfn " Key Insight"
 printfn "═══════════════════════════════════════════════════════════════"
 printfn ""
-printfn " Tree-based encodings reduce circuit depth from O(n) to O(log n),"
-printfn " enabling more efficient quantum simulation of larger molecules."
+printfn " Tree-based mappings reduce worst-case ladder-operator weight"
+printfn " from linear to logarithmic growth."
 printfn ""
-printfn " For a 100-mode system:"
-printfn "   Jordan-Wigner max weight: ~100 gates per term"
-printfn "   Ternary Tree max weight:  ~5 gates per term"
+printfn " The generated n=64 maxima are JW=64, BK=7, ternary=6."
 printfn ""
+
+(**
+## Full H2 Spectrum Comparison
+
+Term counts and mutual agreement are not enough. We construct each 16x16 Pauli
+matrix and compare all 16 spectral moments against the independent H2 spectrum.
+For a Hermitian 16x16 matrix, agreement of these power sums fixes the eigenvalue
+multiset to the stated numerical tolerance.
+*)
+
+let h2Lookup = ``Ch03-spin-orbitals``.h2RawPhysicistFactory
+
+printfn " Full H2 spectrum comparison:"
+for (name, encode) in encodings do
+    let hamiltonian =
+        computeHamiltonianWith encode h2Lookup 4u
+    if name = "Jordan-Wigner" then
+        PauliMatrix.assertH2JwMatrix name 1e-9 hamiltonian
+    PauliMatrix.assertH2Spectrum name 1e-7 hamiltonian

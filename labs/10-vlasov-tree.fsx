@@ -1,4 +1,4 @@
-// Lab 09: Vlasov Tree Encoding — Comparison with Other Encodings
+// Lab 10: Vlasov Tree Encoding — Comparison with Other Encodings
 //
 // This lab compares the Vlasov complete ternary tree encoding with
 // Jordan-Wigner, Bravyi-Kitaev, and balanced ternary tree encodings.
@@ -9,16 +9,16 @@
 // Based on: Vlasov, "Clifford algebras, Spin groups and qubit trees"
 //   arXiv:1904.09912 (2019), Quanta 11:97-114 (2022).
 //
-// The Vlasov tree achieves O(log₃ n) Pauli weight scaling, similar to the balanced ternary tree. However, its level-order indexing leads to different
+// The breadth-first ternary tree has Θ(log n) Pauli-weight scaling, like the balanced ternary tree, with a ternary depth constant. Its level-order indexing leads to different
 // qubit arrangements and may have different practical performance for certain Hamiltonians.
 //
-// Run with: dotnet fsi book/labs/10-vlasov-tree.fsx
-// Prereq:   dotnet build --configuration Release
+// Run with: dotnet fsi labs/10-vlasov-tree.fsx
 
 // Thanks to Dr Stephen Jordan and Dr Robin Kothari for introducing me to this encoding!
 
 
-#r "../../src/Encodings/bin/Debug/net10.0/Encodings.dll"
+#load "../code/ch03-spin-orbitals.fsx"
+#load "PauliMatrix.fsx"
 
 open Encodings
 open Encodings.TreeEncoding
@@ -33,7 +33,7 @@ open System.Numerics
 // ═══════════════════════════════════════════════════════
 
 printfn "═══════════════════════════════════════════════════"
-printfn " Lab 09: Vlasov Tree Encoding"
+printfn " Lab 10: Vlasov Tree Encoding"
 printfn "═══════════════════════════════════════════════════\n"
 
 printfn "─── Tree Shapes (n = 8) ───\n"
@@ -106,34 +106,24 @@ for j in 0u .. n - 1u do
 printfn "\n─── H₂ Hamiltonian (4 spin-orbitals) ───\n"
 
 let nH2 = 4u
-let integrals = Map [
-    ("0,0", Complex(-1.2563, 0.0)); ("1,1", Complex(-1.2563, 0.0))
-    ("2,2", Complex(-0.4719, 0.0)); ("3,3", Complex(-0.4719, 0.0))
-    ("0,0,0,0", Complex(0.6745, 0.0)); ("1,1,1,1", Complex(0.6745, 0.0))
-    ("2,2,2,2", Complex(0.6974, 0.0)); ("3,3,3,3", Complex(0.6974, 0.0))
-    ("0,0,1,1", Complex(0.6745, 0.0)); ("1,1,0,0", Complex(0.6745, 0.0))
-    ("0,0,2,2", Complex(0.6636, 0.0)); ("2,2,0,0", Complex(0.6636, 0.0))
-    ("0,0,3,3", Complex(0.6636, 0.0)); ("3,3,0,0", Complex(0.6636, 0.0))
-    ("1,1,2,2", Complex(0.6636, 0.0)); ("2,2,1,1", Complex(0.6636, 0.0))
-    ("1,1,3,3", Complex(0.6636, 0.0)); ("3,3,1,1", Complex(0.6636, 0.0))
-    ("2,2,3,3", Complex(0.6974, 0.0)); ("3,3,2,2", Complex(0.6974, 0.0))
-    ("0,2,2,0", Complex(0.1809, 0.0)); ("2,0,0,2", Complex(0.1809, 0.0))
-    ("1,3,3,1", Complex(0.1809, 0.0)); ("3,1,1,3", Complex(0.1809, 0.0))
-]
-let lookup key = integrals |> Map.tryFind key
+let lookup = ``Ch03-spin-orbitals``.h2RawPhysicistFactory
 
 printfn "  %-20s  %5s  %7s  %7s" "Encoding" "Terms" "MaxWt" "AvgWt"
 printfn "  %-20s  %5s  %7s  %7s" "────────" "─────" "─────" "─────"
 
 for (name, encoder) in encoders do
-    let ham = (computeHamiltonianWith encoder lookup nH2).DistributeCoefficient
+    let ham =
+        (computeHamiltonianWith encoder lookup nH2).DistributeCoefficient
     let terms = ham.SummandTerms
-                |> Array.filter (fun t -> Complex.Abs t.Coefficient > 1e-10)
+                |> Array.filter (fun t -> Complex.Abs t.Coefficient > 1e-12)
     let weights = terms |> Array.map (fun t ->
         t.Signature |> Seq.filter (fun c -> c <> 'I') |> Seq.length)
     let maxW = if weights.Length > 0 then Array.max weights else 0
     let avgW = if weights.Length > 0 then Array.averageBy float weights else 0.0
     printfn "  %-20s  %5d  %7d  %7.2f" name terms.Length maxW avgW
 
-printfn "\nAll four Hamiltonians have identical eigenspectra — same physics,"
-printfn "different representations. The tree shape affects circuit cost."
+printfn "\nThis table compares representation-level term weights only."
+printfn "\n─── Full H₂ Spectrum Comparison ───\n"
+for (name, encoder) in encoders do
+    let ham = computeHamiltonianWith encoder lookup nH2
+    PauliMatrix.assertH2Spectrum name 1e-7 ham

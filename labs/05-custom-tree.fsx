@@ -10,9 +10,11 @@ index: 5
 (**
 # Custom Tree-Based Encodings
 
-Tree-based encodings map fermionic modes to qubits using a rooted tree structure.
-The key insight is that **any ternary tree** (at most 3 children per node) with n nodes
-defines a valid encoding for n modes, and tree shape impacts Pauli weight.
+Tree-based constructions map fermionic modes to qubits using a labelled rooted
+tree. This lab compares candidate shapes accepted by the API. Acceptance by the
+constructor is not a proof that every arbitrary tree/label assignment preserves
+the CAR; validate the resulting operators before calling a candidate an
+encoding.
 
 ## The TreeNode Type
 
@@ -27,9 +29,10 @@ type TreeNode = {
 ```
 *)
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 
 open Encodings
+open Encodings.TreeEncoding
 open System.Numerics
 
 (**
@@ -47,7 +50,8 @@ let maxWeight (prs : PauliRegisterSequence) =
 (**
 ## Building a Chain Tree (Linear)
 
-A chain tree represents the Jordan-Wigner encoding:
+A chain-shaped candidate gives the path structure associated with long
+Jordan-Wigner-like strings:
 
 ```
   0 (root)
@@ -152,16 +156,19 @@ in unbalanced trees require longer Pauli strings.
 *)
 
 printfn ""
-printfn "=== Key Insight ==="
-printfn "Tree shape directly determines circuit depth."
-printfn "Shallow trees minimize worst-case Pauli weight."
+printfn "=== Key Observation ==="
+printfn "Tree shape changes path lengths and candidate Pauli weights."
+printfn "Full circuit cost still depends on the Hamiltonian and compiler."
 
 (**
 ## Summary
 
-Any rooted tree defines a valid fermion-to-qubit encoding:
+To investigate a custom tree candidate:
 - Build nodes with `Index`, `Children`, and `Parent`
 - Collect into an `EncodingTree` with `Root`, `Nodes` map, and `Size`
 - Use `encodeWithTernaryTree` to encode operators
 - Tree depth determines worst-case Pauli weight
+- Verify the CAR and direct-matrix parity before using the result
 *)
+
+printfn "This lab compares weights only; it does not certify CAR preservation."

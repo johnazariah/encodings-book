@@ -66,17 +66,17 @@ The indices are **shuffled**, not just relabelled. The physicist's pair $(p, r)$
 
 ### Worked example
 
-Suppose you have the chemist's integral $[00 \mid 00] = 0.6745$ Ha (the Coulomb self-repulsion of two electrons both in the $\sigma_g$ orbital). What is the corresponding physicist's integral?
+Suppose you have the chemist's integral $[00 \mid 00] = 0.6748$ Ha (the Coulomb self-repulsion of two electrons both in the $\sigma_g$ orbital). What is the corresponding physicist's integral?
 
 Use the conversion: $\langle pq \mid rs\rangle = [pr \mid qs]$. We need $[pr \mid qs] = [00 \mid 00]$, so $p = 0, r = 0, q = 0, s = 0$. Therefore:
 
-$$\langle 00 \mid 00\rangle = [00 \mid 00] = 0.6745 \text{ Ha}$$
+$$\langle 00 \mid 00\rangle = [00 \mid 00] = 0.6748 \text{ Ha}$$
 
-That one was trivial — all indices are the same. Now consider a more revealing example: $[00 \mid 11] = 0.6636$ Ha (the Coulomb repulsion between an electron in $\sigma_g$ and one in $\sigma_u$). We need $[pr \mid qs] = [00 \mid 11]$, so $p = 0, r = 0, q = 1, s = 1$. Therefore:
+That one was trivial — all indices are the same. Now consider a more revealing example: $[00 \mid 11] = 0.6637$ Ha (the Coulomb repulsion between an electron in $\sigma_g$ and one in $\sigma_u$). We need $[pr \mid qs] = [00 \mid 11]$, so $p = 0, r = 0, q = 1, s = 1$. Therefore:
 
-$$\langle 01 \mid 01\rangle = [00 \mid 11] = 0.6636 \text{ Ha}$$
+$$\langle 01 \mid 01\rangle = [00 \mid 11] = 0.6637 \text{ Ha}$$
 
-Notice: $\langle 01 \mid 01\rangle \neq \langle 00 \mid 11\rangle$ in general. The integral $\langle 00 \mid 11\rangle = [01 \mid 01]$ is a different integral — a pair-scattering integral in which both electrons change orbital. For H₂ in STO-3G, $[01 \mid 01] = 0.6976$ Ha — a different value from $[00 \mid 11] = 0.6636$ Ha.
+Notice: $\langle 01 \mid 01\rangle \neq \langle 00 \mid 11\rangle$ in general. The integral $\langle 00 \mid 11\rangle = [01 \mid 01]$ is a pair-scattering integral in which both electrons change orbital. For H₂/STO-3G at 0.74 Å, $[01 \mid 01] = 0.1812$ Ha, distinct from $[00 \mid 11] = 0.6637$ Ha. For real orbitals, the within-bracket symmetry also gives $[01 \mid 01]=[01 \mid 10]$; these are not two independent values.
 
 > **Common Mistake #1: Using the wrong convention.** If you take $[00 \mid 11]$ from PySCF and use it as $\langle 00 \mid 11\rangle$ in the physicist's Hamiltonian, you have swapped a Coulomb integral for an exchange integral. The Hamiltonian will have plausible structure, but the eigenvalues will be wrong. There is no error message. The only way to catch it is to verify against a known result.
 
@@ -94,7 +94,7 @@ Note three things:
 
 2. **The two-body term** uses physicist's notation $\langle pq \mid rs\rangle$. If you have chemist's integrals, convert first: $\langle pq \mid rs\rangle = [pr \mid qs]$.
 
-3. **The operator ordering is $a_p^\dagger a_q^\dagger a_s a_r$** — the annihilation operators are in *reverse* order relative to the ket indices of the integral ($r, s$ become $a_s a_r$, not $a_r a_s$). This is not a typo. It follows from the definition of the antisymmetrized matrix element and the anti-commutation relations. Getting this order wrong flips the sign on certain exchange terms.
+3. **The operator ordering is $a_p^\dagger a_q^\dagger a_s a_r$** — the annihilation operators are in *reverse* order relative to the ket indices of the integral ($r, s$ become $a_s a_r$, not $a_r a_s$). This is not a typo. It follows from the integral convention and anti-commutation relations. Getting this order wrong flips signs on configuration-coupling terms.
 
 If you prefer to work entirely in chemist's notation, the Hamiltonian reads:
 
@@ -152,11 +152,10 @@ Here are all the non-zero two-body integrals for H₂ in STO-3G, in *both* conve
 
 | Chemist's $[pq \mid rs]$ | Value (Ha) | Physicist's $\langle pq \mid rs\rangle$ | Conversion used |
 |:---:|:---:|:---:|:---|
-| $[00 \mid 00]$ | $0.6745$ | $\langle 00 \mid 00\rangle$ | $\langle 00 \mid 00\rangle = [00 \mid 00]$ |
-| $[11 \mid 11]$ | $0.6974$ | $\langle 11 \mid 11\rangle$ | $\langle 11 \mid 11\rangle = [11 \mid 11]$ |
-| $[00 \mid 11]$ | $0.6636$ | $\langle 01 \mid 01\rangle$ | $\langle 01 \mid 01\rangle = [00 \mid 11]$ |
-| $[01 \mid 01]$ | $0.6976$ | $\langle 00 \mid 11\rangle$ | $\langle 00 \mid 11\rangle = [01 \mid 01]$ |
-| $[01 \mid 10]$ | $0.1809$ | $\langle 01 \mid 10\rangle$ | $\langle 01 \mid 10\rangle = [01 \mid 10]$ |
+| $[00 \mid 00]$ | $0.6747559268$ | $\langle 00 \mid 00\rangle$ | $\langle 00 \mid 00\rangle = [00 \mid 00]$ |
+| $[11 \mid 11]$ | $0.6976515045$ | $\langle 11 \mid 11\rangle$ | $\langle 11 \mid 11\rangle = [11 \mid 11]$ |
+| $[00 \mid 11]$ | $0.6637114014$ | $\langle 01 \mid 01\rangle$ | $\langle 01 \mid 01\rangle = [00 \mid 11]$ |
+| $[01 \mid 01]=[01 \mid 10]$ | $0.1812104620$ | $\langle 00 \mid 11\rangle=\langle 01 \mid 10\rangle$ | $\langle pq \mid rs\rangle=[pr \mid qs]$ |
 
 Study this table. Make sure you can derive each entry in the rightmost column from the boxed conversion rule. If you can do that, you will never make error #1.
 
@@ -164,7 +163,10 @@ Study this table. Make sure you can derive each entry in the rightmost column fr
 
 ## The Companion Library: FockMap
 
-Throughout this book, we verify every formula and every table against executable code. The library we use is **FockMap** — an open-source F# framework for symbolic Fock-space operator algebra.
+Core transformations have executable checks: independent PySCF/direct-matrix
+artifacts establish the chemistry reference, and FockMap supplies symbolic
+operator implementations that must reproduce it. Companions fail closed when
+the live package disagrees.
 
 A few things worth knowing about it:
 
@@ -172,7 +174,7 @@ A few things worth knowing about it:
 
 - **It is functional.** FockMap is written in F#, a functional-first language on .NET. If you've never used F#, don't worry — the code snippets in this book are short and read like mathematical notation. You don't need to be an F# programmer to follow them; you only need to be able to read `let x = ...` as "define x to be ..."
 
-- **It runs anywhere.** FockMap targets .NET 10 and runs on Windows, macOS, and Linux. Install it with `dotnet add package FockMap`, or clone the repository and build from source.
+- **It runs anywhere.** FockMap targets .NET 10 and runs on Windows, macOS, and Linux. Install the API version used by this book with `dotnet add package FockMap --version 0.9.0`, or clone the repository and build from the accepted source.
 
 - **It is the subject of the JOSS paper** cited in the preface. If you want to understand the library's design — the type system, the two encoding frameworks, the test suite — that paper is the place to look. This book focuses on *using* the library to learn the physics.
 
@@ -182,12 +184,23 @@ When you see code in this book, it serves one purpose: to show that the mathemat
 
 ## FockMap's Convention
 
-FockMap uses **physicist's notation** throughout. The `computeHamiltonianWith` function expects integrals in physicist's convention:
+FockMap 0.9 makes raw physicist integrals the primary contract.
+`computeHamiltonianWith` accepts:
 
 - One-body key `"p,q"` → $h_{pq}$
-- Two-body key `"p,q,r,s"` → $\langle pq \mid rs\rangle$
+- Two-body key `"p,q,r,s"` → the raw single-bar integral
+  $\langle pq \mid rs\rangle$
 
-If your integral source provides chemist's notation (most do), convert the indices before building the coefficient factory:
+The library then applies the $\tfrac12$ prefactor and annihilator-index order required by
+$\tfrac12\langle pq\mid rs\rangle a_p^\dagger a_q^\dagger a_s a_r$.
+The explicitly named migration API `computeHamiltonianFromWeightedWith` instead
+accepts the old full weighted coefficient of
+$a_p^\dagger a_q^\dagger a_k a_l$ and applies it verbatim. Do not feed a
+preweighted factory to a primary raw builder, or a raw factory to a
+`...FromWeighted...` builder.
+
+If your integral source provides chemist's notation (most do), first convert it
+to a raw physicist factory:
 
 ```fsharp
 // chemist_integrals stores [pq|rs] indexed as (p,q,r,s)
@@ -202,9 +215,15 @@ let physicistFactory (key : string) =
         let p, q, r, s = parts.[0], parts.[1], parts.[2], parts.[3]
         chemist_integrals |> Map.tryFind (sprintf "%d,%d,%d,%d" p r q s)
     | _ -> None
+
+let ham =
+    computeHamiltonianWith encoder physicistFactory numSpinOrbitals
 ```
 
-This is the single most important function in any quantum chemistry pipeline. Get it right and everything downstream works. Get it wrong and everything downstream is silently, plausibly wrong.
+This boundary is the single most important function in any quantum chemistry
+pipeline. Get it right and everything downstream works. Get it wrong and
+everything downstream is silently, plausibly wrong. FockMap 0.9's FCIDUMP
+adapters produce this same raw physicist contract directly.
 
 ---
 

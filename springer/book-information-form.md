@@ -47,7 +47,13 @@ John's unique combination of academic grounding in Chemistry and Computer Scienc
 
 This book is a self-contained, 23-chapter computational tutorial covering the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation. It addresses a critical gap in the literature: no existing resource walks a student through every coefficient, every sign, and every intermediate Pauli string while providing executable code that reproduces each result.
 
-Starting from one-body and two-body integrals of the hydrogen molecule (H₂) in the STO-3G basis, we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings (Jordan–Wigner, Bravyi–Kitaev, Parity, balanced binary tree, balanced ternary tree, and a Vlasov complete-ternary-tree encoding), verify spectral equivalence across encodings, reduce qubit count via diagonal and Clifford Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q#. Two running examples — H₂ (4 qubits) and H₂O (12–14 qubits) — are developed from molecular geometry to quantum circuit, including computing the H₂ dissociation curve and the H–O–H bond angle from first principles.
+Starting from generated one-body and two-body integrals of H₂ in STO-3G, we
+derive and independently verify the direct fermionic and Jordan–Wigner
+Hamiltonians before comparing six encoding interfaces, physical-sector
+tapering, product-formula circuits, CNOT costs, and OpenQASM/Q# export. Separate
+PySCF calculations provide the H₂ dissociation reference and an H₂O FCI angular
+scan at fixed experimental O–H length, keeping classical chemistry evidence
+distinct from circuit construction.
 
 Every formula has a corresponding executable computation in the companion FockMap library, an open-source F# framework for symbolic Fock-space operator algebra. The book includes 10 interactive laboratory sessions.
 

@@ -1,22 +1,32 @@
-# Chapter 19: The Water Bond Angle
+# Chapter 19: A Fixed-Bond Water Angle Scan
 
-_We built a pipeline. Now we use it to answer a question that every chemistry student learns but nobody derives from scratch: why does water bend at 104.5°?_
+_We built the translation layer. Now we examine a classical FCI reference calculation that asks how water's energy changes as the molecule bends._
 
 ## In This Chapter
 
-- **What you'll learn:** How to scan a potential energy surface by running the same pipeline at many molecular geometries — and how the energy minimum tells you the equilibrium bond angle.
-- **Why this matters:** This is the payoff of the entire book. We built sixteen chapters of machinery. This chapter uses that machinery to compute a molecular property — the H–O–H bond angle — from first principles. No fitting. No empirical parameters. Just quantum mechanics and our pipeline.
+- **What you'll learn:** How to scan one coordinate of a potential energy surface, how to read a conditional minimum, and how to separate a classical chemistry reference from circuit construction.
+- **Why this matters:** Geometry scans are the workload that a future quantum energy estimator would have to repeat. Credibility starts by stating which coordinates are fixed, which backend computes the energy, and which parts of the quantum pipeline actually run.
 - **Prerequisites:** Chapter 18 (the complete H₂ pipeline).
 
 ---
 
 ## The Question
 
-Every introductory chemistry textbook states the facts: water has a bond angle of 104.52°. The oxygen atom sits at the vertex, the two hydrogen atoms at the arms. VSEPR theory offers a qualitative explanation — two bonding pairs and two lone pairs around oxygen arrange themselves to minimise repulsion — but it doesn't predict the actual number. It says "less than 109.5°" and leaves it at that.
+The gas-phase equilibrium angle of water is approximately 104.5° (Hoy &
+Bunker, 1979). The oxygen atom sits at the vertex, the two hydrogen atoms at the
+arms. VSEPR theory offers a qualitative explanation — two bonding pairs and two
+lone pairs around oxygen arrange themselves to minimise repulsion — but it
+doesn't predict the actual number.
 
-Quantum mechanics does better. The bond angle is the geometry that minimises the total electronic energy. If we can compute the energy as a function of angle, the minimum of that curve *is* the bond angle. No hand-waving about lone pair repulsion. No empirical fitting. Just energy versus geometry.
+Quantum mechanics does better. A full equilibrium geometry minimizes the total
+energy over all internal coordinates. If the O–H distance is held fixed and only
+the angle varies, the minimum gives the best angle **along that one-dimensional
+cut**, not a complete geometry optimization.
 
-That computation is exactly what our pipeline was built for.
+The committed calculation fixes $r_{\mathrm{OH}}=0.9584$ Å, the experimental
+bond length, and scans only the H–O–H angle. It therefore contains empirical
+geometric input. Its value is still substantial: every energy is an ab initio
+RHF/FCI result in a declared basis, and the calculation is reproducible.
 
 ---
 
@@ -24,35 +34,28 @@ That computation is exactly what our pipeline was built for.
 
 The approach is simple:
 
-1. **Pick a range of angles.** We'll scan from 60° to 180° in 5° steps (25 geometries).
-2. **At each angle, compute the molecular integrals.** PySCF generates the one-body and two-body integrals for that geometry.
-3. **At each angle, build the encoded Hamiltonian.** Same pipeline as Chapter 18, but with different integrals each time.
-4. **At each angle, compute the ground-state energy.** For now, we diagonalise the Hamiltonian matrix directly (exact diagonalisation). On a quantum computer, this would be a VQE or QPE run — Chapter 20 covers those algorithms.
-5. **Find the angle with the lowest energy.** That's the bond angle.
-
-Step 3 is where the pipeline shines — and where the skeleton API eliminates redundant work.
+1. **Fix the O–H distance.** We use $0.9584$ Å at every point.
+2. **Pick a range of angles.** We scan 60° to 180° in 5° steps, then 95° to 115° in 1° steps.
+3. **At each angle, run RHF and FCI in PySCF.** FCI is exact within the selected STO-3G orbital space and electron/spin sector.
+4. **Write the energies and plot the curve.**
+5. **Report the lowest sampled angle.** This is the conditional minimum on the fixed-bond grid.
 
 ---
 
-## The Skeleton Trick
+## Separate the Reference from the Circuit
 
-At every bond angle, we call `computeHamiltonianWith` with different integrals. But the *structure* of the Hamiltonian — which Pauli strings appear, how ladder operators map to qubits — depends only on the encoding and the number of qubits. It doesn't change when the molecule bends.
+`code/ch19-bond-angle-scan.py` computes the energies directly with PySCF. It
+does not export per-geometry FockMap JSON, invoke an encoding, taper qubits, or
+diagonalize a FockMap matrix. That separation is deliberate in the repaired
+workflow:
 
-FockMap exploits this with the **skeleton** pattern:
+- **PySCF track:** reproducible RHF/FCI reference energies, CSV files, and plot.
+- **FockMap track:** encoded Hamiltonians and circuit costs, once
+  geometry-by-geometry matrix parity and physical-sector selection are tested.
 
-```fsharp
-// Precompute the structure once
-let skeleton = computeHamiltonianSkeleton ternaryTreeTerms 14u
-
-// Then, for each geometry, just plug in the integrals
-let hamAtAngle angle =
-    let factory = integralsAt angle
-    applyCoefficients skeleton factory
-```
-
-`computeHamiltonianSkeleton` does the expensive work — encoding every ladder operator pair, combining like terms, building the Pauli string structure — exactly once. `applyCoefficients` then multiplies each precomputed Pauli string by the appropriate integral value. For a 25-point scan, this is 25× faster than calling `computeHamiltonianWith` 25 times, because the encoding step (which involves Pauli string multiplication and like-term combination) dominates the cost.
-
-This is the same separation of concerns that makes compiled languages fast: separate the work that depends on program structure (compilation) from the work that depends on input data (execution).
+A skeleton API can amortize symbolic encoding when the zero pattern and
+convention are stable, but this chapter does not claim that such a scan produced
+the committed energies.
 
 ---
 
@@ -60,7 +63,11 @@ This is the same separation of concerns that makes compiled languages fast: sepa
 
 For H₂ we had 4 spin-orbitals and 16 integrals. For H₂O in a minimal basis (STO-3G), we have 14 spin-orbitals and hundreds of integrals — too many to type by hand. In practice, you generate them with PySCF:
 
-> **Active space and frozen core:** H₂O has 10 electrons, but the oxygen 1s core electrons are tightly bound and contribute negligibly to chemical bonding. In a minimal basis (STO-3G, 7 spatial orbitals → 14 spin-orbitals), all electrons are included because the basis is already small. In larger basis sets, practitioners typically "freeze" the core electrons — removing them from the active space and treating their contribution as a constant energy offset. This reduces the number of spin-orbitals (and therefore qubits) without significantly affecting the bond angle or other valence properties. The integrals generated below include all electrons because STO-3G is minimal; for larger-basis production calculations, the PySCF `mc.CASCI` or `mc.CASSCF` interface would be used to define the active space explicitly.
+> **Active space and frozen core:** H₂O has 10 electrons. This STO-3G scan
+> includes all 7 spatial orbitals (14 spin-orbitals). Larger-basis studies often
+> freeze the oxygen 1s core and treat its contribution as an offset, but that is
+> an approximation whose effect must be checked for the target property. PySCF's
+> `mc.CASCI`/`mc.CASSCF` interfaces can define an explicit active space.
 
 ```python
 from pyscf import gto, scf, ao2mo
@@ -90,56 +97,34 @@ def h2o_integrals(angle_degrees, bond_length=0.9584):
     return mol.energy_nuc(), h1, h2
 ```
 
-The PySCF script runs on a laptop in seconds. For each angle, it produces the nuclear repulsion energy $V_{nn}$, the one-body integrals $h_{pq}$, and the two-body integrals $h_{pqrs}$. We export these as a JSON map with keys like `"0,1"` and `"0,1,2,3"` — the same format our `factory` function expects.
-
-The companion script `code/ch19-bond-angle-scan.py` has the full workflow: generate integrals at each angle, write CSVs, and produce the bond angle plot.
-
-The data flows through a simple two-stage pipeline:
+The companion script `code/ch19-bond-angle-scan.py` constructs each molecule,
+runs RHF and FCI, writes the coarse and fine CSV files, and produces the plot.
+Its PySCF backend is documented by Sun et al. (2020). Its data path is:
 
 ```mermaid
 flowchart LR
-    PY["PySCF (Python)<br/>Generate integrals"] -->|"JSON files<br/>(one per angle)"| FM["FockMap (F#)<br/>Encode → Taper → Diagonalise"]
-    FM --> CSV["CSV / Plot<br/>Energy vs angle"]
+    GEO["Fixed rOH = 0.9584 Å<br/>Angle grid"] --> PY["PySCF RHF + FCI"]
+    PY --> CSV["CSV / Plot<br/>Energy vs angle"]
     style PY fill:#e8ecf1,stroke:#6b7280
-    style FM fill:#d1fae5,stroke:#059669
+    style CSV fill:#d1fae5,stroke:#059669
 ```
 
-PySCF produces the molecular integrals (one JSON file per geometry); FockMap reads them, applies the encoding pipeline, and outputs energies. The JSON format is the same `Map<string, Complex>` (keys like `"0,1"` for one-body and `"0,1,2,3"` for two-body) that every companion script uses.
+The method, basis, fixed coordinate, and energy backend are therefore visible
+in the exact script that writes the published data.
 
 ---
 
 ## The Scan
 
-With the skeleton precomputed and the integrals generated, the scan itself is remarkably concise:
+The executable entry point is:
 
-```fsharp
-open System.Numerics
-open Encodings
-
-// Precompute the Pauli structure once
-let skeleton = computeHamiltonianSkeleton ternaryTreeTerms 14u
-
-let angles = [| 60.0 .. 5.0 .. 180.0 |]
-
-for angle in angles do
-    // Load integrals for this geometry
-    let factory = loadIntegrals (sprintf "h2o_integrals_%03.0f.json" angle)
-
-    // Build the Hamiltonian (fast — just multiplying precomputed strings by numbers)
-    let ham = applyCoefficients skeleton factory
-
-    // Taper
-    let tapered = taper defaultTaperingOptions ham
-
-    // The ground-state energy is the smallest eigenvalue of the Hamiltonian matrix.
-    // For 14 qubits (or ~11 after tapering), exact diagonalisation is still feasible.
-    // exactGroundStateEnergy builds the 2^n × 2^n matrix and returns min(eigenvalues).
-    let energy = exactGroundStateEnergy tapered.Hamiltonian
-
-    printfn "%.0f°  %.6f Ha" angle energy
+```bash
+python3 code/ch19-bond-angle-scan.py
 ```
 
-The inner loop — `applyCoefficients`, `taper`, diagonalise — runs in milliseconds per geometry. The entire 25-point scan takes a few seconds on a laptop.
+It writes `h2o_bond_angle_coarse.csv`, `h2o_bond_angle_fine.csv`, and
+`h2o_bond_angle.png`. `make data` regenerates these outputs together with the
+H₂ references.
 
 ---
 
@@ -176,31 +161,37 @@ We re-run the scan from 95° to 115° in 1° steps. The skeleton is already comp
 | 103 | −75.013356 | 115 | −75.003590 |
 | 105 | −75.012488 | | |
 
-The minimum is at **99°** with energy **−75.0141 Ha**. The curve is clearly parabolic — the energy changes by only 0.00005 Ha between 98° and 100°, then drops away more steeply on either side.
+The lowest sampled point is **99°** with energy **−75.0141 Ha** for
+$r_{\mathrm{OH}}=0.9584$ Å. The energy changes by only about 0.00005 Ha
+between 98° and 100°, so a fitted or finer scan would be needed to quote a
+sub-degree minimum.
 
-![H₂O bond angle scan (STO-3G, FCI): coarse scan (left) identifies the minimum near 100°; fine scan (right) pinpoints it at 99°.](code/h2o_bond_angle.png)
+![H₂O fixed-bond angular scan (STO-3G, FCI): the coarse scan (left) identifies the minimum near 100°; the fine scan (right) has its lowest sampled point at 99°.](figures/h2o_bond_angle.png)
 
 ---
 
 ## What Do the Numbers Mean?
 
-The minimum at **99°** in STO-3G is ~5° below the experimental value of 104.52°. The discrepancy comes from the minimal basis set — STO-3G uses only one Slater-type orbital per atomic orbital, which lacks the flexibility (especially polarization functions) to describe the electron density near the equilibrium geometry accurately.
+The conditional minimum at **99°** in STO-3G is about 5° below the experimental
+equilibrium angle of 104.52°. The comparison is not like-for-like because the
+scan fixes the O–H length, but the minimal basis is also too inflexible,
+especially because it lacks polarization functions.
 
 A careful reader will notice something surprising: Hartree–Fock in STO-3G predicts **101°** — *closer* to the experimental 104.52° than our FCI result of 99°. Does this mean correlation makes things worse?
 
 No. It means the basis set is too small for the correlation correction to land in the right place. In STO-3G, both 101° and 99° are wrong because the basis functions cannot describe how the electron cloud deforms as the molecule bends. Correlation shifts the angle by ~2° in a direction that happens to overshoot in this basis — not because correlation is wrong, but because the basis is too inflexible to support the correction properly.
 
-In a larger basis set, the picture reverses. Here are actual computed values (HF, MP2, and CASCI with an 8-electron, 8-orbital active space):
+Larger bases and different correlation spaces can move the conditional minimum,
+but this book does not quote cc-pVDZ/cc-pVTZ HF, MP2, or CASCI minima without a
+committed record of orbital selection, frozen core, active space, state
+symmetry, scan grid, software version, and output. The defensible conclusion
+from the present data is narrower: in this fixed-bond STO-3G model, FCI shifts
+the sampled minimum from the HF value of 101° to 99°.
 
-| Basis | HF min | MP2 min | Correlated min | Expt. |
-|:---|:---:|:---:|:---:|:---:|
-| STO-3G (7 orbitals) | 101° | — | 99° (FCI) | 104.52° |
-| cc-pVDZ (24 orbitals) | 104° | 102° | 100° (CASCI) | 104.52° |
-| cc-pVTZ (58 orbitals) | 105° | 104° | 104° (CASCI) | 104.52° |
-
-At cc-pVTZ, correlation shifts the angle *toward* experiment — from 105° to 104°. The correction works as expected; it just needs a basis that can represent it faithfully. This is a general lesson in computational chemistry: adding more physics (correlation) to an under-determined model (minimal basis) can make individual predictions worse, even though the model is formally more complete. The basis set error dominates.
-
-But the point is not the fourth decimal place. The point is the *method*: we derived a molecular geometry from a quantum simulation pipeline. No one told the code that water should bend. No one parameterised the angle. The pipeline explored the energy landscape and found the bend — the same bend that determines water's polarity, its solvent properties, its ability to form hydrogen bonds, and ultimately, its role in sustaining life on Earth.
+The point is the method and its limits: the calculation explores an angular
+energy landscape and finds a bent minimum without fitting the angle, while the
+O–H distance remains fixed to experiment. A full geometry prediction would
+optimize both bond lengths and the angle.
 
 ---
 
@@ -210,38 +201,41 @@ The energy curve tells us *that* water bends. But what drives the bend?
 
 The answer is already present at the Hartree–Fock level — no electron correlation required. HF, which by definition uses a single Slater determinant and contains zero correlation energy, predicts a bent water molecule at roughly 101° in STO-3G. The bend is fundamentally a mean-field effect: as the molecule departs from linearity, the oxygen lone-pair orbitals hybridise in a way that lowers the kinetic and electron-nuclear attraction energy. VSEPR theory's "lone pair repulsion" is a qualitative cartoon for this mean-field energy landscape.
 
-What correlation adds is a quantitative correction. The FCI minimum occurs at 99° — shifted by about 2° from the HF minimum. Correlation also deepens the energy well (the FCI bending energy from 180° to 99° is ~0.126 Ha, compared to ~0.113 Ha at the HF level). But it does not *cause* the bend. Hartree–Fock already explains roughly 85% of the bending energy.
+What correlation adds is a quantitative correction. The FCI minimum occurs at
+99° — shifted by about 2° from the HF minimum. Correlation also deepens the
+energy well (the stated FCI bending energy from 180° to 99° is about 0.126 Ha,
+compared with about 0.113 Ha at HF). On those numbers, HF accounts for about
+90%, not 85%, of the bending energy. It does not *cause* the bend.
 
 This distinction matters: it illustrates what quantum simulation adds and what it doesn't. The *qualitative* prediction (water bends) comes from mean-field theory, which any laptop can compute. The *quantitative* refinement (exactly how much it bends, the precise curvature of the potential energy surface, the vibrational frequencies) is where correlated methods — and ultimately quantum simulation — earn their keep.
 
 ---
 
-## What About the Encoding?
+## What This Scan Says About Encoding
 
-With 14 spin-orbitals, H₂O is the first molecule in this book where encoding choice makes a meaningful difference in circuit cost. If we replace `ternaryTreeTerms` with `jordanWignerTerms` in the skeleton, the energies don't change — same physics — but the Pauli weights increase dramatically:
-
-| Encoding | Max weight | Avg weight |
-|:---|:---:|:---:|
-| Jordan–Wigner | 14 | ~7 |
-| Bravyi–Kitaev | 5 | ~3 |
-| Parity | 14 | ~7 |
-| Binary Tree | 5 | ~3 |
-| Ternary Tree | 4 | ~3 |
-| Vlasov Tree | 4 | ~3 |
-
-The ternary tree encoding produces the lightest Pauli strings, which translates directly to fewer CNOTs per Trotter step. This is the compression we studied in Chapters 7 and 16 — now applied to a molecule large enough for it to matter.
-
-For the energy *scan*, the encoding doesn't affect the result (all encodings give the same eigenvalues). But when we move to a quantum computer — where each CNOT carries noise — the lighter encoding gives a more accurate simulation for the same hardware budget. At H₂O scale, that's roughly a 3× reduction in two-qubit gates.
+Nothing by itself. The PySCF FCI energies are independent of a
+fermion-to-qubit map. An encoding comparison requires a committed H₂O integral
+artifact, a declared active space and orbital order, direct-matrix parity,
+physical-sector tapering, and generated term/weight/CNOT tables. Until that
+artifact exists, molecule-specific encoding ratios belong in the benchmark
+backlog rather than in this chemistry result.
 
 ---
 
 ## The Greenhouse Connection
 
-Water's bent shape isn't just a textbook fact — it's one of the reasons Earth supports life.
+Water's bent equilibrium structure gives the molecule a permanent electric
+dipole and a rich rotational spectrum. Its vibrational modes, including the
+bending mode near 1595 cm$^{-1}$, change the molecular dipole and can absorb
+infrared radiation (Shimanouchi, 1972; Shostak, Ebenstein & Muenter, 1991).
 
-A bent molecule has a permanent electric dipole moment: the oxygen end is slightly negative, the hydrogen end slightly positive. This dipole oscillates during the bending vibration ($\nu_2$ mode at $\approx$ 1595 cm$^{-1}$), creating a time-varying electric field that couples to infrared photons. That coupling is what makes water a greenhouse gas: it absorbs outgoing infrared radiation and re-emits it in all directions, warming the atmosphere.
-
-A linear H₂O molecule would have no permanent dipole and a very different infrared spectrum. The bond angle we just computed — the one that emerged from our pipeline without any empirical input — is literally the reason Earth has a habitable temperature.
+A permanent dipole is not required for greenhouse activity: linear CO₂ has no
+permanent dipole but has IR-active vibrations because its dipole changes during
+those modes. Water's geometry contributes to its spectrum, while atmospheric
+abundance, temperature, line strengths, and spectral overlap determine its
+climate effect and water-vapour feedback (NASA Earth Observatory). The bond
+angle is therefore one part of the causal chain, not the sole reason Earth has
+a habitable temperature.
 
 The potential energy surface scan we performed is the first step in a vibrational analysis. The *curvature* of the energy curve near the minimum (the second derivative) determines the bending frequency. This is obtained from the **Hessian matrix** of the PES — and computing that Hessian for molecules where classical methods fail is one of the practical applications of quantum simulation.
 
@@ -249,11 +243,15 @@ The potential energy surface scan we performed is the first step in a vibrationa
 
 ## Key Takeaways
 
-- A potential energy surface scan runs the **same pipeline** at many geometries and plots energy versus structural parameter.
-- The **skeleton API** separates structure (encoding-dependent, computed once) from coefficients (geometry-dependent, applied per point), making scans efficient.
-- The energy minimum of the H₂O bond angle scan occurs at **99°** in STO-3G — below the experimental 104.52°. In the minimal basis, correlation overshoots (HF gives 101°, closer to experiment), but in larger bases (cc-pVTZ) correlation correctly shifts the angle toward experiment (105° → 104°). The discrepancy is a basis-set limitation, not a method failure.
-- The bond angle emerges from quantum mechanics without empirical input — the bend is a mean-field effect already captured by Hartree–Fock, while electron correlation provides a quantitative refinement of ~2°.
-- Water's bent geometry produces its permanent dipole moment, which makes it a greenhouse gas and a universal solvent — properties that follow directly from the energy curve we computed.
+- The committed result is a **PySCF FCI angular scan at fixed experimental
+  $r_{\mathrm{OH}}=0.9584$ Å**, not a full geometry optimization.
+- The lowest sampled STO-3G point is **99°**; HF gives about 101° on the same
+  cut, so bending is already a mean-field effect and correlation shifts the
+  conditional minimum.
+- FockMap does not produce the committed energies; geometry-by-geometry
+  encoding and circuit benchmarks require separate parity artifacts.
+- Bent water has a permanent dipole, while greenhouse absorption follows the
+  more general rule that a vibration must change the dipole moment.
 
 ## Further Reading
 
@@ -262,6 +260,6 @@ The potential energy surface scan we performed is the first step in a vibrationa
 
 ---
 
-**Previous:** [Chapter 18 — The Complete Pipeline](18-complete-pipeline.html)
+**Previous:** [Chapter 18 — The Question We Can Now Answer](18-complete-pipeline.html)
 
 **Next:** [Chapter 20 — Algorithms: VQE and QPE](20-algorithms.html)

@@ -14,19 +14,23 @@ Centre for Quantum Software and Information, University of Technology Sydney
 
 ## Short Blurb
 
-> Every chemistry textbook tells you that water's bond angle is 104.5°. Every quantum computing textbook tells you that fermions must be encoded as qubits. This book connects the two: a complete, executable pipeline from molecular geometry to quantum circuit, with six encoding schemes, qubit tapering, Trotterization, and circuit export — all computed explicitly, nothing left as an exercise.
+> Every chemistry textbook tells you that water's bond angle is 104.5°. Every quantum computing textbook tells you that fermions must be encoded as qubits. This book connects the two by making the translation layer explicit: molecular data become encoded Hamiltonians, symmetry reductions, product-formula circuits, and portable circuit descriptions under six encoding schemes.
 
 ---
 
 ## Book Description
 
-**From Molecules to Quantum Circuits** is a self-contained computational guide covering the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation.
+**From Molecules to Quantum Circuits** is a self-contained computational guide
+to the translation layer from molecular electronic structure to logical quantum
+circuits.
 
-Every formula has a corresponding executable computation in the FockMap library, an open-source F# framework for symbolic Fock-space operator algebra. Every sign, every coefficient, every intermediate Pauli string is computed explicitly.
+Core transformations are paired with executable FockMap companions, while independent PySCF scripts generate the classical chemistry references used to check them. Signs, coefficients, and intermediate Pauli strings are exposed rather than hidden behind a black-box workflow.
 
 The guide covers six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree, Vlasov tree), qubit tapering via diagonal and Clifford Z₂ symmetries, Trotter decomposition with CNOT cost analysis, and circuit output in OpenQASM and Q#.
 
-Two running examples — H₂ (the simplest molecule) and H₂O (the most important molecule) — are developed from geometry to quantum circuit, including computing the H-O-H bond angle from first principles.
+Two running examples separate construction from reference chemistry: H₂ is
+derived and checked from generated integrals to a JW matrix and circuit, while
+H₂O supplies a PySCF FCI angular scan at fixed experimental O–H length.
 
 ## Who This Book Is For
 
@@ -45,27 +49,32 @@ Two running examples — H₂ (the simplest molecule) and H₂O (the most import
 >
 > *This book opens the box.*
 >
-> *Starting from the one-body and two-body integrals of H₂, we build the 15-term qubit Hamiltonian by hand, verify it against exact eigenvalues, and then show how six different encodings produce the same physics with dramatically different circuit costs. We taper away redundant qubits using Z₂ symmetries, decompose the Hamiltonian into a Trotter circuit, count every CNOT gate, and export the result to OpenQASM and Q#.*
+> *Starting from generated H₂ integrals, we build the 15-term JW Hamiltonian,
+> verify its matrix, labelled states, and spectrum against an independent
+> reference, and use that result as the acceptance target for six encoding
+> interfaces. We develop physical-sector tapering requirements, product-formula
+> circuits, logical CNOT accounting, and circuit export without treating any
+> one of those layers as a ground-state algorithm.*
 >
-> *Then we do it again for water — and compute its bond angle from first principles.*
+> *For water, we trace a PySCF FCI angular cut at fixed O–H length and state exactly which parts of the quantum circuit pipeline remain separate.*
 >
-> *Every formula is executable. Every intermediate result is inspectable. The companion FockMap library runs the same pipeline on any molecule you give it.*
+> *The core transformations are executable. Intermediate results are inspectable. FockMap constructs encoded Hamiltonians and logical circuits; state preparation and energy estimation remain separate algorithmic tasks.*
 >
-> *The quantum computer isn't ready yet. The pipeline is.*
+> *The translation layer is necessary. It is not the whole computation.*
 
 ---
 
-- **23 chapters + 2 appendices** (~48,500 words)
+- **23 chapters + 2 appendices** (~45,960 words)
 - **Two running examples**: H₂ (the teacher) and H₂O (the real test)
-- **Computed results**: H₂ dissociation curve, H₂O bond angle scan (99° in STO-3G, 104° in cc-pVTZ)
+- **Computed results**: H₂ dissociation curve; fixed-bond H₂O angular scans (99° sampled minimum in STO-3G)
 - **FockMap library**: 6 encodings, Z₂ tapering, Trotterization, circuit export
 
 ## At a Glance
 
 | | |
 |---|---|
-| **Words** | ~48,500 |
-| **Pages** | 166 |
+| **Words** | ~45,960 |
+| **Pages** | 175 |
 | **Chapters** | 23 + 2 appendices |
 | **Mermaid diagrams** | 25 |
 | **Companion scripts** | 10 (F# + Python) |
@@ -77,15 +86,16 @@ Two running examples — H₂ (the simplest molecule) and H₂O (the most import
 
 | Stage | Chapters | Words |
 |---|---|---|
-| Foreword | — | 830 |
-| The Molecule (Ch 1–3) | 3 | 8,210 |
-| The Machine (Ch 4) | 1 | 2,380 |
-| Encoding (Ch 5–9) | 5 | 10,520 |
-| Tapering (Ch 10–13) | 4 | 6,140 |
-| Circuits (Ch 14–17) | 4 | 5,450 |
-| The Pipeline (Ch 18–21) | 4 | 8,040 |
-| Horizons (Ch 22–23) | 2 | 2,980 |
-| Appendices | 2 | 990 |
+| Foreword | — | 815 |
+| The Molecule (Ch 1–3) | 3 | 8,291 |
+| The Machine (Ch 4) | 1 | 2,208 |
+| Encoding (Ch 5–9) | 5 | 10,943 |
+| Tapering (Ch 10–13) | 4 | 6,420 |
+| Circuits (Ch 14–17) | 4 | 5,103 |
+| The Pipeline (Ch 18–21) | 4 | 7,903 |
+| Horizons (Ch 22–23) | 2 | 2,515 |
+| Appendices | 2 | 1,249 |
+| References | — | 514 |
 
 ## Quick Start
 
@@ -117,8 +127,11 @@ Makefile        Build PDF, sample, word counts
 |---|---|
 | `make` | Build full manuscript PDF |
 | `make sample` | Build sample PDF (selected chapters) |
+| `make epub` | Build the EPUB release artifact |
 | `make word-count` | Per-chapter and total word counts |
 | `make data` | Regenerate H₂/H₂O data (requires PySCF) |
+| `make verify-data` | Independently verify H₂ integrals, JW coefficients, and sector spectra |
+| `make pipeline-check` | Verify Chapter 18 writes only ignored derived output and leaves canonical data unchanged |
 | `make clean` | Remove generated files |
 
 ## The FockMap Library
@@ -127,11 +140,19 @@ The code in this book uses the [FockMap](https://github.com/johnazariah/encoding
 library, published on NuGet. Labs reference it via:
 
 ```fsharp
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 open Encodings
+open Encodings.JordanWigner
 ```
+
+FockMap feature modules are explicit rather than `AutoOpen`; Hamiltonian,
+tapering, Trotter, circuit-export, and other examples open their corresponding
+`Encodings.*` modules.
 
 ## License
 
-Manuscript text: All rights reserved.
-Code (labs, scripts): MIT License.
+Manuscript and rendered book: © 2026 John S Azariah, all rights reserved
+([MANUSCRIPT-RIGHTS](MANUSCRIPT-RIGHTS)).
+
+Companion code and build automation: MIT License
+([LICENSE-CODE](LICENSE-CODE)).

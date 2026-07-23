@@ -10,7 +10,7 @@ index: 7
 (**
 # Trotter Cost: From Pauli Weight to CNOT Count
 
-In the [scaling analysis](06-scaling.html), we compared encodings by their
+In the [scaling analysis](06-scaling.fsx), we compared encodings by their
 **Pauli weight** — the number of non-identity Pauli operators in an encoded
 ladder operator. But Pauli weight is a proxy for what actually matters on
 hardware: **CNOT gates**.
@@ -40,39 +40,26 @@ where $L$ is the number of Pauli terms and $w_k$ is the weight of term $k$.
 ## Setup
 *)
 
-#r "nuget: FockMap"
+#load "../code/ch03-spin-orbitals.fsx"
+#load "PauliMatrix.fsx"
 
 open Encodings
+open Encodings.BravyiKitaev
+open Encodings.Hamiltonian
+open Encodings.JordanWigner
+open Encodings.MajoranaEncoding
+open Encodings.TreeEncoding
 open System.Numerics
 
 (**
-## H₂ Integrals (STO-3G, R = 0.7414 Å)
+## H₂ Integrals (STO-3G, R = 0.74 Å)
 
-These are the same integrals from the [H₂ lab](02-h2-molecule.html)
-and the [grand finale](../guides/cookbook/13-grand-finale.html):
+The complete generated tensor is shared with Chapter 3 and checked by
+`make verify-data`; this lab does not maintain a second truncated map.
 *)
 
 let nModes = 4u
-
-let integrals = Map [
-    ("0,0", Complex(-1.2563, 0.0)); ("1,1", Complex(-1.2563, 0.0))
-    ("2,2", Complex(-0.4719, 0.0)); ("3,3", Complex(-0.4719, 0.0))
-    ("0,0,0,0", Complex(0.6745, 0.0)); ("1,1,1,1", Complex(0.6745, 0.0))
-    ("2,2,2,2", Complex(0.6974, 0.0)); ("3,3,3,3", Complex(0.6974, 0.0))
-    ("0,0,1,1", Complex(0.6745, 0.0)); ("1,1,0,0", Complex(0.6745, 0.0))
-    ("0,0,2,2", Complex(0.6636, 0.0)); ("2,2,0,0", Complex(0.6636, 0.0))
-    ("0,0,3,3", Complex(0.6636, 0.0)); ("3,3,0,0", Complex(0.6636, 0.0))
-    ("1,1,2,2", Complex(0.6636, 0.0)); ("2,2,1,1", Complex(0.6636, 0.0))
-    ("1,1,3,3", Complex(0.6636, 0.0)); ("3,3,1,1", Complex(0.6636, 0.0))
-    ("2,2,3,3", Complex(0.6974, 0.0)); ("3,3,2,2", Complex(0.6974, 0.0))
-    ("0,2,2,0", Complex(0.1809, 0.0)); ("2,0,0,2", Complex(0.1809, 0.0))
-    ("1,3,3,1", Complex(0.1809, 0.0)); ("3,1,1,3", Complex(0.1809, 0.0))
-]
-
-let lookup key =
-    match (key : string).Split(',').Length with
-    | 2 | 4 -> integrals |> Map.tryFind key
-    | _ -> None
+let lookup = ``Ch03-spin-orbitals``.h2RawPhysicistFactory
 
 (**
 ## CNOT Cost Computation
@@ -92,7 +79,10 @@ let cnotsPerRotation w = 2 * (w - 1) |> max 0
 let trotterCost (ham : PauliRegisterSequence) =
     let terms = ham.DistributeCoefficient.SummandTerms
     let nonIdentityTerms =
-        terms |> Array.filter (fun t -> pauliWeight t.Signature > 0)
+        terms
+        |> Array.filter (fun term ->
+            Complex.Abs term.Coefficient > 1e-12
+            && pauliWeight term.Signature > 0)
     let totalCnots =
         nonIdentityTerms
         |> Array.sumBy (fun t -> t.Signature |> pauliWeight |> cnotsPerRotation)
@@ -135,6 +125,7 @@ let mutable jwCnots = 0
 
 for (name, encode) in encoders do
     let ham = computeHamiltonianWith encode lookup nModes
+    PauliMatrix.assertH2Spectrum name 1e-7 ham
     let stats = trotterCost ham
     if name = "Jordan-Wigner" then jwCnots <- stats.TotalCnots
     let comparison =
@@ -199,31 +190,27 @@ printfn "╚══════════════════════�
 (**
 ## The Scaling Story
 
-The crossover is now visible:
+The reproduced operator-level separation is visible:
 
-- At $n = 4$: JW (weight 4) and Ternary Tree (weight 2) are comparable
-- At $n = 32$: JW needs **62 CNOTs** per worst-case rotation, while
-  Ternary Tree needs only **6** — a **10× reduction**
-- At $n = 100$: JW would need **198 CNOTs** per rotation, while
-  Ternary Tree needs only **8** — a **25× reduction**
+- At $n = 32$: JW uses 62 standard staircase CNOTs for its worst-case
+  rotation, while the tested ternary mapping uses 8.
+- At $n = 64$: the corresponding values are 126 and 10, a 12.6x ratio.
 
-These per-rotation savings compound across every term in the Hamiltonian
-and every Trotter step, making encoding choice the single largest
-lever for reducing circuit depth in Trotter-based simulation.
+These are maximum single-rotation costs. A molecular step needs the complete
+generated distribution of terms and weights.
 
 ## The Formula in Context
 
-The $2(w-1)$ CNOT cost is a hard floor: it's the minimum number of
-entangling gates needed to implement a Pauli rotation in the standard
-circuit model (without ancillae). Any Trotter-based simulation must
-pay this cost for every term in every time step. This is why encoding
-choice is a **first-order concern** for quantum simulation — it
-doesn't just affect abstract operator weight, it directly determines
-the number of noisy two-qubit gates your quantum computer must execute.
+The $2(w-1)$ count is the cost of the standard compute–rotate–uncompute
+CNOT staircase on an all-to-all logical device without ancillae.
+Connectivity-aware compilation, cancellations between adjacent rotations,
+ancilla-assisted constructions, or different native entangling gates can
+change the final count. Pauli weight is therefore a useful pre-compilation
+cost signal, not a universal lower bound.
 
 ---
 
-**Previous:** [Encoding Scaling Analysis](06-scaling.html)
+**Previous:** [Encoding Scaling Analysis](06-scaling.fsx)
 
-**Back to:** [Lab index](index.html)
+**Back to:** [Repository quick start](../README.md#quick-start)
 *)
