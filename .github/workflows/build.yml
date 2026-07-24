@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +26,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install mermaid-cli
         run: sudo npm install -g @mermaid-js/mermaid-cli
 
@@ -39,7 +44,6 @@ jobs:
 
       - name: Build sample PDF
         run: make sample
-        continue-on-error: true
 
       - name: Word count
         run: make word-count
@@ -57,7 +61,7 @@ jobs:
           path: manuscript/molecules-to-circuits-sample.pdf
 
   labs:
-    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
