@@ -217,7 +217,7 @@ parity remains under CA-H002/003.
 
 **Canonical upstream fixture:** `code/physicist_spin_integrals.json` is
 byte-identical to `johnazariah/encodings-research` commit
-`1e000bbc9664b8e5cfef48608d07364279c0a54f`, path
+`66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`, path
 `papers/results/h2_sto3g/physicist_spin_integrals.json`, git blob
 `e0477e70c0dfd35b865000bb23b7b31882b062d3`, and file SHA-256
 `6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812`.

@@ -1,7 +1,7 @@
 {
   "description": "Immutable-source provenance for the vendored H2/STO-3G physicist spin-integral fixture. Pins the source COMMIT and git BLOB (content-addressed, immutable), not a mutable branch. The two hashes below are computed over the sibling file physicist_spin_integrals.json, which is the byte-for-byte vendored artifact.",
   "source_repo": "johnazariah/encodings-research",
-  "source_commit": "1e000bbc9664b8e5cfef48608d07364279c0a54f",
+  "source_commit": "66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06",
   "source_path": "papers/results/h2_sto3g/physicist_spin_integrals.json",
   "git_blob_sha1": "e0477e70c0dfd35b865000bb23b7b31882b062d3",
   "file_sha256": "6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812",
