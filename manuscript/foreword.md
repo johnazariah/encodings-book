@@ -6,6 +6,10 @@
 
 Centre for Quantum Software and Information, University of Technology Sydney
 
+> **Rights:** Manuscript and rendered book © 2026 John S Azariah. All rights
+> reserved. Companion source code is available under the MIT License; see
+> `LICENSE-CODE`.
+
 ---
 
 *For my parents, who believed before I did.*
@@ -24,20 +28,18 @@ matters for the circuit you'll run on a quantum computer.
 
 This book fills that gap.
 
-We walk through the complete pipeline — from molecular geometry to
-quantum circuit — with two running examples: the hydrogen molecule
+We walk through the translation from molecular data to logical quantum
+circuits with two running examples: the hydrogen molecule
 (H₂), because it is the simplest system that exhibits all the
 essential structure, and the water molecule (H₂O), because it is
 the most important molecule on Earth and rich enough to make the
 engineering trade-offs tangible.
 
-Every formula in this book has a corresponding executable computation
-in the FockMap library, an open-source F# framework for symbolic
-Fock-space operator algebra. Every sign, every coefficient, every
-intermediate Pauli string is computed explicitly. Nothing is left as
-an exercise for the reader — though there are plenty of exercises at
-the end of each chapter for readers who want to deepen their
-understanding.
+Core transformations have executable FockMap companions, while PySCF scripts
+produce the independent chemistry references. The companions expose signs,
+coefficients, and intermediate Pauli strings and fail closed when a live
+package does not reproduce the canonical matrix. Exercises remain at the end
+of each chapter for readers who want to deepen their understanding.
 
 The book follows a deliberate pedagogical ordering: chemistry and
 physics first, mathematical formalism second, executable code third.
@@ -80,7 +82,7 @@ simulation pipeline:
 3. **Encoding** (Chapters 5–9) — from fermions to qubits
 4. **Tapering** (Chapters 10–13) — removing redundant qubits
 5. **Circuits** (Chapters 14–17) — Trotterization and cost analysis
-6. **The Pipeline** (Chapters 18–21) — complete pipeline, bond angle, algorithms, export
+6. **The Pipeline** (Chapters 18–21) — integration, fixed-bond scan, algorithms, export
 7. **Horizons** (Chapters 22–23) — scaling and what comes next
 
 You can read straight through (recommended for first reading), or
@@ -94,7 +96,7 @@ All computations in this book are reproducible using the FockMap
 library:
 
 - **Source code:** https://github.com/johnazariah/encodings
-- **NuGet package:** `dotnet add package FockMap`
+- **NuGet package:** `dotnet add package FockMap --version 0.9.0`
 - **Web documentation:** https://johnazariah.github.io/encodings/
 
 The library is open-source (MIT license), runs on Windows, macOS,

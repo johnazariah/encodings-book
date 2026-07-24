@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   build:
-    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -26,6 +26,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Install Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Install mermaid-cli
         run: sudo npm install -g @mermaid-js/mermaid-cli
 
@@ -39,7 +44,6 @@ jobs:
 
       - name: Build sample PDF
         run: make sample
-        continue-on-error: true
 
       - name: Word count
         run: make word-count
@@ -48,16 +52,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: manuscript
-          path: manuscript/manuscript.pdf
+          path: manuscript/molecules-to-circuits.pdf
 
       - name: Upload sample PDF
         uses: actions/upload-artifact@v4
         with:
           name: sample
-          path: manuscript/sample.pdf
+          path: manuscript/molecules-to-circuits-sample.pdf
 
   labs:
-    runs-on: [self-hosted, Linux, X64, buildbeast, podman, ci]
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
 
@@ -66,9 +70,13 @@ jobs:
         with:
           dotnet-version: '10.0.x'
 
+      - name: Execute labs
+        run: make lab-check
+
       - name: Package labs
         run: |
-          tar czf labs.tar.gz labs/ code/ README.md
+          tar czf labs.tar.gz \
+            labs/ code/ scripts/ README.md LICENSE-CODE MANUSCRIPT-RIGHTS
           echo "Labs tarball created"
           ls -lh labs.tar.gz
 

@@ -39,7 +39,7 @@ Each spatial orbital produces **two** spin-orbitals. Two spatial orbitals give f
 
 In the non-relativistic Hamiltonian we've been using, spin and spatial degrees of freedom are completely independent — the Hamiltonian contains no term that couples them. An electron in $\sigma_g$ with spin $\alpha$ has exactly the same energy as one with spin $\beta$. The one-body integrals are spin-independent, and the two-body integrals only require each electron to conserve its own spin (as we'll see below).
 
-This is an approximation. In reality, **spin-orbit coupling** — the interaction between an electron's spin angular momentum and its orbital angular momentum — mixes the spin and spatial degrees of freedom. The coupling strength scales as $Z^4$ (the fourth power of the nuclear charge), so it is negligible for hydrogen ($Z=1$) and small for light elements like carbon and oxygen, but significant for heavy atoms (iodine, lead, actinides).
+This is an approximation. In reality, **spin-orbit coupling** — the interaction between an electron's spin angular momentum and its orbital angular momentum — mixes the spin and spatial degrees of freedom. Hydrogenic estimates often scale roughly as $Z^4$, but molecular trends also depend on electronic structure and bonding. The effect is negligible for H₂ and small for the light-element examples in this book, but it can be significant for heavy atoms such as iodine, lead, and the actinides.
 
 For the molecules in this book (H₂, H₂O), spin-orbit coupling is negligible and we work with the non-relativistic Hamiltonian throughout. This means:
 - One-body integrals are diagonal in spin: $\langle \alpha \mid \beta \rangle = 0$
@@ -75,7 +75,7 @@ The conversion between spin-orbital index $p$ and spatial orbital/spin:
 
 $$\text{spatial orbital} = \lfloor p/2 \rfloor \qquad \text{spin} = p \bmod 2 \quad (0 = \alpha,\; 1 = \beta)$$
 
-> **Convention alert:** Some references use **blocked** indexing ($\alpha$ orbitals first, then all $\beta$), so the ordering would be $0\alpha, 1\alpha, 0\beta, 1\beta$. We use interleaved indexing because it matches PySCF's default and FockMap's convention. If your integral source uses a different spin-orbital ordering, you must permute before proceeding. This is another silent-error source.
+> **Convention alert:** Some references use **blocked** indexing ($\alpha$ orbitals first, then all $\beta$), so the ordering would be $0\alpha, 1\alpha, 0\beta, 1\beta$. This book's PySCF-to-FockMap conversion imposes interleaved indexing; PySCF itself does not define one universal spin-orbital ordering for every interface. If your integral source uses a different order, permute the indices before proceeding. This is another silent-error source.
 
 ---
 
@@ -93,10 +93,10 @@ Why? The one-body Hamiltonian (kinetic energy + electron-nucleus attraction) doe
 
 | $p$ | $q$ | $h^{\text{spin}}_{pq}$ (Ha) | How we got it |
 |:---:|:---:|:---:|:---|
-| 0 ($\sigma_g, \alpha$) | 0 ($\sigma_g, \alpha$) | $-1.2563$ | $h^{\text{spatial}}_{00}$, same spin ✓ |
-| 1 ($\sigma_g, \beta$)  | 1 ($\sigma_g, \beta$)  | $-1.2563$ | $h^{\text{spatial}}_{00}$, same spin ✓ |
-| 2 ($\sigma_u, \alpha$) | 2 ($\sigma_u, \alpha$) | $-0.4719$ | $h^{\text{spatial}}_{11}$, same spin ✓ |
-| 3 ($\sigma_u, \beta$)  | 3 ($\sigma_u, \beta$)  | $-0.4719$ | $h^{\text{spatial}}_{11}$, same spin ✓ |
+| 0 ($\sigma_g, \alpha$) | 0 ($\sigma_g, \alpha$) | $-1.2533$ | $h^{\text{spatial}}_{00}$, same spin ✓ |
+| 1 ($\sigma_g, \beta$)  | 1 ($\sigma_g, \beta$)  | $-1.2533$ | $h^{\text{spatial}}_{00}$, same spin ✓ |
+| 2 ($\sigma_u, \alpha$) | 2 ($\sigma_u, \alpha$) | $-0.4751$ | $h^{\text{spatial}}_{11}$, same spin ✓ |
+| 3 ($\sigma_u, \beta$)  | 3 ($\sigma_u, \beta$)  | $-0.4751$ | $h^{\text{spatial}}_{11}$, same spin ✓ |
 
 All off-diagonal entries ($p \neq q$) are zero — either because the spatial integral is zero ($h^{\text{spatial}}_{01} = 0$ by symmetry) or because the spins don't match.
 
@@ -158,22 +158,26 @@ For reference, here are all the inputs to the encoding pipeline.
 | Electrons | 2 |
 | Two-electron configurations | $\binom{4}{2} = 6$ |
 
+The numerical values below are repository-generated PySCF data, not constants
+quoted from a paper. The artifact records the PySCF version, geometry, RHF
+orbital basis, tensor convention, and checksum; `make verify-data` regenerates
+and checks it (Sun et al., 2020).
+
 ### Spatial One-Body Integrals $h_{pq}$ (Ha)
 
 |  | $q = 0$ ($\sigma_g$) | $q = 1$ ($\sigma_u$) |
 |:---:|:---:|:---:|
-| $p = 0$ | $-1.2563390730$ | $0$ |
-| $p = 1$ | $0$ | $-0.4718960244$ |
+| $p = 0$ | $-1.2533097866$ | $0$ |
+| $p = 1$ | $0$ | $-0.4750688488$ |
 
 ### Spatial Two-Body Integrals $[pq \mid rs]$ (Ha)
 
 | Chemist's integral | Value | Physicist's equivalent |
 |:---:|:---:|:---:|
-| $[00 \mid 00]$ | $0.6744887663$ | $\langle 00 \mid 00\rangle$ |
-| $[11 \mid 11]$ | $0.6973979495$ | $\langle 11 \mid 11\rangle$ |
-| $[00 \mid 11] = [11 \mid 00]$ | $0.6636340479$ | $\langle 01 \mid 01\rangle = \langle 10 \mid 10\rangle$ |
-| $[01 \mid 10] = [10 \mid 01]$ | $0.1809312700$ | $\langle 01 \mid 10\rangle = \langle 10 \mid 01\rangle$ |
-| $[01 \mid 01] = [10 \mid 10]$ | $0.6975782469$ | $\langle 00 \mid 11\rangle = \langle 11 \mid 00\rangle$ |
+| $[00 \mid 00]$ | $0.6747559268$ | $\langle 00 \mid 00\rangle$ |
+| $[11 \mid 11]$ | $0.6976515045$ | $\langle 11 \mid 11\rangle$ |
+| $[00 \mid 11] = [11 \mid 00]$ | $0.6637114014$ | $\langle 01 \mid 01\rangle = \langle 10 \mid 10\rangle$ |
+| $[01 \mid 01] = [01 \mid 10] = [10 \mid 01] = [10 \mid 10]$ | $0.1812104620$ | $\langle 00 \mid 11\rangle = \langle 01 \mid 10\rangle = \langle 10 \mid 01\rangle = \langle 11 \mid 00\rangle$ |
 
 All other spatial two-body integrals are zero.
 
@@ -183,68 +187,28 @@ All other spatial two-body integrals are zero.
 
 ## From Tables to Code
 
-With the integral tables complete, we can build the coefficient factory that FockMap's Hamiltonian construction functions consume:
+The executable companion loads the canonical `0.74` record from the generated
+JSON rather than maintaining another literal tensor:
 
 ```fsharp
-open System.Numerics
-open Encodings
+#load "code/ch03-spin-orbitals.fsx"
 
-let h2Integrals = Map [
-    // One-body (spin-orbital, interleaved indexing)
-    ("0,0", Complex(-1.2563390730, 0.0))
-    ("1,1", Complex(-1.2563390730, 0.0))
-    ("2,2", Complex(-0.4718960244, 0.0))
-    ("3,3", Complex(-0.4718960244, 0.0))
+let h2RawPhysicistIntegrals =
+    ``Ch03-spin-orbitals``.h2RawPhysicistIntegrals
+let h2RawPhysicistFactory =
+    ``Ch03-spin-orbitals``.h2RawPhysicistFactory
 
-    // Two-body (physicist's convention, spin-orbital)
-    // Same-spin αα-αα
-    ("0,0,0,0", Complex(0.6744887663, 0.0))
-    ("2,2,2,2", Complex(0.6973979495, 0.0))
-    ("0,2,2,0", Complex(0.1809312700, 0.0))
-    ("2,0,0,2", Complex(0.1809312700, 0.0))
-    ("0,2,0,2", Complex(0.6975782469, 0.0))
-    ("2,0,2,0", Complex(0.6975782469, 0.0))
-    ("0,0,2,2", Complex(0.6636340479, 0.0))
-    ("2,2,0,0", Complex(0.6636340479, 0.0))
-
-    // Same-spin ββ-ββ (identical values, odd indices)
-    ("1,1,1,1", Complex(0.6744887663, 0.0))
-    ("3,3,3,3", Complex(0.6973979495, 0.0))
-    ("1,3,3,1", Complex(0.1809312700, 0.0))
-    ("3,1,1,3", Complex(0.1809312700, 0.0))
-    ("1,3,1,3", Complex(0.6975782469, 0.0))
-    ("3,1,3,1", Complex(0.6975782469, 0.0))
-    ("1,1,3,3", Complex(0.6636340479, 0.0))
-    ("3,3,1,1", Complex(0.6636340479, 0.0))
-
-    // Cross-spin αβ-αβ (electron 1 = α, electron 2 = β)
-    ("0,1,0,1", Complex(0.6744887663, 0.0))
-    ("0,3,0,3", Complex(0.6636340479, 0.0))
-    ("2,1,2,1", Complex(0.6636340479, 0.0))
-    ("2,3,2,3", Complex(0.6973979495, 0.0))
-    ("0,1,2,3", Complex(0.6975782469, 0.0))
-    ("2,3,0,1", Complex(0.6975782469, 0.0))
-    ("0,3,2,1", Complex(0.1809312700, 0.0))
-    ("2,1,0,3", Complex(0.1809312700, 0.0))
-
-    // Cross-spin βα-βα (electron 1 = β, electron 2 = α)
-    ("1,0,1,0", Complex(0.6744887663, 0.0))
-    ("1,2,1,2", Complex(0.6636340479, 0.0))
-    ("3,0,3,0", Complex(0.6636340479, 0.0))
-    ("3,2,3,2", Complex(0.6973979495, 0.0))
-    ("1,0,3,2", Complex(0.6975782469, 0.0))
-    ("3,2,1,0", Complex(0.6975782469, 0.0))
-    ("1,2,3,0", Complex(0.1809312700, 0.0))
-    ("3,0,1,2", Complex(0.1809312700, 0.0))
-]
-
-let h2Factory key = h2Integrals |> Map.tryFind key
-
-// Build the 4-qubit H₂ Hamiltonian with Jordan-Wigner
-let h2Hamiltonian = computeHamiltonianWith jordanWignerTerms h2Factory 4u
+let h2Hamiltonian =
+    computeHamiltonian h2RawPhysicistFactory 4u
 ```
 
-This is our first substantial code block — the coefficient factory that will feed the entire encoding pipeline. Notice the pattern: we built the chemistry understanding (Chapter 1), pinned down the notation (Chapter 2), expanded to spin-orbitals (this chapter), and only now convert to code. The code is evidence that the tables are correct, not a substitute for understanding them.
+The displayed tables are rounded views of that machine-readable record.
+`make verify-data` regenerates the record, checks its checksum and raw MO
+tensors, and re-derives the direct/JW matrix. The canonical 4+32 tensor is
+byte-identical to the audited `encodings-research` artifact pinned by commit,
+git blob, and SHA-256. FockMap's primary Hamiltonian builders consume raw
+`(p,q,r,s) -> <pq|rs>` entries directly and internally assemble
+`0.5 * <pq|rs> a^p a^q a_s a_r`.
 
 ---
 
@@ -266,7 +230,7 @@ Before we can encode, we need to understand the target. Chapter 4 introduces the
 
 ## Common Mistakes
 
-1. **Omitting cross-spin blocks.** The $\alpha\beta$ and $\beta\alpha$ blocks produce the off-diagonal Pauli terms (XX, YY) that create entanglement. Without them, your quantum simulation is classical. **This is the single most common implementation failure at the integral stage** — if your encoded Hamiltonian has no off-diagonal terms, check the cross-spin blocks first.
+1. **Omitting cross-spin blocks.** The $\alpha\beta$ and $\beta\alpha$ blocks contribute the expected configuration-coupling Pauli terms. Omitting them produces the wrong fermionic matrix and fails the independent FCI reference. If those terms are absent, check the cross-spin expansion first.
 
 2. **Wrong spin-orbital ordering.** Interleaved ($0\alpha, 0\beta, 1\alpha, 1\beta$) vs blocked ($0\alpha, 1\alpha, 0\beta, 1\beta$) indexing produces different integral tables. The eigenvalues are independent of indexing, but the Pauli string structure changes. Always check your convention.
 

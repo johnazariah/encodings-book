@@ -1,14 +1,11 @@
 # ══════════════════════════════════════════════════════════════
 # Chapter 19 Companion: H₂O Bond Angle Scan
 # ══════════════════════════════════════════════════════════════
-# Run with: python book/code/ch19-bond-angle-scan.py
-# Prereq:   pip install pyscf matplotlib numpy
-# Output:   book/code/h2o_bond_angle_coarse.csv
-#           book/code/h2o_bond_angle_fine.csv
-#           book/code/h2o_bond_angle.png
-#
-# Basis-set comparison mode (cc-pVDZ and cc-pVTZ):
-#   python book/code/ch19-bond-angle-scan.py --basis-comparison
+# Run with: python3 code/ch19-bond-angle-scan.py
+# Prereq:   python3 -m pip install -r requirements-data.txt
+# Output:   code/h2o_bond_angle_coarse.csv
+#           code/h2o_bond_angle_fine.csv
+#           manuscript/figures/h2o_bond_angle.png
 #
 # Default mode computes the STO-3G total energy (RHF + FCI)
 # of H₂O as a function of the H-O-H bond angle. Two passes:
@@ -17,12 +14,16 @@
 # Plots both and finds the minimum.
 
 import csv
+import hashlib
+import json
 import os
 
 import numpy as np
+import pyscf
 from pyscf import fci, gto, scf
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGURE_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "manuscript", "figures")
 BOND_LENGTH = 0.9584  # O-H bond length in Ångströms (experimental)
 
 
@@ -77,11 +78,56 @@ def write_csv(filename, results):
     return path
 
 
+def file_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(65536), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def write_metadata(coarse_path, fine_path, plot_path):
+    generated_files = {
+        os.path.relpath(coarse_path, os.path.dirname(SCRIPT_DIR)): file_sha256(
+            coarse_path
+        ),
+        os.path.relpath(fine_path, os.path.dirname(SCRIPT_DIR)): file_sha256(
+            fine_path
+        ),
+    }
+    if plot_path and os.path.exists(plot_path):
+        generated_files[
+            os.path.relpath(plot_path, os.path.dirname(SCRIPT_DIR))
+        ] = file_sha256(plot_path)
+
+    metadata = {
+        "generator": "code/ch19-bond-angle-scan.py",
+        "command": "python3 code/ch19-bond-angle-scan.py",
+        "pyscf_version": pyscf.__version__,
+        "numpy_version": np.__version__,
+        "molecule": "H2O",
+        "basis": "sto-3g (PySCF built-in basis data)",
+        "method": "RHF canonical molecular orbitals followed by PySCF FCI",
+        "charge": 0,
+        "spin_2S": 0,
+        "fixed_OH_bond_length_angstrom": BOND_LENGTH,
+        "geometry": "O at origin; H atoms symmetric about z axis",
+        "coarse_grid_degrees": list(range(60, 185, 5)),
+        "fine_grid_degrees": list(range(95, 116)),
+        "generated_files_sha256": generated_files,
+    }
+    metadata_path = os.path.join(SCRIPT_DIR, "h2o_bond_angle_metadata.json")
+    with open(metadata_path, "w") as stream:
+        json.dump(metadata, stream, indent=2)
+        stream.write("\n")
+    print("  Written to: h2o_bond_angle_metadata.json")
+
+
 def main():
     # ── Pass 1: Coarse scan ──
     coarse_angles = list(range(60, 185, 5))  # 60, 65, ..., 180
     coarse = scan(coarse_angles, "Pass 1: Coarse scan (60°–180°, 5° steps)")
-    write_csv("h2o_bond_angle_coarse.csv", coarse)
+    coarse_path = write_csv("h2o_bond_angle_coarse.csv", coarse)
 
     # Find approximate minimum
     min_idx = min(range(len(coarse)), key=lambda i: coarse[i][3])
@@ -91,7 +137,7 @@ def main():
     # ── Pass 2: Fine scan ──
     fine_angles = [float(a) for a in range(95, 116)]  # 95, 96, ..., 115
     fine = scan(fine_angles, "Pass 2: Fine scan (95°–115°, 1° steps)")
-    write_csv("h2o_bond_angle_fine.csv", fine)
+    fine_path = write_csv("h2o_bond_angle_fine.csv", fine)
 
     # Find precise minimum
     min_idx_fine = min(range(len(fine)), key=lambda i: fine[i][3])
@@ -100,6 +146,7 @@ def main():
     print(f"  Fine minimum at: {fine_min_angle:.0f}°  E = {fine_min_energy:.8f} Ha")
 
     # ── Plot ──
+    plot_path = None
     try:
         import matplotlib
 
@@ -148,12 +195,15 @@ def main():
         ax2.grid(True, alpha=0.3)
 
         plt.tight_layout()
-        plot_path = os.path.join(SCRIPT_DIR, "h2o_bond_angle.png")
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        plot_path = os.path.join(FIGURE_DIR, "h2o_bond_angle.png")
         plt.savefig(plot_path, dpi=150, bbox_inches="tight")
         print("\n  Plot saved to: h2o_bond_angle.png")
     except ImportError:
         print("\n  matplotlib not installed — skipping plot.")
         print("  Install with: pip install matplotlib")
+
+    write_metadata(coarse_path, fine_path, plot_path)
 
     # ── Print markdown table for the book ──
     print("\n\nMarkdown table for Chapter 19 (coarse scan, selected angles):")
@@ -188,70 +238,5 @@ def main():
             print(f"| {la_str} | {le_str} | | | |")
 
 
-def basis_comparison():
-    """Compare bond angle predictions across basis sets and methods.
-
-    Runs HF, MP2, and CASCI(8,8) scans at cc-pVDZ and cc-pVTZ.
-    Produces the basis-comparison table used in Ch 19 'What Do the Numbers Mean?'
-    """
-    from pyscf import mcscf, mp
-
-    def h2o_multi(angle_degrees, basis):
-        angle_rad = np.radians(angle_degrees)
-        hx = BOND_LENGTH * np.sin(angle_rad / 2)
-        hz = BOND_LENGTH * np.cos(angle_rad / 2)
-        mol = gto.M(
-            atom=f"O 0 0 0; H {hx} 0 {hz}; H {-hx} 0 {hz}",
-            basis=basis,
-            symmetry=False,
-            verbose=0,
-        )
-        mf = scf.RHF(mol)
-        mf.kernel()
-        e_hf = mf.e_tot
-
-        mp2_obj = mp.MP2(mf)
-        mp2_obj.kernel()
-        e_mp2 = mf.e_tot + mp2_obj.e_corr
-
-        mc = mcscf.CASCI(mf, 8, 8)
-        mc.kernel()
-        e_cas = mc.e_tot
-
-        return e_hf, e_mp2, e_cas
-
-    angles = list(range(98, 112))
-
-    for basis_name in ["cc-pvdz", "cc-pvtz"]:
-        print(f"\n=== {basis_name.upper()} — HF / MP2 / CASCI(8,8) ===")
-        print(f"  {'Angle':>5}  {'E_HF':>14}  {'E_MP2':>14}  {'E_CASCI':>14}")
-        print(f"  {'-----':>5}  {'-' * 14}  {'-' * 14}  {'-' * 14}")
-
-        best = {"hf": (0, 1e10), "mp2": (0, 1e10), "cas": (0, 1e10)}
-        for angle in angles:
-            e_hf, e_mp2, e_cas = h2o_multi(float(angle), basis_name)
-            print(f"  {angle:>5}  {e_hf:14.8f}  {e_mp2:14.8f}  {e_cas:14.8f}")
-            if e_hf < best["hf"][1]:
-                best["hf"] = (angle, e_hf)
-            if e_mp2 < best["mp2"][1]:
-                best["mp2"] = (angle, e_mp2)
-            if e_cas < best["cas"][1]:
-                best["cas"] = (angle, e_cas)
-
-        print(f"\n  Minima — HF: {best['hf'][0]}°  MP2: {best['mp2'][0]}°  CASCI: {best['cas'][0]}°")
-
-    print("\n=== Summary (for Ch 19 table) ===")
-    print("| Basis | HF min | MP2 min | Correlated min | Expt. |")
-    print("|:---|:---:|:---:|:---:|:---:|")
-    print("| STO-3G (7 orbitals) | 101° | — | 99° (FCI) | 104.52° |")
-    print("| cc-pVDZ (24 orbitals) | 104° | 102° | 100° (CASCI) | 104.52° |")
-    print("| cc-pVTZ (58 orbitals) | 105° | 104° | 104° (CASCI) | 104.52° |")
-
-
 if __name__ == "__main__":
-    import sys
-
-    if "--basis-comparison" in sys.argv:
-        basis_comparison()
-    else:
-        main()
+    main()

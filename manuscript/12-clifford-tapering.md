@@ -67,15 +67,20 @@ commutes a b  // true — XX and ZZ commute
 
 A Pauli string $g$ is a Z₂ symmetry of $\hat{H}$ if it commutes with every term and squares to the identity. Since every phase-free Pauli string (a tensor product of $\{I, X, Y, Z\}$, which is how this book represents them) squares to $I$, the squaring condition is automatic.
 
-The commutation condition $\text{crosswise dot product} = 0$ for all terms $t_k$ is a system of linear equations where the arithmetic is binary (0 and 1, with addition meaning XOR). The solution set — the **null space** of the commutation check matrix — gives all Z₂ generators.
+The commutation condition $\text{crosswise dot product} = 0$ for all terms
+$t_k$ is a system of binary linear equations. Its null space is the Pauli
+**centralizer** of the Hamiltonian: every solution commutes with every
+Hamiltonian term. An arbitrary basis of that null space need not commute
+pairwise. Tapering therefore needs a second step: select an independent
+mutually commuting (Abelian) subgroup and retain the Pauli phases
+(Bravyi et al., 2017).
 
 ```fsharp
-let generators = findCommutingGenerators hamiltonian
-// Returns SymplecticVector[] — all Pauli strings that commute with every term
+let centralizer = findCommutingGenerators hamiltonian
+// Candidate Pauli strings that commute with every Hamiltonian term.
 
-let indep = independentGenerators generators
-// Selects a maximal linearly independent subset (binary linear algebra)
-// The number of independent generators = max qubits taperable
+// A valid tapering implementation must then select independent candidates
+// that also commute with one another and track their phases.
 ```
 
 The null space computation uses Gaussian elimination with XOR instead of subtraction — the same row-reduction you learned in linear algebra, but in binary arithmetic. It runs in $O(L \cdot n^2)$ time, where $L$ is the number of Hamiltonian terms and $n$ is the number of qubits. In practice, this is dominated by the $O(n^4)$ cost of integral processing and is never the bottleneck. See Bravyi et al. (arXiv:1701.08213, §III) for the formal analysis.
@@ -98,10 +103,11 @@ This rotates each multi-qubit generator onto a single-qubit $Z$, making the syst
 >
 > 1. **Represent** each term $P_k$ as a $2n$-bit symplectic vector.
 > 2. **Build** the $L \times 2n$ commutation check matrix (one row per term).
-> 3. **Compute** its null space via binary Gaussian elimination → independent generators $g_1, \ldots, g_m$.
-> 4. **For each** generator $g_i$: find a qubit $q_i$ where $g_i$ has support. If the support is X, apply H to convert to Z. If Y, apply S then H. Use CNOTs to clear all other qubits, leaving $g_i \to Z_{q_i}$. Collect the gate list.
-> 5. **Conjugate** every term $P_k$ by the collected Clifford gates (symbolically — substitution rules on symplectic vectors).
-> 6. **Fix** each target qubit $q_i$ to eigenvalue $\pm 1$ (the sector choice) and remove it.
+> 3. **Compute** its null space via binary Gaussian elimination to obtain the centralizer candidates.
+> 4. **Select** an independent mutually commuting subgroup $g_1,\ldots,g_m$, including each generator's phase.
+> 5. **Synthesize** a Clifford that maps the generators to distinct single-qubit $Z_{q_i}$ operators while preserving generators already reduced. Local H/S choices and every CNOT update must track the Pauli phase.
+> 6. **Conjugate** every term $P_k$ by the collected Clifford gates.
+> 7. **Fix** each target qubit $q_i$ to the eigenvalue implied by the physical sector and remove it.
 >
 > **Complexity:** Step 3 is $O(L \cdot n^2)$; step 5 is $O(Lm)$ where $L$ is the number of terms. Total is dominated by Hamiltonian construction, not tapering.
 
@@ -113,10 +119,10 @@ FockMap synthesizes this circuit using three elementary gates:
 | Phase gate | $S_j$ | Maps X→Y on qubit $j$ (Z unchanged) |
 | CNOT | $\text{CNOT}_{c,t}$ | Propagates X from control to target; propagates Z from target to control |
 
-The synthesis algorithm:
-1. For each generator, find a qubit where it has support (X, Y, or Z bit set).
-2. If the support is X, apply H to convert to Z. If Y, apply S then H.
-3. Use CNOTs to clear all other qubits' support, leaving Z on exactly one qubit.
+The synthesis algorithm must choose target qubits and local Clifford gates
+consistently across the whole commuting set. Mapping a Y support may introduce
+a minus sign, and CNOT conjugation can also change Pauli phases. Dropping those
+signs changes Hamiltonian coefficients and can corrupt the tapered spectrum.
 
 ```fsharp
 let (gates, targets) = synthesizeTaperingClifford independentGens
@@ -144,18 +150,22 @@ After rotation, the target qubits are diagonally taperable, and we apply the v1 
 FockMap's `taper` function combines everything:
 
 ```fsharp
-// Full Clifford tapering (default)
-let result = taper defaultTaperingOptions hamiltonian
+// Full Clifford tapering in an explicitly derived physical sector
+let physicalOptions =
+    { defaultTaperingOptions with Sector = [(0, 1); (1, -1)] }
+let result = taper physicalOptions hamiltonian
 
-// Diagonal only (v1 fallback)
-let result = taper { defaultTaperingOptions with Method = DiagonalOnly } h
+// Diagonal-only exploration uses the same explicit sector discipline
+let diagonalResult =
+    taper { physicalOptions with Method = DiagonalOnly } h
 
-// Cap removal
-let result = taper { defaultTaperingOptions with MaxQubitsToRemove = Some 2 } h
-
-// Explicit sector
-let result = taper { defaultTaperingOptions with Sector = [(0,1); (1,-1)] } h
+// A removal cap changes cost, not the need to identify the sector
+let cappedResult =
+    taper { physicalOptions with MaxQubitsToRemove = Some 2 } h
 ```
+
+`defaultTaperingOptions` is a configuration starting point, not evidence that
+its default positive sector represents the target molecule.
 
 The result includes everything you need:
 
@@ -189,7 +199,9 @@ We need Pauli strings that commute with every term. Let's check $Z_0 Z_1$:
 - Does $Z_0 Z_1$ commute with $Y_0 Y_1$? X-bits of $YY$ are $(1,1)$, Z-bits are $(1,1)$. Crosswise sum: $(0 \cdot 1 + 1 \cdot 1) + (0 \cdot 1 + 1 \cdot 1) = 2$ → **commute** ✓
 - Does $Z_0 Z_1$ commute with itself? Always yes ✓
 
-$Z_0 Z_1$ is a Z₂ generator. One independent generator → one qubit can be tapered.
+$Z_0 Z_1$ is a Z₂ generator. The Heisenberg Hamiltonian has additional
+commuting structure, but we intentionally use this one generator to show a
+single-qubit reduction and both of its sectors.
 
 **Step 3: Clifford synthesis — rotate $Z_0 Z_1$ onto a single qubit.**
 
@@ -214,33 +226,34 @@ Under CNOT(0,1) conjugation, recall the full propagation rules: $Z_0 \to Z_0$, $
 | Original | Propagation | Result |
 |:---:|:---|:---:|
 | $X_0 X_1$ | $X_0 \to X_0 X_1$, $X_1 \to X_1$ | $(X_0 X_1)(X_1) = X_0 I_1 = X_0$ |
-| $Y_0 Y_1$ | $Y = iXZ$: use $X_0 \to X_0 X_1$, $Z_0 \to Z_0$, $X_1 \to X_1$, $Z_1 \to Z_0 Z_1$ | $Y_0 Y_1 \to (iX_0 X_1 Z_0)(iX_1 Z_0 Z_1) = -X_0 X_1 Z_0 X_1 Z_0 Z_1 = -Z_1$ |
+| $Y_0 Y_1$ | Conjugate the full Pauli product, including phase | $-X_0 Z_1$ |
 | $Z_0 Z_1$ | $Z_0 \to Z_0$, $Z_1 \to Z_0 Z_1$ | $Z_0 (Z_0 Z_1) = Z_1$ |
 
-After the CNOT rotation, the Hamiltonian becomes: $X_0 - Z_1 + Z_1 = X_0$. Qubit 1 now has only $I$ or $Z$ across all terms — it is diagonally taperable!
+After the CNOT rotation,
 
-**Step 5: Diagonal taper.** Fix qubit 1 to sector $+1$ (replacing $Z_1 \to +1$), remove it. The result is a 1-qubit Hamiltonian: $H_\text{tapered} = X_0$. Its eigenvalues are $\pm 1$, matching the original Heisenberg model's eigenspectrum (which you can verify by direct diagonalisation of the $4 \times 4$ matrix).
+$$H'=X_0-X_0Z_1+Z_1.$$
 
-```fsharp
-let heis =
-    [| PauliRegister("XX", Complex(1.0, 0.0))
-       PauliRegister("YY", Complex(1.0, 0.0))
-       PauliRegister("ZZ", Complex(1.0, 0.0)) |]
-    |> PauliRegisterSequence
+Qubit 1 is now diagonal, but its sector still matters:
 
-let result = taper defaultTaperingOptions heis
-printfn "%d → %d qubits" result.OriginalQubitCount result.TaperedQubitCount
-// 2 → 1 qubit
-```
+- $Z_1=+1$: $H'_+=I$, giving eigenvalues $\{1,1\}$.
+- $Z_1=-1$: $H'_-=2X_0-I$, giving eigenvalues $\{-3,1\}$.
 
-A 2-qubit problem reduced to 1 qubit — a 2× Hilbert space reduction that diagonal-only tapering would have missed entirely.
+Together the sectors give $\{-3,1,1,1\}$, exactly the spectrum of
+$XX+YY+ZZ$. The ground state is in the $-1$ sector. Replacing the result by
+the one-qubit Hamiltonian $X_0$ would lose both the $-3$ eigenvalue and the
+sector structure.
+
+A verified one-generator reduction turns each two-dimensional symmetry sector
+into a one-qubit problem. Both sectors are needed to recover the full spectrum.
+Direct $4\times4$ matrix conjugation provides an independent check of every
+sign in the symbolic derivation.
 
 ---
 
 ## Key Takeaways
 
 - The **binary Pauli representation** (two bits per qubit) turns commutativity checking into a crosswise binary dot product — fast and exact.
-- The **null space** of the commutation check matrix (computed by binary Gaussian elimination) gives all Z₂ generators.
+- The null space gives the Pauli centralizer; tapering needs an independent mutually commuting subgroup with phases.
 - **Clifford synthesis** rotates multi-qubit generators onto single-qubit Zs using H, S, and CNOT — no matrices needed.
 - **The unified `taper` function** handles both diagonal and Clifford tapering with one API.
 - Everything is symbolic and exact — no approximation, no eigensolvers, no numerical instability.

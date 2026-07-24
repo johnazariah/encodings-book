@@ -12,137 +12,110 @@ _H₂ was our teacher. H₂O was our first real test. Now we look at where the p
 
 ## The Scaling Landscape
 
-Every quantity in our pipeline grows with the number of spin-orbitals $n$:
+Several quantities grow with the number of spin-orbitals $n$, but they are not
+interchangeable:
 
-| Quantity | Growth | H₂ ($n{=}4$) | H₂O ($n{=}14$) | N₂ ($n{=}20$) | FeMo-co ($n{\approx}108$) |
-|:---|:---|:---:|:---:|:---:|:---:|
-| Qubits | $n$ | 4 | 14 | 20 | ~108 |
-| Hamiltonian terms | $O(n^4)$ | 15 | ~600 | ~2,000 | ~$10^7$ |
-| JW max weight | $n$ | 4 | 14 | 20 | 108 |
-| TT max weight | $O(\log_3 n)$ | 3 | 4 | 5 | ~5 |
-| Configurations (FCI) | $\binom{n}{n_e}$ | 6 | 1,001 | 38,760 | ~$10^{30}$ |
+- a direct occupation encoding uses $n$ system qubits before tapering;
+- the two-electron tensor has $O(n^4)$ index combinations before symmetry and
+  sparsity are exploited;
+- the fixed-particle-number determinant space has
+  $\binom{n}{n_e}$ basis states; and
+- encoded Pauli weight depends on the mapping and orbital ordering.
 
-The configuration count is why classical methods fail. Full CI (exact diagonalisation) scales as $\binom{n}{n_e}$ — the number of ways to place $n_e$ electrons in $n$ spin-orbitals. For FeMo-co, that's roughly $10^{30}$ determinants. No classical computer will ever enumerate them.
-
-A quantum computer doesn't enumerate configurations — it represents the quantum state directly in $n$ qubits. The cost is in the *circuit*, not the *state space*. And the circuit cost depends on the encoding.
-
----
-
-## The Encoding Crossover
-
-At 4 qubits, the encoding choice barely matters — Chapter 17 shows all encodings produce similar CNOT counts (JW: 36, TT: 40). At 12+ qubits, the differences become dramatic. The following table shows first-order Trotter CNOT counts *without tapering* — the raw encoding comparison:
-
-| Molecule | $n$ | JW CNOTs/step | TT CNOTs/step | Ratio |
-|:---|:---:|:---:|:---:|:---:|
-| H₂ | 4 | 36 | 40 | 0.9× |
-| LiH | 12 | ~1,200 | ~500 | 2.4× |
-| H₂O (frozen core) | 12 | ~1,800 | ~600 | 3.0× |
-| N₂ | 20 | ~5,000 | ~1,200 | 4.2× |
-| FeMo-co | ~108 | ~$10^7$ | ~$10^5$ | ~100× |
-
-The ratio grows because JW's Pauli weights grow linearly while TT's grow logarithmically. At FeMo-co scale, the difference is roughly two orders of magnitude for the *logical* (pre-transpilation) circuit. After hardware-specific transpilation (qubit routing, native gate decomposition), the absolute gate counts increase for all encodings, but the *relative* advantage of lighter Pauli weights is preserved.
-
-> **Caveat on the estimates:** The CNOT counts for H₂, LiH, and H₂O are computed values from FockMap (matching the Chapter 17 tables). The estimates for N₂ and FeMo-co are order-of-magnitude projections based on scaling trends. All entries are for *unoptimised logical circuits*; hardware transpilers typically reduce gate counts by 20–40% through gate cancellation and commutation.
-
-### Why the Ratio Matters
-
-On near-term hardware, each CNOT gate has a finite error rate — typically 0.1–1%. The probability that a circuit executes correctly drops exponentially with the CNOT count:
-
-$$P_\text{success} \approx (1 - \varepsilon)^{C_\text{CNOT}}$$
-
-At $\varepsilon = 0.5\%$ and 1,800 CNOTs (JW for H₂O, untapered), $P_\text{success} \approx 0.01\%$. At 600 CNOTs (TT for H₂O, untapered), $P_\text{success} \approx 5\%$. Under these typical assumptions, that's roughly a 500× improvement in success probability from encoding choice alone — before tapering, before error mitigation, before hardware improvements. (In practice, tapering reduces both CNOT counts further, and error mitigation techniques like zero-noise extrapolation can partially compensate for low success rates.)
-
-This is why the chapters on encoding (5–9), tapering (10–13), and cost analysis (17) matter. They're not academic exercises. They directly determine whether a simulation succeeds or fails on real hardware.
+A quantum register avoids storing every determinant amplitude explicitly. The
+difficulty moves into state preparation, Hamiltonian simulation, precision, and
+measurement; compact representation alone is not an efficient ground-state
+algorithm.
 
 ---
 
-## The Tapering Dividend
+## The Reproducible Encoding-Level Result
 
-Tapering compounds with encoding choice. At each system size, tapering removes $k$ qubits and often reduces the term count:
+The companion script measures the maximum creation-operator weight directly
+from the pinned package:
 
-| Molecule | $n$ | Tapered $n{-}k$ | Terms (before) | Terms (after) |
-|:---|:---:|:---:|:---:|:---:|
-| H₂ | 4 | 2 | 15 | 5 |
-| H₂O | 14 | ~11 | ~600 | ~300 |
-| N₂ | 20 | ~16 | ~2,000 | ~1,200 |
+| $n$ | JW weight | BK weight | Ternary weight | Standard staircase CNOTs (JW / BK / TT) |
+|:---:|:---:|:---:|:---:|:---:|
+| 4 | 4 | 3 | 2 | 6 / 4 / 2 |
+| 8 | 8 | 4 | 3 | 14 / 6 / 4 |
+| 16 | 16 | 5 | 4 | 30 / 8 / 6 |
+| 32 | 32 | 6 | 5 | 62 / 10 / 8 |
+| 64 | 64 | 7 | 6 | 126 / 12 / 10 |
 
-Fewer terms means fewer Pauli rotations per Trotter step. Combined with lower Pauli weights from a good encoding, the circuit shrinks multiplicatively. The optimisation stack from Chapter 17 — encoding + tapering + Trotter order — compounds at every scale.
+Both tree families are $\Theta(\log n)$; ternary branching improves a
+constant, not the asymptotic class. At $n=64$, the standard single-rotation
+staircase comparison is $126/10=12.6$, not 16.
 
----
-
-## Application: Encoding Choice at H₂O Scale
-
-With 14 spin-orbitals (no frozen core), H₂O is the smallest molecule where encoding choice makes a practical difference. Here's the comparison *after tapering* (14→~11 qubits):
-
-| Encoding | Tapered qubits | Max weight | CNOTs/step | Depth estimate |
-|:---|:---:|:---:|:---:|:---:|
-| Jordan–Wigner | ~11 | 11 | ~1,100 | ~2,200 |
-| Bravyi–Kitaev | ~11 | 5 | ~500 | ~1,000 |
-| Parity | ~11 | 11 | ~1,100 | ~2,200 |
-| Binary Tree | ~11 | 5 | ~450 | ~900 |
-| Ternary Tree | ~11 | 4 | ~380 | ~760 |
-| Vlasov Tree | ~11 | 4 | ~380 | ~760 |
-
-The ~3× reduction from JW to TT (tapered) is the difference between a circuit that fries on near-term hardware and one that might just survive. On a device with ~99.5% two-qubit gate fidelity, the TT circuit has roughly a 30× higher success probability per shot — $(0.995)^{380} \approx 15\%$ vs. $(0.995)^{1100} \approx 0.4\%$. Over millions of VQE shots, that translates directly to better energy estimates.
-
-This is the practical answer to "which encoding should I use?" — at H₂O scale and beyond, ternary tree with tapering is the best option in the FockMap toolkit.
+This is an **operator-level** result. A molecular Hamiltonian contains a
+distribution of terms and weights, with cancellations, symmetries, tapering,
+and compiler interactions. The table does not imply a 12.6-fold reduction for
+an entire molecule.
 
 ---
 
-## The Grand Challenge: FeMo-co
+## From Operator Weight to a Molecular Benchmark
 
-The iron-molybdenum cofactor (FeMo-co) of nitrogenase is the molecule that launched a field. It catalyses nitrogen fixation — converting atmospheric N₂ to ammonia — and understanding its mechanism could transform fertiliser production, one of the most energy-intensive industrial processes on Earth.
+A reproducible molecule-level comparison needs committed geometry, basis,
+active space, electron/spin sector, orbital order, encoding version, Pauli
+lists, tapering generators, product order, and logical-connectivity assumptions.
+Those artifacts do not yet exist for the former H₂O, LiH, N₂, or FeMo-co
+tables, so their projected CNOT and success-probability numbers are withheld.
 
-FeMo-co has ~54 active electrons in ~108 active spin-orbitals (following Reiher et al., *PNAS* 114, 7555, 2017). Classical methods cannot accurately compute its electronic structure because the iron centres are **strongly correlated**: many electron configurations contribute comparably to the ground state, defeating perturbation theory and single-reference methods like coupled cluster.
+Tapering must also be measured rather than assumed: each reduced spectrum must
+match one identified untapered physical sector. A qubit reduction does not by
+itself establish a term-count, coefficient-norm, or end-to-end depth reduction.
 
-### The Numbers
+---
 
-| Quantity | Value |
-|:---|:---|
-| Active electrons | ~54 |
-| Active spin-orbitals | ~108 |
-| Qubits (JW) | ~108 |
-| JW max Pauli weight | 108 |
-| TT max Pauli weight | ~5 |
-| JW CNOTs per worst-case rotation | 214 |
-| TT CNOTs per worst-case rotation | 8 |
-| Ratio | 27× |
+## FeMo-co: What the Active Space Tells Us
 
-At 108 qubits, the JW encoding produces Pauli strings where nearly every qubit participates. Each off-diagonal rotation requires a CNOT staircase spanning the entire register. The ternary tree encoding compresses the worst-case weight to ~5 — a chain of 4 CNOTs per direction.
+Reiher et al. use a representative active-space model with about 54 electrons
+in 54 spatial orbitals (108 spin-orbitals). The corresponding determinant count
+is roughly $\binom{108}{54}\approx2.5\times10^{31}$, which explains why
+explicit Full CI is not an option.
 
-### How Far Away Is the Hardware?
-
-For FeMo-co at chemical accuracy via QPE:
-- **Qubits needed**: ~108 system + ~10 ancilla ≈ 120 logical qubits
-- **Trotter steps**: ~$10^4$ (for the required precision)
-- **CNOTs per Trotter step** (TT): ~$10^5$
-- **Total CNOTs**: ~$10^9$
-
-At current error rates, this requires full quantum error correction — perhaps 1,000–10,000 physical qubits per logical qubit, depending on the code and hardware (see Gidney and Fowler, *Quantum* 5, 433, 2021, for concrete surface-code estimates). That puts the total physical qubit count at $10^5$–$10^6$.
-
-No device available today can do this. But the same pipeline we developed for H₂ (4 qubits, 15 terms, 12 CNOTs) is the *same code* that would generate the FeMo-co circuit. The bottleneck is hardware, not software. When the hardware arrives, the pipeline is ready.
+That active-space size does **not** determine a quantum resource estimate.
+Logical qubits, Hamiltonian representation, state preparation, precision,
+simulation algorithm, error-correction code, and hardware assumptions all
+enter. Until a versioned resource model is committed, this book does not quote
+total T gates/CNOTs, logical qubits, physical qubits, or runtime for FeMo-co.
 
 ---
 
 ## Where Classical Methods Still Win
 
-It's worth being honest about the landscape. Quantum simulation has a theoretical advantage for strongly correlated systems, but classical methods are formidable:
+Classical methods remain formidable:
 
-- **Density functional theory (DFT)** handles hundreds of atoms routinely. It's not exact, but it's remarkably accurate for weakly correlated systems and costs $O(n^3)$.
-- **Coupled cluster CCSD(T)** — the "gold standard" of quantum chemistry — handles systems of tens of atoms (depending on basis set) with chemical accuracy for single-reference systems. Local approximations extend this to hundreds of atoms, but canonical CCSD(T) scales as $O(N^7)$.
-- **DMRG and tensor network methods** exploit the entanglement structure of 1D and quasi-1D systems, often matching quantum simulation accuracy for those geometries.
+- Conventional Kohn-Sham DFT implementations are often dominated by a cubic
+  diagonalization step, while linear-scaling variants exploit locality and
+  sparsity under additional conditions (Bowler & Miyazaki, 2010).
+- Canonical single-reference CCSD(T) has an $O(N^7)$ perturbative-triples
+  step and is reliable primarily when a single-reference description is
+  appropriate; local and reduced-scaling variants change the practical cost
+  (Bartlett & Musial, 2007).
+- DMRG is exceptionally effective for low-entanglement one-dimensional and
+  quasi-one-dimensional structure, with efficiency degrading as entanglement
+  grows (White, 1992; Schollwock, 2011).
 
-Quantum simulation's niche is the strongly correlated regime: transition-metal complexes, open-shell systems, conical intersections, and exotic electronic states where no classical method converges reliably. FeMo-co is the poster child, but the real impact may be in catalysis design, high-temperature superconductors, and photochemistry — areas where electron correlation defies classical approximation.
+Strongly correlated transition-metal complexes, open-shell systems, and
+conical intersections are candidate quantum targets because standard
+single-reference methods can struggle there. Advantage remains an
+instance-specific comparison against the best classical workflow.
 
 ---
 
 ## Key Takeaways
 
-- Circuit cost grows with system size, but **encoding choice** determines the growth rate: linear (JW) vs logarithmic (TT) Pauli weight.
-- The **encoding crossover** becomes meaningful around 12–14 qubits — exactly the range of near-term quantum hardware.
-- **Tapering compounds** with encoding choice, reducing both qubit count and term count multiplicatively.
-- **FeMo-co** (~108 qubits) is the grand challenge: classically intractable, but requiring fault-tolerant hardware that doesn't yet exist.
-- The same pipeline code works at every scale — from H₂ to FeMo-co. The bottleneck is hardware, not software.
+- The reproduced **operator-level** census separates JW's linear maximum weight
+  from BK/ternary logarithmic weight; it does not predict a full molecular cost.
+- At $n=64$, the standard worst-case single-rotation comparison is 126 CNOTs
+  for JW, 12 for BK, and 10 for the tested ternary mapping.
+- Tapering benefits must be measured in an identified physical sector; qubit,
+  term, coefficient-norm, and circuit reductions are distinct quantities.
+- FeMo-co motivates large active spaces, but active-space size alone is not a
+  logical/physical qubit or runtime estimate.
+- Chemistry method, state preparation, algorithms, software validation, error
+  correction, and hardware are all potential bottlenecks.
 
 ## Further Reading
 

@@ -16,7 +16,9 @@ After twelve chapters, our pipeline has produced a remarkable object: a symbolic
 
 $$\hat{H} = \sum_{k=1}^{L} c_k P_k$$
 
-verified to give the correct eigenvalues, potentially tapered to use fewer qubits, with encoding choice optimizing the Pauli weight. This object captures *everything* about the molecule's electronic structure — every orbital energy, every Coulomb repulsion, every quantum exchange interaction.
+verified against an independent matrix and labelled states, and potentially
+tapered in an identified physical sector. This finite-basis operator contains
+the orbital, interaction, and configuration-coupling terms of the chosen model.
 
 But it is a *description*, not a *program*. A quantum computer doesn't accept descriptions. It accepts a sequence of gates — Hadamard, CNOT, $R_z$ — applied to specific qubits in a specific order. The Hamiltonian tells us *what* to compute; the circuit tells the machine *how* to compute it.
 
@@ -52,7 +54,7 @@ This dual role is what makes quantum simulation work: if you can implement $U(t)
 
 ## The Gap in Our Pipeline
 
-Let's pause and take stock. Here's the complete pipeline so far:
+Let's pause and take stock of the operator-to-circuit sequence so far:
 
 ```mermaid
 flowchart LR
@@ -99,7 +101,7 @@ and the terms generally **do not commute**: $P_j P_k \neq P_k P_j$. This means:
 
 $$e^{-i(c_1 P_1 + c_2 P_2)t} \neq e^{-ic_1 P_1 t} \cdot e^{-ic_2 P_2 t}$$
 
-The exponential of a sum is *not* the product of exponentials for non-commuting operators. This is where Trotterization enters.
+The exponential of a sum is *not* the product of exponentials for non-commuting operators. Trotterization is how we get around it.
 
 ---
 
@@ -153,7 +155,12 @@ Trotterization is the workhorse of Hamiltonian simulation — simple, well-under
 
 In 2016, Dr Guang Hao Low and Isaac Chuang introduced **qubitization** — a fundamentally different approach to Hamiltonian simulation that achieves optimal query complexity. Where Trotterization approximates $e^{-iHt}$ as a product of easy rotations (with error that shrinks as you add more steps), qubitization encodes the Hamiltonian directly into a quantum walk operator using a technique called the **Linear Combination of Unitaries (LCU)**. The result: instead of error scaling as $O(t^2/N)$ or $O(t^3/N^2)$, qubitization achieves error that scales *linearly* in the number of queries to the Hamiltonian — provably optimal.
 
-The catch: qubitization requires additional ancilla qubits and a more complex circuit structure (the "PREPARE" and "SELECT" oracles). It is harder to implement and harder to optimize for near-term hardware. For the molecules in this book (H₂, H₂O), Trotterization is more than adequate. For the grand-challenge molecules (FeMo-co, cytochrome P450), qubitization may be the only method that achieves chemical accuracy within a reasonable circuit depth.
+The catch: qubitization requires PREPARE/SELECT-style oracles, ancillas, and a
+different resource model. Product formulas are easy to inspect for H₂, where
+their unitaries can be compared directly. For larger active spaces, the choice
+between product formulas, qubitization, and other methods must come from a
+precision-specific generated resource estimate; molecule size alone does not
+select the winner.
 
 We will not develop qubitization in this book — it deserves its own treatment — but we mention it here so that the reader understands where Trotterization sits in the landscape:
 

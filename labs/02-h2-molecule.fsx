@@ -23,16 +23,19 @@ where:
 ## Setup
 *)
 
-#r "nuget: FockMap"
+#load "../code/ch03-spin-orbitals.fsx"
 
 open System.Numerics
 open Encodings
+open Encodings.Hamiltonian
+open Encodings.JordanWigner
 
 (**
 ## Molecular Integrals
 
-These are the STO-3G integrals for H₂ at bond length
-R = 0.74 Å, matching the manuscript's Chapter 3 tables.
+These are loaded from the generated `code/h2_dissociation_integrals.json`
+record for H₂/STO-3G at R = 0.74 Å. The lab does not maintain a second literal
+copy.
 
 ### Spin-Orbital Indexing
 
@@ -52,13 +55,10 @@ terms are nonzero:
 
 let nSpinOrbitals = 4u
 
-let oneBodyIntegrals = Map.ofList [
-    // Diagonal elements (same spatial orbital)
-    ("0,0", Complex(-1.2563390730, 0.0))  // h₀₀ = ⟨σg↑|h|σg↑⟩
-    ("1,1", Complex(-1.2563390730, 0.0))  // h₁₁ = ⟨σg↓|h|σg↓⟩
-    ("2,2", Complex(-0.4718960244, 0.0))  // h₂₂ = ⟨σu↑|h|σu↑⟩
-    ("3,3", Complex(-0.4718960244, 0.0))  // h₃₃ = ⟨σu↓|h|σu↓⟩
-]
+let canonicalIntegrals = ``Ch03-spin-orbitals``.h2RawPhysicistIntegrals
+let oneBodyIntegrals =
+    canonicalIntegrals
+    |> Map.filter (fun key _ -> key.Split(',').Length = 2)
 
 (**
 ### Two-Body Integrals ⟨pq|rs⟩
@@ -67,65 +67,23 @@ These are the electron-electron repulsion integrals in physicist's notation.
 Symmetries reduce the number of unique values significantly.
 *)
 
-let twoBodyIntegrals = Map.ofList [
-    // Same-spin αα-αα
-    ("0,0,0,0", Complex(0.6744887663, 0.0))
-    ("2,2,2,2", Complex(0.6973979495, 0.0))
-    ("0,2,2,0", Complex(0.1809312700, 0.0))
-    ("2,0,0,2", Complex(0.1809312700, 0.0))
-    ("0,2,0,2", Complex(0.6975782469, 0.0))
-    ("2,0,2,0", Complex(0.6975782469, 0.0))
-    ("0,0,2,2", Complex(0.6636340479, 0.0))
-    ("2,2,0,0", Complex(0.6636340479, 0.0))
-
-    // Same-spin ββ-ββ
-    ("1,1,1,1", Complex(0.6744887663, 0.0))
-    ("3,3,3,3", Complex(0.6973979495, 0.0))
-    ("1,3,3,1", Complex(0.1809312700, 0.0))
-    ("3,1,1,3", Complex(0.1809312700, 0.0))
-    ("1,3,1,3", Complex(0.6975782469, 0.0))
-    ("3,1,3,1", Complex(0.6975782469, 0.0))
-    ("1,1,3,3", Complex(0.6636340479, 0.0))
-    ("3,3,1,1", Complex(0.6636340479, 0.0))
-
-    // Cross-spin αβ-αβ
-    ("0,1,0,1", Complex(0.6744887663, 0.0))
-    ("0,3,0,3", Complex(0.6636340479, 0.0))
-    ("2,1,2,1", Complex(0.6636340479, 0.0))
-    ("2,3,2,3", Complex(0.6973979495, 0.0))
-    ("0,1,2,3", Complex(0.6975782469, 0.0))
-    ("2,3,0,1", Complex(0.6975782469, 0.0))
-    ("0,3,2,1", Complex(0.1809312700, 0.0))
-    ("2,1,0,3", Complex(0.1809312700, 0.0))
-
-    // Cross-spin βα-βα
-    ("1,0,1,0", Complex(0.6744887663, 0.0))
-    ("1,2,1,2", Complex(0.6636340479, 0.0))
-    ("3,0,3,0", Complex(0.6636340479, 0.0))
-    ("3,2,3,2", Complex(0.6973979495, 0.0))
-    ("1,0,3,2", Complex(0.6975782469, 0.0))
-    ("3,2,1,0", Complex(0.6975782469, 0.0))
-    ("1,2,3,0", Complex(0.1809312700, 0.0))
-    ("3,0,1,2", Complex(0.1809312700, 0.0))
-]
+let twoBodyIntegrals =
+    canonicalIntegrals
+    |> Map.filter (fun key _ -> key.Split(',').Length = 4)
 
 (**
 ## Coefficient Lookup Function
 
-The `computeHamiltonian` function needs a way to look up coefficients
-for arbitrary index combinations. We provide a factory function:
+The raw-physicist Hamiltonian function needs a way to look up integrals
+for arbitrary index combinations. We provide the canonical raw factory:
 *)
 
-let coefficientFactory (key : string) : Complex option =
-    match key.Split(',').Length with
-    | 2 -> oneBodyIntegrals.TryFind key   // One-body: "p,q" key
-    | 4 -> twoBodyIntegrals.TryFind key   // Two-body: "p,q,r,s" key
-    | _ -> None
+let rawPhysicistFactory = ``Ch03-spin-orbitals``.h2RawPhysicistFactory
 
 (**
 ## Computing the Hamiltonian
 
-Now we call `computeHamiltonian` with Jordan-Wigner encoding (the default).
+Now we call the raw-primary `computeHamiltonian` with Jordan-Wigner encoding.
 This function:
 1. Iterates over all one-body index pairs (p,q)
 2. Iterates over all two-body index quadruples (p,q,r,s)
@@ -136,8 +94,31 @@ This function:
 
 printfn "Computing H₂ Hamiltonian with Jordan-Wigner encoding...\n"
 
-let hamiltonian = computeHamiltonian coefficientFactory nSpinOrbitals
-let terms = hamiltonian.SummandTerms
+let hamiltonian =
+    computeHamiltonian rawPhysicistFactory nSpinOrbitals
+let terms =
+    hamiltonian.DistributeCoefficient.SummandTerms
+    |> Array.filter (fun term -> Complex.Abs term.Coefficient > 1e-12)
+
+let requireCoefficient signature expected =
+    let actual =
+        terms
+        |> Array.tryFind (fun term -> term.Signature = signature)
+        |> Option.map (fun term -> term.Coefficient.Real)
+        |> Option.defaultWith (fun () -> failwithf "Missing Pauli term %s" signature)
+
+    if abs (actual - expected) > 1e-9 then
+        failwithf
+            "FockMap Hamiltonian convention mismatch for %s: expected %.10f, got %.10f. Run make verify-data before trusting this lab."
+            signature
+            expected
+            actual
+
+if terms.Length <> 15 then
+    failwithf "Expected 15 nonzero JW terms, got %d" terms.Length
+
+requireCoefficient "IIII" -0.8121706072
+requireCoefficient "XXYY" -0.0453026155
 
 (**
 ## Examining the Results
@@ -165,10 +146,9 @@ The H₂ Hamiltonian typically produces 15 unique Pauli terms:
 
 | Pattern | Physical Origin |
 |---------|-----------------|
-| `IIII`  | Constant energy offset |
-| `ZZII`, `IZZI`, etc. | Number operators from h_{pp} a†_p a_p |
-| `XXYY`, `YYXX`, etc. | Hopping terms from h_{pq} a†_p a_q |
-| `ZZZZ` patterns | Two-body Coulomb repulsion |
+| `IIII`  | Electronic energy offset |
+| `ZZII`, `IZZI`, etc. | Diagonal one- and two-body contributions |
+| `XXYY`, `XYYX`, `YXXY`, `YYXX` | Double-excitation configuration coupling |
 
 ## Why This Matters
 

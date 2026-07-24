@@ -56,9 +56,12 @@ $$H\lvert 0\rangle = \frac{\lvert 0\rangle + \lvert 1\rangle}{\sqrt{2}}, \qquad 
 
 This is the gate that takes a classical bit and makes it quantum. Without $H$ (or something equivalent), you could never create superpositions and quantum computing would reduce to classical computing.
 
-**Rotation gates** ($R_z(\theta)$, $R_x(\theta)$) rotate the qubit's state by a continuous angle $\theta$. These are the gates that implement the actual physics: the Hamiltonian's coefficients (like $-0.1744$ Ha for the exchange terms) become rotation angles in the circuit.
+**Rotation gates** ($R_z(\theta)$, $R_x(\theta)$) rotate the qubit's state by a continuous angle $\theta$. These are the gates that implement the actual physics: Hamiltonian coefficients, such as the H₂ coupling coefficient $-0.0453026155$ Ha, set rotation angles in the circuit.
 
-On current quantum processors — IBM's Eagle and Heron chips (superconducting transmon qubits), IonQ's Aria (trapped ytterbium ions), Quantinuum's H-series (trapped calcium ions) — single-qubit gates take 20–100 nanoseconds with error rates around $10^{-4}$. They are the cheapest thing a quantum computer does. For cost accounting, we treat them as essentially free; the expensive operations are the two-qubit gates we're about to meet.
+Logical cost models often count two-qubit operations more heavily than
+single-qubit rotations. Physical duration, fidelity, native gate, and
+connectivity are backend- and calibration-specific, so this book does not treat
+one timing/error figure as a platform constant.
 
 ---
 
@@ -84,25 +87,24 @@ $$\lvert 00\rangle \xrightarrow{H \otimes I} \frac{\lvert 0\rangle + \lvert 1\ra
 
 Two gates — one Hadamard, one CNOT — and we've created a maximally entangled state from a product state. No classical operation can do this.
 
-### Why CNOT is expensive
+### Why two-qubit operations dominate this logical model
 
-On physical quantum processors, the CNOT gate is the bottleneck. Here's what it actually costs on current hardware:
+The standard Pauli-rotation staircase uses CNOTs to compute and uncompute parity,
+so its logical count grows with Pauli weight. A physical compiler may replace
+CNOT with CZ, ECR, Mølmer–Sørensen, or another native entangler and may add
+routing operations for limited connectivity. Consult a named backend's dated
+calibration record for physical timing and error data.
 
-| Platform | Vendor | CNOT time | CNOT error rate | Single-qubit error rate |
-|:---|:---|:---:|:---:|:---:|
-| Superconducting transmon | IBM (Heron) | ~300 ns | ~$5 \times 10^{-3}$ | ~$3 \times 10^{-4}$ |
-| Trapped ion | Quantinuum (H2) | ~2 ms | ~$2 \times 10^{-3}$ | ~$10^{-5}$ |
-| Trapped ion | IonQ (Forte) | ~600 μs | ~$4 \times 10^{-3}$ | ~$3 \times 10^{-4}$ |
-
-The pattern: CNOT is **10–100× slower** and **10–100× noisier** than single-qubit gates, regardless of the hardware platform. The physics is different in each case — microwave cross-resonance pulses for superconducting qubits, laser-driven Mølmer–Sørensen interactions for trapped ions — but the engineering reality is the same: making two quantum systems interact controllably is harder than manipulating one.
-
-There is also a **connectivity constraint**. On many architectures (especially superconducting), CNOT is only available between physically adjacent qubits. If you need to entangle qubit 0 with qubit 15, you must first "swap" the quantum state through the intervening qubits — and each swap costs 3 CNOTs.
-
-> **If you don't have access to quantum hardware**, you can still run everything in this book using a **quantum simulator**. The [Quokka](https://www.quokkacomputing.com/) (by Eigensystems, co-founded by Dr Chris Ferrie at UTS) is a dedicated quantum simulation appliance — available as a standalone device or accessible over the web — that can simulate up to ~30 qubits. That's more than enough for H₂ (4 qubits), H₂O (12 qubits), and most textbook-scale problems. IBM's Qiskit Aer and Google's Cirq also provide free software simulators. The circuits we generate in the later pipeline chapters can target any of these backends.
+> **If you don't have access to quantum hardware**, you can still run the
+> logical examples in a simulator. Quokka, Qiskit Aer, Cirq, and other tools
+> have different supported sizes and execution models; check the selected
+> backend rather than assuming a fixed qubit limit.
 >
-> The CNOT cost analysis is still relevant for simulated circuits: it tells you how the circuit *would* perform on real hardware, and whether your molecule is within reach of current or near-term quantum processors.
+> The staircase count remains useful as a pre-compilation comparison. It does
+> not by itself predict physical fidelity or feasibility.
 
-> **The bottom line:** Single-qubit gates are cheap. CNOT is expensive. Circuit cost ≈ CNOT count. Everything else follows from this.
+> **The bottom line:** Pauli weight determines the standard logical staircase
+> count. Hardware cost requires compilation and calibration data.
 
 ---
 
@@ -142,12 +144,14 @@ To make this concrete:
 |:---:|:---:|:---|
 | 1 | 0 | Single $Z$ — just an $R_z$ |
 | 2 | 2 | $ZZ$ — one CNOT, one $R_z$, one reverse CNOT |
-| 4 | 6 | $XXYY$ — the H₂ exchange terms |
-| 12 | 22 | Typical JW term for H₂O |
-| 100 | 198 | JW term for FeMo-co — infeasible |
-| 5 | 8 | Same FeMo-co term under ternary tree — feasible |
+| 4 | 6 | $XXYY$ — an H₂ coupling term |
+| 5 | 8 | A logarithmic-weight example |
+| 12 | 22 | A heavier logical Pauli rotation |
+| 100 | 198 | A near-register-wide logical rotation |
 
-The last two rows are the entire argument for encoding choice, in two numbers.
+This table is for the standard all-to-all logical staircase. It does not predict
+a molecule's total circuit or hardware feasibility; routing, cancellations,
+native gates, and the distribution of Hamiltonian terms still matter.
 
 ---
 
@@ -155,7 +159,7 @@ The last two rows are the entire argument for encoding choice, in two numbers.
 
 - A **qubit** stores a superposition of $\lvert 0\rangle$ and $\lvert 1\rangle$. An $n$-qubit register stores $2^n$ amplitudes — an exponentially large state space.
 - **Pauli operators** ($I$, $X$, $Y$, $Z$) form a basis for all single-qubit operations. Every Hamiltonian term can be written as a Pauli string.
-- **CNOT** is the gate that creates entanglement — and it is 10–100× more expensive than single-qubit gates. Circuit cost ≈ CNOT count.
+- **CNOT** is the entangling gate used by the standard logical staircase. Its count is a useful pre-compilation metric, not a platform-independent physical cost.
 - The set $\{R_z, R_x, \text{CNOT}\}$ is **universal**: it can implement any quantum operation, including everything we need for quantum simulation.
 - The **CNOT staircase** decomposes a Pauli rotation into $2(w-1)$ CNOTs, where $w$ is the Pauli weight. This is the conversion factor from encoding choice to circuit cost.
 

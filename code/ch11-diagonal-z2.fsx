@@ -1,13 +1,14 @@
 // ══════════════════════════════════════════════════════════════
 // Chapter 11 Companion: Diagonal Z₂ Symmetries
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch11-diagonal-z2.fsx
+// Run with: dotnet fsi code/ch11-diagonal-z2.fsx
 // Prereq:   dotnet build --configuration Release
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 
 open System.Numerics
 open Encodings
+open Encodings.Tapering
 
 printfn ""
 printfn "Chapter 11: Diagonal Z₂ Symmetries"

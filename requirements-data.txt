@@ -1,0 +1,4 @@
+# Reproducing the committed chemistry data and figures
+numpy>=1.24
+matplotlib>=3.7
+pyscf>=2.0

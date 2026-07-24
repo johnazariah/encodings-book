@@ -4,19 +4,28 @@ _Chapter 7 gave us six encodings. This chapter shows how we got the sixth — by
 
 ## In This Chapter
 
-- **What you'll learn:** How the path-based tree framework turns a tree shape into a valid fermion-to-qubit encoding, how to define the Vlasov tree in a few lines of code, and how to verify that a new encoding preserves the canonical anti-commutation relations (CAR).
+- **What you'll learn:** How the path-based framework constructs a candidate
+  from a supported max-three-child tree, how FockMap defines its
+  Vlasov-inspired helper, and how CAR/matrix tests establish validity.
 - **Why this matters:** Understanding the framework well enough to build your own encoding means you're not limited to the built-in options. And the verification skills you'll develop here — checking CAR, comparing eigenvalues — are the same skills you'll need for every pipeline you build.
 - **Prerequisites:** Chapter 7 (you know the six encodings, the two frameworks, and the CAR theorem).
 
-> **Scope note:** This chapter covers the tree-based (path-based) route to custom encodings. Chapter 7 briefly introduced the index-set route, which works for star-shaped trees. The tree-based route is strictly more general.
+> **Scope note:** This chapter covers the tree-based (path-based) route to
+> custom encodings. Chapter 7's audited star-only result concerns a different
+> tree-to-index-set constructor; it does not restrict the separately defined
+> path-based mapping here. Neither route makes an untested custom mapping valid
+> without CAR checks.
 
 ---
 
 ## The Goal
 
-In Chapter 7, we listed six encodings and noted that FockMap ships *two* ternary tree encodings: the balanced ternary tree (Jiang et al., 2020) and the Vlasov tree (Vlasov, arXiv:1904.09912). Both achieve $O(\log_3 n)$ worst-case Pauli weight, but they assign qubits to tree nodes differently.
+In Chapter 7, we listed six encodings and noted that FockMap ships *two* ternary-tree encodings: a balanced construction associated with Jiang et al. (2020) and a breadth-first construction inspired by Vlasov (arXiv:1904.09912). Both have logarithmic worst-case weight, but they assign qubits to tree nodes differently.
 
-How did the Vlasov tree get into FockMap? Someone had to define the tree shape, plug it into the path-based framework, and verify that the result was a valid encoding. In this chapter, we'll walk through exactly that process — and by the end, you'll be able to do the same for any tree shape you can imagine.
+How did the Vlasov-inspired tree get into FockMap? Someone defined a supported
+max-three-child shape, plugged it into the path-based framework, and verified
+the resulting operators. This chapter shows that process without implying that
+an arbitrary rooted tree is accepted or valid.
 
 > I am grateful to Dr Robin Kothari and Dr Stephen Jordan for bringing Vlasov's construction to my attention. Their suggestion led directly to the implementation we'll develop here.
 
@@ -24,7 +33,11 @@ How did the Vlasov tree get into FockMap? Someone had to define the tree shape, 
 
 ## Step 1: Define the Tree Shape
 
-The Vlasov tree is a **complete ternary tree** with **breadth-first (level-order) indexing**. Node 0 is the root. The children of node $j$ are $3j+1$, $3j+2$, and $3j+3$ — the same formula used to index a heap in computer science.
+FockMap's `vlasovTree` helper builds a **breadth-first ternary tree** inspired
+by Vlasov's qubit-tree construction. Node 0 is the root; the children of node
+$j$ are $3j+1$, $3j+2$, and $3j+3$, as in a heap. CAR tests validate the
+implemented map; historical correspondence to every detail of Vlasov's
+construction remains a separate source-level claim.
 
 For $n = 9$ modes:
 
@@ -175,19 +188,28 @@ for i in 0u .. n-1u do
         // Compute {a†_i, a_j} and check = delta_ij * I
 ```
 
-This is what FockMap's property tests do for all six encodings at every system size from 1 to 32.
+FockMap's property tests apply these checks across the built-in encodings and
+representative supported sizes; the exact tested range belongs to the pinned
+release report.
 
 ### Level 2: Compare eigenvalues
 
 Build the H₂ Hamiltonian with the new encoding and compare eigenvalues against a known-good encoding:
 
 ```fsharp
-let vlHam = computeHamiltonianWith vlasovTreeTerms factory 4u
-let jwHam = computeHamiltonianWith jordanWignerTerms factory 4u
-// Diagonalize both → eigenvalues must match to machine precision
+let vlHam =
+    computeHamiltonianWith
+        vlasovTreeTerms rawPhysicistFactory 4u
+let jwHam =
+    computeHamiltonianWith
+        jordanWignerTerms rawPhysicistFactory 4u
+// Compare both matrices, labelled basis states, and spectra to tolerance
 ```
 
-The CAR check tells you the algebra is right. The eigenvalue comparison tells you the full pipeline — tree construction, path traversal, Majorana assembly, Hamiltonian construction — is correct end-to-end.
+The CAR check tests the ladder algebra. A direct matrix and labelled-state
+comparison tests tree construction, path traversal, Majorana assembly,
+Hamiltonian construction, and basis order for the chosen input. Spectrum
+agreement alone can hide a basis permutation.
 
 ---
 
@@ -197,18 +219,18 @@ Now that we trust the encoding, let's see how it compares:
 
 | Mode | JW | BK | Balanced Ternary | Vlasov |
 |:---:|:---:|:---:|:---:|:---:|
-| 0 | 1 | 1 | 3 | 3 |
-| 1 | 2 | 2 | 3 | 3 |
-| 2 | 3 | 2 | 3 | 3 |
-| 3 | 4 | 3 | 3 | 3 |
-| 4 | 5 | 3 | 3 | 3 |
-| 5 | 6 | 3 | 3 | 3 |
-| 6 | 7 | 3 | 3 | 3 |
-| 7 | 8 | 4 | 4 | 3 |
+| 0 | 1 | 4 | 3 | 3 |
+| 1 | 2 | 4 | 3 | 3 |
+| 2 | 3 | 4 | 3 | 3 |
+| 3 | 4 | 4 | 3 | 2 |
+| 4 | 5 | 4 | 2 | 3 |
+| 5 | 6 | 4 | 3 | 3 |
+| 6 | 7 | 4 | 3 | 3 |
+| 7 | 8 | 4 | 3 | 3 |
 
 For $n = 8$, both ternary trees have maximum weight 3–4, while JW reaches 8 and BK reaches 4. The ternary trees are consistently better for the high-index modes where JW's Z-chains are longest.
 
-The two ternary trees have *slightly* different per-mode weights — because different tree shapes put different modes at different depths — but the same worst-case scaling. This is the point: the $O(\log_3 n)$ guarantee comes from the ternary branching factor, not from the specific assignment of modes to nodes.
+The two ternary trees have *slightly* different per-mode weights because different shapes put modes at different depths. Both are $\Theta(\log n)$; ternary branching improves the depth constant relative to a binary tree, while the exact finite-size bound depends on the construction and indexing.
 
 ---
 
@@ -216,7 +238,9 @@ The two ternary trees have *slightly* different per-mode weights — because dif
 
 You've now seen the complete process. Here it is as a recipe:
 
-1. **Choose a tree shape.** Any rooted tree with at most 3 children per internal node works. The branching factor determines the Pauli weight scaling.
+1. **Choose a supported tree shape.** The current path encoder requires a
+   labelled rooted tree with at most three children per node. A four-child star
+   is outside the API contract. Validate CAR for every custom candidate.
 
 2. **Implement the tree.** Use `mkNode` and `mkTree` to build the `EncodingTree`. The only creative part is the child-assignment rule.
 
@@ -224,19 +248,25 @@ You've now seen the complete process. Here it is as a recipe:
 
 4. **Verify CAR.** Run the anti-commutation check for all pairs $(i, j)$ at several system sizes. If it fails, your tree construction has a bug.
 
-5. **Compare eigenvalues.** Build a Hamiltonian and compare against a known encoding. If eigenvalues match to machine precision, the full pipeline is correct.
+5. **Compare matrices and labelled states.** Build a Hamiltonian and compare
+   with an independent fermionic reference. Check the full matrix, occupations,
+   and spectrum with stated tolerances.
 
-The entire Vlasov encoding — from Vlasov's paper to a verified FockMap function — took 6 lines of tree construction, 3 lines of wrapper, and a test suite that matches the property tests used for every other encoding.
+The breadth-first helper takes a few lines of tree construction and a wrapper.
+The important work is the CAR and matrix test suite; short source code does not
+by itself establish correspondence with a published construction.
 
 ---
 
 ## Key Takeaways
 
-- The path-based framework turns **any tree shape** into a valid encoding. You provide the shape; the framework provides the algebra.
+- The path-based framework accepts supported max-three-child labelled trees;
+  CAR and matrix tests establish whether the resulting candidate is valid.
 - The Vlasov tree uses level-order indexing ($3j+1$, $3j+2$, $3j+3$) — a different qubit assignment than the balanced ternary tree, but the same asymptotic weight.
 - **Verification is non-negotiable.** A tree that looks reasonable can still violate the CAR. Always check anti-commutation before trusting results.
-- Two verification levels: symbolic CAR check (algebraic guarantee) and eigenvalue comparison (end-to-end pipeline check).
-- Building a new encoding is **fast** — a few lines of tree construction, plus the validation effort. The path-based framework removes all the hard algebra.
+- Verification needs symbolic CAR plus direct matrix, labelled-state, and spectrum checks.
+- Tree construction is short; CAR, matrix, state-order, and spectrum validation
+  are the substantive work.
 
 ## Exercises
 
@@ -246,12 +276,12 @@ The entire Vlasov encoding — from Vlasov's paper to a verified FockMap functio
 
 3. **Vlasov vs balanced at scale.** Compare the Vlasov and balanced ternary trees at $n = 27$ (a perfect power of 3). Do the per-mode weights differ? What about $n = 30$ (not a perfect power)?
 
-4. **Try the lab.** Run the [Vlasov tree lab](../labs/10-vlasov-tree.html) to see the tree shapes and per-mode weight comparisons in action.
+4. **Try the lab.** Run the [Vlasov tree lab](https://github.com/johnazariah/molecules-to-circuits/blob/main/labs/10-vlasov-tree.fsx) to see the tree shapes and per-mode weight comparisons in action.
 
 ## Further Reading
 
-- Vlasov, A. Yu. "Clifford algebras, Spin groups and qubit trees." *Quanta* 11, 97–114 (2022). arXiv:1904.09912 (2019). The original construction.
-- Jiang, Z. et al. "Optimal fermion-to-qubit mapping via ternary trees." *PRX Quantum* 1, 010306 (2020). The balanced ternary tree and path-based framework.
+- Vlasov, A. Yu. "Clifford algebras, Spin groups and qubit trees." *Quanta* 11, 97–114 (2022). DOI: 10.12743/quanta.v11i1.199; arXiv:1904.09912.
+- Jiang, Z., Kalev, A., Mruczkiewicz, W., and Neven, H. "Optimal fermion-to-qubit mapping via ternary trees with applications to reduced quantum states learning." *Quantum* 4, 276 (2020). DOI: 10.22331/q-2020-06-04-276.
 
 ---
 

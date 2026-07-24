@@ -15,7 +15,7 @@ _Numbers, not promises. This chapter measures exactly how much tapering saves on
 For each test system, we:
 1. Build the encoded Hamiltonian (JW encoding)
 2. Count: qubits, terms, max weight, total CNOT cost per Trotter step
-3. Apply tapering (all detected symmetries, +1 sector)
+3. Select verified commuting symmetries and their physical-sector eigenvalues
 4. Re-count the same metrics on the tapered Hamiltonian
 5. Report the reduction
 
@@ -49,7 +49,9 @@ let h6 =
 | Hilbert space | 64 | 1 | 64× |
 | CNOTs/step | 12 | 0 | 100% |
 
-**Interpretation:** All symmetries were diagonal. The entire Hamiltonian collapsed to a scalar — the energy eigenvalue in the +1 sector. This is the extreme case: a fully classical Hamiltonian with no quantum content.
+**Interpretation:** In the chosen sector, every qubit was fixed and the
+Hamiltonian reduced to a scalar. That is a property of this diagonal toy and
+sector, not a general classical/quantum classification.
 
 ### Mixed Hamiltonian (partial tapering)
 
@@ -99,28 +101,32 @@ These savings multiply across every Trotter step. For a simulation with 1000 Tro
 
 ---
 
-## Tapering + Encoding: Compounding Savings
+## Tapering + Encoding: How to Benchmark the Combination
 
 Tapering and encoding choice address different aspects of circuit cost, and they **compound**:
 
 ```mermaid
 flowchart LR
-    H["Original Hamiltonian<br/>n qubits, O(n) weight"]
-    H --> T["After tapering<br/>n-k qubits"]
-    T --> E["After encoding choice<br/>O(log₃(n-k)) weight"]
-    style E fill:#d1fae5,stroke:#059669
+    F["Fermionic Hamiltonian"]
+    F --> E["Choose encoding<br/>n-qubit Pauli Hamiltonian"]
+    E --> T["Identify symmetries<br/>select physical sector<br/>taper to n-k qubits"]
+    T --> C["Compile the reduced Hamiltonian"]
+    style C fill:#d1fae5,stroke:#059669
 ```
 
-For a 14-qubit H₂O system (STO-3G, no frozen core — all 10 electrons and 7 spatial orbitals included):
+The earlier H₂O CNOT table has been removed because no committed
+molecule-specific input/output artifact produced it. A defensible comparison
+must record, for every row:
 
-| Configuration | Qubits | Max weight (JW) | Max weight (TT) | Est. CNOTs/step |
-|:---|:---:|:---:|:---:|:---:|
-| No tapering, JW | 14 | 14 | — | ~1800 |
-| No tapering, TT | 14 | — | 4 | ~500 |
-| Tapered, JW | 11 | 11 | — | ~1100 |
-| Tapered, TT | 11 | — | 4 | ~380 |
+1. geometry, basis, frozen-core and active-space choices;
+2. orbital and qubit ordering plus the pinned encoding version;
+3. nonzero Pauli terms before and after tapering;
+4. commuting generators and the physical sector;
+5. product-formula ordering and logical connectivity assumptions; and
+6. generated term-weight and CNOT totals.
 
-The combination of tapering (14→11 qubits) and ternary tree encoding (weight 14→4) gives roughly a 5× total reduction in CNOT cost.
+Worst-case ladder-operator weight is not enough to infer a full molecular
+Hamiltonian's cost.
 
 ---
 
@@ -138,7 +144,10 @@ flowchart LR
     style S5 fill:#fde68a,stroke:#d97706
 ```
 
-We now have a verified, tapered qubit Hamiltonian — smaller than what encoding alone produced, with all physics preserved exactly. The next stage turns this Hamiltonian into a sequence of quantum gates.
+We now have the criteria for a verified tapered Hamiltonian: a commuting
+generator set, a physical sector, phase-preserving Clifford conjugation, and a
+sector-spectrum parity test. The next stage turns a Hamiltonian that passes
+those checks into gates.
 
 ---
 
@@ -146,13 +155,13 @@ We now have a verified, tapered qubit Hamiltonian — smaller than what encoding
 
 A natural question: should you always taper everything you can, or is there a point of diminishing returns?
 
-The answer is simple: **taper every symmetry you find.** Unlike basis-set truncation, where you trade accuracy for cost, tapering has no downside. Every tapered qubit preserves the physics exactly — same eigenvalues, same ground-state energy — while reducing qubit count, Hilbert space dimension, and usually circuit cost. There is no accuracy–cost tradeoff. You never want to leave a symmetry unexploited.
+The safe rule is: **use every verified symmetry whose sector you can identify and whose downstream transformations you can validate.** Unlike basis-set truncation, correct tapering introduces no approximation within that sector. But an invalid generator, a phase error, or the wrong sector changes the spectrum, and transformed observables and state preparation may add practical overhead.
 
-The real question is not *how much* to taper but *whether you found all the symmetries.* Diagonal tapering (Chapter 11) catches qubits that are individually frozen — easy to spot. Clifford tapering (Chapter 12) catches symmetries hidden across combinations of qubits — harder to spot, but FockMap finds them automatically. Between the two, you exhaust all Z₂ symmetries (operators that square to the identity and commute with every Hamiltonian term).
+The real questions are whether the generators form a valid independent commuting set, which physical sector they label, and whether the implementation preserves phases and sector spectra. Diagonal tapering (Chapter 11) catches qubits that are individually frozen. Clifford tapering (Chapter 12) can expose symmetries hidden across combinations of qubits, provided those checks pass.
 
 Could you do more? In principle, yes. The Hamiltonian has other symmetries beyond Z₂ — particle-number conservation (U(1)), spin symmetry (SU(2)) — that could remove additional qubits. But exploiting them requires different mathematical machinery (symmetry-adapted encodings, qubit-efficient mappings) that goes beyond the stabiliser framework we've developed here. This is an active area of research; Chapter 23 touches on it briefly.
 
-In practice, Z₂ tapering removes 2 qubits from H₂ (4 → 2), 3 from H₂O (14 → 11), and typically 3–5 from larger molecules. The absolute savings shrink as a fraction of total qubits — at FeMo-co scale (~100 qubits), tapering saves ~5 qubits. Still worth doing (it's free), but encoding choice matters more at scale. The complete optimization stack is: **taper first** (remove every qubit you can for free), **then choose the encoding** (to minimize the weight of what remains).
+Encoding and tapering must be evaluated together. Starting from the same fermionic Hamiltonian, build each candidate encoded Hamiltonian, identify its symmetry generators, map the target quantum numbers to sector eigenvalues, taper, and only then compare circuit costs. You cannot taper a Jordan–Wigner Hamiltonian and then re-encode the reduced Pauli operator with a different fermion mapping.
 
 ---
 
@@ -160,10 +169,10 @@ In practice, Z₂ tapering removes 2 qubits from H₂ (4 → 2), 3 from H₂O (1
 
 - Tapering reduces qubit count, Hilbert space size, and often term count and Pauli weight.
 - Diagonal tapering handles the easy cases; Clifford tapering catches multi-qubit symmetries that diagonal misses.
-- **Taper everything** — there is no accuracy cost, so every symmetry you find is worth exploiting.
-- The savings compound with encoding choice: taper first, then the encoding operates on a smaller system.
+- Taper only verified commuting symmetries in an identified physical sector; then check sector-spectrum preservation.
+- Encoding and tapering compound, but tapering is performed separately after each fermion-to-qubit encoding.
 - The real metric is **CNOTs per Trotter step** — tapering can reduce this by 50% or more.
-- At large scale, encoding choice dominates; tapering provides a smaller but free additional reduction.
+- At large scale, encoding and tapering benefits must be generated separately for the stated Hamiltonian and physical sector.
 
 ## Further Reading
 

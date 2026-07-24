@@ -1,10 +1,10 @@
 # ══════════════════════════════════════════════════════════════
 # Chapter 18 Companion: H₂ Dissociation Curve
 # ══════════════════════════════════════════════════════════════
-# Run with: python book/code/ch18-dissociation-scan.py
-# Prereq:   pip install pyscf matplotlib numpy
-# Output:   book/code/h2_dissociation.csv
-#           book/code/h2_dissociation.png
+# Run with: python3 code/ch18-dissociation-scan.py
+# Prereq:   python3 -m pip install -r requirements-data.txt
+# Output:   code/h2_dissociation.csv
+#           manuscript/figures/h2_dissociation.png
 #
 # Computes the STO-3G total energy (HF, FCI) of H₂ at multiple
 # bond lengths and produces the dissociation curve.
@@ -15,6 +15,7 @@ import os
 from pyscf import fci, gto, scf
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+FIGURE_DIR = os.path.join(os.path.dirname(SCRIPT_DIR), "manuscript", "figures")
 
 BOND_LENGTHS = [
     0.30,
@@ -136,7 +137,8 @@ def main():
         ax.grid(True, alpha=0.3)
         ax.set_xlim(0.2, 5.2)
 
-        plot_path = os.path.join(SCRIPT_DIR, "h2_dissociation.png")
+        os.makedirs(FIGURE_DIR, exist_ok=True)
+        plot_path = os.path.join(FIGURE_DIR, "h2_dissociation.png")
         plt.savefig(plot_path, dpi=150, bbox_inches="tight")
         print(f"  Plot saved to: {os.path.basename(plot_path)}")
     except ImportError:

@@ -6,12 +6,11 @@ has_sample: true
 cover_image: cover.png
 about: |
   **From Molecules to Quantum Circuits** is a self-contained computational
-  guide covering the complete pipeline from molecular electronic structure
-  to quantum circuit compilation for quantum simulation.
+  guide to the translation layer from molecular electronic structure
+  to logical quantum circuits.
 
-  Every formula has a corresponding executable computation in the FockMap
-  library. Every sign, every coefficient, every intermediate Pauli string
-  is computed explicitly — nothing is left as an exercise.
+  Core transformations have executable FockMap companions; independent PySCF
+  scripts generate the chemistry references used to check them.
 
   The guide covers six fermion-to-qubit encodings (Jordan-Wigner,
   Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree,
@@ -20,10 +19,9 @@ about: |
   decomposition with CNOT cost analysis, and circuit output in OpenQASM
   and Q#.
 
-  Two running examples — H₂ (the simplest molecule) and H₂O (the most
-  important molecule) — are developed from geometry to quantum circuit,
-  including applications like computing the H-O-H bond angle from first
-  principles and explaining why water is a greenhouse gas.
+  Two running examples keep construction and reference chemistry distinct:
+  H₂ is derived from generated integrals to a verified JW matrix and circuit;
+  H₂O provides a PySCF FCI angular scan at fixed experimental O-H length.
 
   Intended for graduate students, advanced undergraduates, and researchers
   who know some quantum mechanics and linear algebra but have not

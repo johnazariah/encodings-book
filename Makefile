@@ -3,8 +3,8 @@
 # ══════════════════════════════════════════════════════════════
 #
 # Usage:
-#   make              Build manuscript.pdf
-#   make sample       Build sample.pdf (first 7 chapters)
+#   make              Build molecules-to-circuits.pdf
+#   make sample       Build molecules-to-circuits-sample.pdf (selected chapters)
 #   make arxiv-pdflatex  Build pdflatex arXiv submission (tarball + PDF)
 #   make clean        Remove generated files
 #   make word-count   Print word counts per chapter
@@ -22,6 +22,7 @@ CODE_DIR    := code
 IMG_DIR     := $(MS_DIR)/mermaid-images
 OUT         := $(MS_DIR)/molecules-to-circuits.pdf
 SAMPLE_OUT  := $(MS_DIR)/molecules-to-circuits-sample.pdf
+EPUB_OUT    := $(MS_DIR)/molecules-to-circuits.epub
 
 # ── Source files ──
 CHAPTERS     := $(shell cat $(MS_DIR)/Book.txt | sed 's|^|$(MS_DIR)/|')
@@ -35,14 +36,14 @@ PREAMBLE    := $(MS_DIR)/preamble.tex
 PANDOC_COMMON := \
   --pdf-engine=xelatex \
   --lua-filter=$(LUA_FILTER) \
+  --resource-path=$(MS_DIR):. \
   -H $(PREAMBLE) \
   -V geometry:margin=1in \
   -V fontsize=11pt \
   -V classoption=oneside \
-  -V mainfont="Latin Modern Roman" \
-  -V sansfont="Latin Modern Sans" \
-  -V monofont="Latin Modern Mono" \
-  -V mathfont="Latin Modern Math" \
+  -V mainfont="DejaVu Serif" \
+  -V sansfont="DejaVu Sans" \
+  -V monofont="DejaVu Sans Mono" \
   -V title="From Molecules to Quantum Circuits" \
   -V subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
   -V author="John S Azariah" \
@@ -56,7 +57,7 @@ PANDOC_COMMON := \
   -V urlcolor=blue
 
 PANDOC_OPTS := $(PANDOC_COMMON) \
-  --metadata=abstract:"This tutorial covers the complete pipeline from molecular electronic structure to quantum circuit compilation for quantum simulation. Starting from one-body and two-body integrals of the hydrogen molecule (H₂) in the STO-3G basis, we construct the qubit Hamiltonian explicitly under six fermion-to-qubit encodings (Jordan-Wigner, Bravyi-Kitaev, Parity, balanced binary tree, balanced ternary tree, and a Vlasov complete-ternary-tree encoding), verify spectral equivalence across encodings, reduce qubit count via diagonal and Clifford Z₂ symmetry tapering, decompose the tapered Hamiltonian into Trotter circuits with explicit CNOT gate counts, and export the result to OpenQASM 3.0 and Q\#. Every formula has a corresponding executable computation in the companion FockMap library, an open-source F\# framework for symbolic Fock-space operator algebra. Two running examples — H₂ (4 qubits) and H₂O (12–14 qubits) — are developed from molecular geometry to quantum circuit, including computing the H₂ dissociation curve and the H-O-H bond angle from first principles. The tutorial comprises 23 chapters with exercises, 10 companion scripts, and 10 interactive laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings."
+  --metadata=abstract:"This tutorial develops the translation layer from molecular electronic structure to logical quantum circuits. For H₂/STO-3G at 0.74 Å, generated PySCF integrals feed an independently verified fermionic matrix and Jordan-Wigner Pauli Hamiltonian before encoding, symmetry, product-formula, cost, and export concepts are applied. Separate PySCF scripts provide the H₂ dissociation reference and an H₂O FCI angular scan at fixed experimental O-H length; these chemistry references are not represented as energies produced by circuit construction alone. The tutorial covers six fermion-to-qubit encodings, physical-sector tapering requirements, Trotter decomposition, CNOT accounting, and OpenQASM/Q\# export across 23 chapters, 10 companion scripts, and 10 laboratory sessions. Companion software and source at https://github.com/johnazariah/encodings."
 
 SAMPLE_FILTER := $(MS_DIR)/sample-filter.lua
 SAMPLE_OPTS := $(PANDOC_COMMON) --lua-filter=$(SAMPLE_FILTER)
@@ -65,7 +66,7 @@ SAMPLE_OPTS := $(PANDOC_COMMON) --lua-filter=$(SAMPLE_FILTER)
 #  Targets
 # ══════════════════════════════════════════════════════════════
 
-.PHONY: all clean word-count diagrams data sample
+.PHONY: all clean word-count diagrams data sample epub verify-data pipeline-check
 
 all: $(OUT)
 
@@ -84,6 +85,23 @@ $(SAMPLE_OUT): $(SAMPLE_CHAPS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Sample.txt
 	@echo "Done: $$(python3 -c "import pymupdf; d=pymupdf.open('$(SAMPLE_OUT)'); print(f'{d.page_count} pages'); d.close()" 2>/dev/null || echo '(install pymupdf for page count)')"
 	@ls -lh $(SAMPLE_OUT)
 
+epub: $(EPUB_OUT)
+
+$(EPUB_OUT): $(CHAPTERS) $(LUA_FILTER) $(MS_DIR)/Book.txt
+	@echo "Building EPUB..."
+	$(PANDOC) $(CHAPTERS) \
+	  -o $(EPUB_OUT) \
+	  --toc --toc-depth=2 \
+	  --lua-filter=$(LUA_FILTER) \
+	  --resource-path=$(MS_DIR):. \
+	  --highlight-style=tango \
+	  --metadata title="From Molecules to Quantum Circuits" \
+	  --metadata subtitle="A Computational Guide to Fermion-to-Qubit Encodings" \
+	  --metadata author="John S Azariah" \
+	  --top-level-division=chapter \
+	  --mathml
+	@ls -lh $(EPUB_OUT)
+
 # ── arXiv submission ──
 ARXIV_DIR   := arxiv-submission
 ARXIV_TEX   := $(ARXIV_DIR)/manuscript.tex
@@ -96,8 +114,8 @@ arxiv: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE) $(MS_DIR)/Book.txt
 	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
 	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
 	fi
-	@cp $(CODE_DIR)/*.png $(ARXIV_DIR)/ 2>/dev/null || true
-	@sed -i 's|manuscript/mermaid-images/||g; s|code/||g' $(ARXIV_TEX)
+	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/ 2>/dev/null || true
+	@sed -i 's|manuscript/mermaid-images/||g; s|manuscript/figures/||g; s|figures/||g' $(ARXIV_TEX)
 	@cd $(ARXIV_DIR) && tar czf ../arxiv-submission.tar.gz *
 	@echo "Created arxiv-submission.tar.gz with:"
 	@tar tzf arxiv-submission.tar.gz | sed 's/^/  /'
@@ -110,6 +128,7 @@ CONVERT_SCRIPT := scripts/convert-to-pdflatex.py
 PANDOC_ARXIV_OPTS := \
   --pdf-engine=pdflatex \
   --lua-filter=$(LUA_FILTER) \
+  --resource-path=$(MS_DIR):. \
   -H $(PREAMBLE_ARXIV) \
   -V geometry:margin=1in \
   -V fontsize=11pt \
@@ -134,8 +153,8 @@ arxiv-pdflatex: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE_ARXIV) $(MS_DIR)/Book.txt $
 	@if [ -d $(IMG_DIR) ] && [ "$$(ls -A $(IMG_DIR))" ]; then \
 	  cp $(IMG_DIR)/*.png $(ARXIV_DIR)/; \
 	fi
-	@cp $(CODE_DIR)/*.png $(ARXIV_DIR)/ 2>/dev/null || true
-	@sed -i 's|manuscript/mermaid-images/||g; s|code/||g' $(ARXIV_TEX)
+	@cp $(MS_DIR)/figures/*.png $(ARXIV_DIR)/ 2>/dev/null || true
+	@sed -i 's|manuscript/mermaid-images/||g; s|manuscript/figures/||g; s|figures/||g' $(ARXIV_TEX)
 	@python3 $(CONVERT_SCRIPT) $(ARXIV_TEX)
 	@echo "Compiling PDF (two passes)..."
 	@cd $(ARXIV_DIR) && pdflatex -interaction=nonstopmode manuscript.tex > /dev/null 2>&1
@@ -154,7 +173,7 @@ arxiv-pdflatex: $(CHAPTERS) $(LUA_FILTER) $(PREAMBLE_ARXIV) $(MS_DIR)/Book.txt $
 	@ls -lh arxiv-submission.tar.gz $(ARXIV_DIR)/manuscript.pdf
 
 clean:
-	rm -rf $(IMG_DIR) $(OUT) $(SAMPLE_OUT) $(ARXIV_DIR) arxiv-submission.tar.gz
+	rm -rf $(IMG_DIR) $(OUT) $(SAMPLE_OUT) $(EPUB_OUT) $(ARXIV_DIR) arxiv-submission.tar.gz
 
 word-count:
 	@echo "Chapter word counts:"
@@ -170,21 +189,29 @@ diagrams:
 	@$(PANDOC) $(CHAPTERS) -t native --lua-filter=$(LUA_FILTER) > /dev/null 2>&1
 	@echo "Rendered $$(ls $(IMG_DIR)/*.png 2>/dev/null | wc -l) diagrams"
 
-# ── Data generation (requires pyscf) ──
-data: $(CODE_DIR)/h2_dissociation.csv $(CODE_DIR)/h2o_bond_angle_coarse.csv
+# ── Data generation (requires requirements-data.txt) ──
+data:
+	python3 $(CODE_DIR)/ch18-generate-h2-integrals.py
+	python3 $(CODE_DIR)/ch18-dissociation-scan.py
+	python3 $(CODE_DIR)/ch19-bond-angle-scan.py
+	python3 $(CODE_DIR)/ch09-verify-h2.py
 
-$(CODE_DIR)/h2_dissociation.csv: $(CODE_DIR)/ch18-dissociation-scan.py
-	python3 $<
+verify-data:
+	python3 $(CODE_DIR)/ch09-verify-h2.py
+	dotnet fsi labs/03-compare-encodings.fsx
+	bash scripts/check-data-idempotence.sh
 
-$(CODE_DIR)/h2o_bond_angle_coarse.csv: $(CODE_DIR)/ch19-bond-angle-scan.py
-	python3 $<
+pipeline-check:
+	bash scripts/check-ch18-output-isolation.sh
 
 # ── Labs ──
 .PHONY: lab-check
 lab-check:
-	@echo "Checking labs..."
-	@for f in labs/*.fsx; do \
+	@set -euo pipefail; \
+	echo "Executing labs..."; \
+	for f in labs/[0-9][0-9]-*.fsx; do \
 	  echo "  $$f"; \
+	  dotnet fsi "$$f"; \
 	done
 
 leanpub-status: leanpub-check

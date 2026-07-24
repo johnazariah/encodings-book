@@ -1,14 +1,18 @@
 // ══════════════════════════════════════════════════════════════
 // Chapter 7 Companion: Six Encodings, One Interface
 // ══════════════════════════════════════════════════════════════
-// Run with: dotnet fsi book/code/ch07-six-encodings.fsx
+// Run with: dotnet fsi code/ch07-six-encodings.fsx
 // Prereq:   dotnet build --configuration Release
 
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 #load "ch03-spin-orbitals.fsx"
 
 open System.Numerics
 open Encodings
+open Encodings.BravyiKitaev
+open Encodings.JordanWigner
+open Encodings.MajoranaEncoding
+open Encodings.TreeEncoding
 
 printfn ""
 printfn "Chapter 7: Six Encodings, One Interface"
@@ -30,7 +34,7 @@ printfn ""
 printfn "  n     JW    BK    TT    JW/TT"
 printfn "  ──    ──    ──    ──    ─────"
 
-for n in [| 4u; 8u; 16u; 32u |] do
+for n in [| 4u; 8u; 16u; 32u; 64u |] do
     let maxWeight (encoder : LadderOperatorUnit -> uint32 -> uint32 -> PauliRegisterSequence) =
         [| for j in 0u .. n - 1u ->
                let terms = encoder Raise j n

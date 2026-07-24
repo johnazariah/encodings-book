@@ -28,7 +28,10 @@ flowchart TD
     style SKIP fill:#fee2e2,stroke:#ef4444
 ```
 
-**Complexity:** $O(n \times m)$ where $n$ is the qubit count and $m$ is the number of terms. For H₂O with 12 active spin-orbitals (frozen core) and ~600 terms, this takes microseconds.
+**Complexity:** $O(nm)$, where $n$ is the qubit count and $m$ is the
+number of stored terms. Wall-clock time depends on representation and
+implementation; this book does not infer molecule timings from the asymptotic
+scan alone.
 
 ### In FockMap
 
@@ -51,7 +54,10 @@ diagonalZ2SymmetryQubits h
 // → [| 0; 1; 2; 3 |]  — all four qubits are diagonal!
 ```
 
-Every term has only I or Z at every position. This is a fully diagonal Hamiltonian — entirely classical. It's a toy, but it illustrates the detection perfectly.
+Every term has only I or Z at every position. The Hamiltonian is diagonal in
+the computational basis, so a basis state attains its minimum eigenvalue.
+Degeneracy can still permit coherent eigenstates; “diagonal” is the precise
+property used by the detector.
 
 ### A more realistic example
 
@@ -71,9 +77,14 @@ diagonalZ2SymmetryQubits hmixed
 
 Qubit 0 has Z, I, Z, I across the four terms — all diagonal. Qubit 2 has Z, I, I, I — also all diagonal. But qubit 1 has I, X, I, Y — the X and Y disqualify it. Qubit 3 has I, X, Z, Y — also disqualified.
 
-Only qubits 0 and 2 can be tapered. The off-diagonal terms (the ones with X and Y that generate coherences, as we discussed in Chapter 6) survive on qubits 1 and 3 — which is exactly right, because the quantum physics lives in those off-diagonal terms and we must not discard them.
+Only qubits 0 and 2 satisfy this single-qubit diagonal test. Qubits 1 and 3
+appear with X/Y support and cannot be removed by this rule. That statement is
+about the detected symmetry form, not a classical-versus-quantum partition.
 
-> **The intuition:** tapering removes qubits whose value is *classically determined* — they contribute only to the diagonal part of the Hamiltonian. The qubits we keep are the ones that carry the off-diagonal (quantum) physics.
+> **The intuition:** in a selected symmetry sector, a tapered generator
+> eigenvalue is fixed. Removing its target qubit represents that constraint;
+> it is not a partition into “classical” discarded qubits and “quantum” kept
+> qubits.
 
 ---
 
@@ -96,7 +107,7 @@ For example, if qubit $j$ represents the parity of the total electron number (ev
 
 If you know your molecule has 2 electrons (even), you choose sector $+1$ for that qubit. This projects the Hamiltonian onto the physically relevant subspace.
 
-For $k$ diagonal qubits, there are $2^k$ possible sectors. Each gives a valid tapered Hamiltonian with the correct eigenvalues for that sector — but different sectors may have different ground-state energies. To find the global ground state, you must check all sectors and take the minimum.
+For $k$ diagonal qubits, there are $2^k$ possible sectors. Each gives a valid tapered Hamiltonian with the eigenvalues of that sector, but sectors can represent different particle numbers, spins, or point-group quantum numbers. A molecular calculation must select the sector matching the intended physical system. Sweeping all sectors is useful for reconstructing or debugging the full spectrum; taking the lowest value across them may instead select an ion or a different spin state.
 
 ---
 
@@ -135,7 +146,7 @@ Four qubits → two qubits. The eigenvalues of $\hat{H}'$ are exactly the eigenv
 let result = taperDiagonalZ2 [ (1, 1); (3, -1) ] h
 
 printfn "%d → %d qubits" result.OriginalQubitCount result.TaperedQubitCount
-// 4 → 2 qubits
+// This diagonal toy: 4 → 2 after explicitly fixing q1=+1 and q3=-1
 
 printfn "Removed: %A" result.RemovedQubits
 // [| 1; 3 |]
@@ -156,7 +167,7 @@ let auto = taperAllDiagonalZ2WithPositiveSector hamiltonian
 // let auto = taperDiagonalZ2 sector hamiltonian
 ```
 
-This is fine for exploration but not for production: the $+1$ sector may not contain the ground state. For a rigorous calculation, sweep all $2^k$ sectors.
+This is fine for API exploration but not for a molecular result: the $+1$ sector may not have the required electron number or spin. For a physical calculation, derive each generator eigenvalue from known quantum numbers and verify the tapered spectrum against that untapered sector.
 
 ---
 
@@ -183,7 +194,7 @@ These guards prevent the two most common tapering bugs: applying tapering to a q
 - Detection is a single scan: $O(n \times m)$.
 - Sector choice selects which quantum-number subspace to project into.
 - Each term's coefficient is multiplied by $\pm 1$ per tapered qubit (depending on I vs Z), then the qubit position is removed.
-- For the global ground state, sweep all $2^k$ sectors.
+- A sector sweep is a spectrum diagnostic, not a substitute for identifying the molecule's particle-number and spin sector.
 - FockMap validates inputs to prevent silent errors.
 
 ## Sector Selection: A Practical Workflow
@@ -192,22 +203,13 @@ Choosing the correct sector is a common source of confusion for first-time pract
 
 1. **If you know the conserved quantities** (e.g., particle number parity, spin projection), compute the expected eigenvalue for each generator and set the sector accordingly. For molecular ground states, the particle number is fixed, so parity-related generators should be set to match the electron count.
 
-2. **If the physical sector is unclear**, sweep all $2^k$ sectors. For each sector, diagonalise (or VQE-evaluate) the tapered Hamiltonian and record the ground-state energy. The global minimum across sectors is the ground-state energy. For H₂ with 2 diagonal qubits, this means 4 sector evaluations — trivial. For larger systems with $k = 3$ or $4$, it means 8–16 evaluations — still cheap compared to the Hamiltonian construction.
+2. **If the generator-to-quantum-number map is unclear**, derive it before reporting a molecular energy. A sweep over all $2^k$ sectors can show how the full spectrum decomposes and can expose a sign mistake, but its global minimum need not belong to the intended molecule.
 
-3. **For production workflows**, always verify: compare the tapered ground-state energy against the untapered eigenvalue (if computable) or against a known reference. A sector mismatch shows up as a ground-state energy that is *higher* than the correct value — never lower.
-
-```fsharp
-// Sweep all sectors for a 2-generator system
-for s0 in [+1; -1] do
-    for s1 in [+1; -1] do
-        let result = taperDiagonalZ2 [(q0, s0); (q1, s1)] hamiltonian
-        let e0 = exactGroundStateEnergy result.Hamiltonian
-        printfn "Sector (%+d, %+d): E₀ = %.6f Ha" s0 s1 e0
-```
+3. **For production workflows**, compare the tapered spectrum with the matching untapered sector (if computable) or with a reference labelled by the same electron number and spin. A sector mismatch can be either higher or lower than the desired molecular energy.
 
 ## Common Mistakes
 
-1. **Assuming the $+1$ sector always contains the ground state.** It may not — the ground state could be in any sector.
+1. **Assuming the $+1$ sector is physical.** Generator signs must be derived from the target electron number, spin, and other conserved quantum numbers.
 
 2. **Tapering a non-diagonal qubit.** FockMap catches this, but if you're implementing by hand, silently dropping X/Y terms is the most dangerous bug.
 

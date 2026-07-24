@@ -133,17 +133,17 @@ The CNOT staircase turns the abstract concept of "Pauli weight" into a concrete 
 
 $$\text{CNOTs per Trotter step} = \sum_{k=1}^{L} 2(w_k - 1)$$
 
-For the same molecule encoded differently:
+For the reproduced maximum ladder-operator weights at $n=32$:
 
-| Encoding | Max $w_k$ | Typical CNOT cost/step |
+| Encoding | Max weight | Standard CNOTs for one worst-case rotation |
 |:---|:---:|:---:|
-| Jordan–Wigner ($n=32$) | 32 | ~2000 |
-| Bravyi–Kitaev ($n=32$) | 6 | ~500 |
-| Ternary Tree ($n=32$) | 5 | ~400 |
-| Vlasov Tree ($n=32$) | 5 | ~400 |
-| Tapered + TT ($n=29$) | 5 | ~340 |
+| Jordan–Wigner | 32 | 62 |
+| Bravyi–Kitaev | 6 | 10 |
+| Ternary Tree | 5 | 8 |
 
-The 6× ratio between JW and TT at $n=32$ is entirely due to the CNOT staircase — the same formula, the same chemistry, but dramatically different circuit depth.
+This is an operator-level comparison. A molecular Trotter-step total requires
+the complete generated term distribution and cannot be inferred from the
+maximum alone.
 
 ---
 

@@ -1,16 +1,18 @@
 #if INTERACTIVE
-#r "nuget: FockMap"
+#r "nuget: FockMap, 0.9.0"
 #endif
 
 open System
 open System.Numerics
 open Encodings
+open Encodings.Tapering
 
 printfn "============================================================"
 printfn "Lab 09 — Qubit Tapering (Diagonal Z2, symbolic)"
 printfn "============================================================"
 
-// A tiny 4-qubit toy Hamiltonian with diagonal Z2 symmetries on qubits 1 and 3.
+// A fully Z-diagonal 4-qubit toy: all four qubits are diagonal Z2
+// symmetries. Below we taper qubits 1 and 3 to illustrate a partial choice.
 let hamiltonian =
     [|
         PauliRegister("ZIZI", Complex(0.8, 0.0))

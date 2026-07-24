@@ -1,0 +1,165 @@
+{
+  "_metadata": {
+    "generator": "code/ch18-generate-h2-integrals.py",
+    "command": "python3 code/ch18-generate-h2-integrals.py",
+    "upstream_generator": "encodings-research/research/tools/generate_h2_integrals.py",
+    "canonical_fixture": {
+      "description": "Immutable-source provenance for the vendored H2/STO-3G physicist spin-integral fixture. Pins the source COMMIT and git BLOB (content-addressed, immutable), not a mutable branch. The two hashes below are computed over the sibling file physicist_spin_integrals.json, which is the byte-for-byte vendored artifact.",
+      "source_repo": "johnazariah/encodings-research",
+      "source_commit": "1e000bbc9664b8e5cfef48608d07364279c0a54f",
+      "source_path": "papers/results/h2_sto3g/physicist_spin_integrals.json",
+      "git_blob_sha1": "e0477e70c0dfd35b865000bb23b7b31882b062d3",
+      "file_sha256": "6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812",
+      "vendored_file": "code/physicist_spin_integrals.json",
+      "semantic_map_sha256": "d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c"
+    },
+    "pyscf_version": "2.13.0",
+    "numpy_version": "2.0.2",
+    "molecule": "H2",
+    "basis": "sto-3g (PySCF built-in basis data)",
+    "mean_field": "RHF canonical molecular orbitals",
+    "geometry": "H 0 0 0; H 0 0 R, R in Angstrom",
+    "spin_orbital_order": "interleaved: spatial p -> 2p alpha, 2p+1 beta",
+    "two_body_convention": "<pq|rs>_physicist = (pr|qs)_chemist",
+    "hamiltonian_contract": "0.5 sum_pqrs <pq|rs> a^p a^q a_s a_r; Vnn separate",
+    "input_threshold": 1e-15,
+    "bond_lengths_angstrom": [
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.74,
+      0.8,
+      0.9,
+      1.0,
+      1.2,
+      1.4,
+      1.6,
+      1.8,
+      2.0,
+      2.5,
+      3.0,
+      4.0,
+      5.0
+    ]
+  },
+  "0.74": {
+    "bond_length_angstrom": 0.74,
+    "Vnn": 0.7151043390810812,
+    "E_HF": -1.1167593073964255,
+    "provenance": {
+      "rhf_mo_coefficients": [
+        [
+          0.548842275088698,
+          -1.2124519201795327
+        ],
+        [
+          0.5488422750886973,
+          1.2124519201795332
+        ]
+      ],
+      "rhf_mo_energies_Ha": [
+        -0.5785538598315288,
+        0.671143491914251
+      ],
+      "spatial_one_body_mo_Ha": [
+        [
+          -1.2533097866459773,
+          3.710495513488027e-17
+        ],
+        [
+          1.3484103984649372e-17,
+          -0.4750688487721783
+        ]
+      ],
+      "spatial_eri_chemist_mo_Ha": [
+        [
+          [
+            [
+              0.6747559268144484,
+              -5.4504794807877774e-17
+            ],
+            [
+              -5.4504794807877774e-17,
+              0.6637114013508132
+            ]
+          ],
+          [
+            [
+              -3.7578564169029254e-17,
+              0.18121046201519675
+            ],
+            [
+              0.18121046201519675,
+              4.0631936247500305e-16
+            ]
+          ]
+        ],
+        [
+          [
+            [
+              -3.7578564169029254e-17,
+              0.18121046201519675
+            ],
+            [
+              0.18121046201519675,
+              4.0631936247500305e-16
+            ]
+          ],
+          [
+            [
+              0.6637114013508134,
+              5.57982112660266e-16
+            ],
+            [
+              5.57982112660266e-16,
+              0.6976515044904612
+            ]
+          ]
+        ]
+      ],
+      "spin_integrals_sha256": "d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c",
+      "local_pyscf_spin_integrals_sha256": "a9a85179ad7f9fef8ef2ad5a90f54ac14b1923f1775ff17fdb6d14a1e1557a14",
+      "canonical_max_abs_error_vs_local_pyscf": 2.220446049250313e-16
+    },
+    "integrals": {
+      "0,0": -1.2533097866459773,
+      "1,1": -1.2533097866459773,
+      "2,2": -0.4750688487721783,
+      "3,3": -0.4750688487721783,
+      "0,0,0,0": 0.6747559268144484,
+      "0,0,2,2": 0.18121046201519672,
+      "0,1,0,1": 0.6747559268144484,
+      "0,1,2,3": 0.18121046201519672,
+      "0,2,0,2": 0.6637114013508132,
+      "0,2,2,0": 0.18121046201519672,
+      "0,3,0,3": 0.6637114013508132,
+      "0,3,2,1": 0.18121046201519672,
+      "1,0,1,0": 0.6747559268144484,
+      "1,0,3,2": 0.18121046201519672,
+      "1,1,1,1": 0.6747559268144484,
+      "1,1,3,3": 0.18121046201519672,
+      "1,2,1,2": 0.6637114013508132,
+      "1,2,3,0": 0.18121046201519672,
+      "1,3,1,3": 0.6637114013508132,
+      "1,3,3,1": 0.18121046201519672,
+      "2,0,0,2": 0.18121046201519672,
+      "2,0,2,0": 0.6637114013508132,
+      "2,1,0,3": 0.18121046201519672,
+      "2,1,2,1": 0.6637114013508132,
+      "2,2,0,0": 0.18121046201519672,
+      "2,2,2,2": 0.6976515044904612,
+      "2,3,0,1": 0.18121046201519672,
+      "2,3,2,3": 0.6976515044904612,
+      "3,0,1,2": 0.18121046201519672,
+      "3,0,3,0": 0.6637114013508132,
+      "3,1,1,3": 0.18121046201519672,
+      "3,1,3,1": 0.6637114013508132,
+      "3,2,1,0": 0.18121046201519672,
+      "3,2,3,2": 0.6976515044904612,
+      "3,3,1,1": 0.18121046201519672,
+      "3,3,3,3": 0.6976515044904612
+    }
+  }
+}

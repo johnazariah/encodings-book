@@ -1,10 +1,11 @@
-# Appendix: Library Cookbook Reference
+# Appendix A: Library Cookbook Reference
 
 _A quick-reference guide to every public type and function in FockMap._
 
-This appendix summarizes the 15-chapter Cookbook that accompanies the main text.
-For full worked examples, see the [Cookbook](../docs/guides/cookbook/index.html) on
-the companion website.
+This appendix summarizes the 18-chapter Cookbook in the
+[FockMap repository](https://github.com/johnazariah/encodings). API examples in
+this book target the pinned companion version and open feature modules
+explicitly.
 
 > **Note:** The "Chapter" numbers below refer to the companion Cookbook chapters, not the main text chapters.
 
@@ -49,10 +50,13 @@ the companion website.
 
 | Function | Signature | What it does |
 |:---|:---|:---|
-| `computeHamiltonianWith` | `EncoderFn → CoefficientFactory → uint32 → PauliRegisterSequence` | Build Hamiltonian with any encoding |
-| `computeHamiltonianWithParallel` | `EncoderFn → CoefficientFactory → uint32 → PauliRegisterSequence` | Parallel version |
+| `computeHamiltonian` | `RawPhysicistFactory → uint32 → PauliRegisterSequence` | Build a JW Hamiltonian from raw single-bar physicist integrals |
+| `computeHamiltonianWith` | `EncoderFn → RawPhysicistFactory → uint32 → PauliRegisterSequence` | Build from raw single-bar physicist integrals with any encoding |
+| `computeHamiltonianWithParallel` | `EncoderFn → RawPhysicistFactory → uint32 → PauliRegisterSequence` | Parallel raw-integral version |
+| `computeHamiltonianFromWeightedWith` | `EncoderFn → WeightedFactory → uint32 → PauliRegisterSequence` | Migration API for full weighted operator coefficients |
 | `computeHamiltonianSkeleton` | `EncoderFn → uint32 → HamiltonianSkeleton` | Pre-compute Pauli structure |
-| `applyCoefficients` | `HamiltonianSkeleton → CoefficientFactory → PauliRegisterSequence` | Dress skeleton with integrals |
+| `applyCoefficients` | `HamiltonianSkeleton → RawPhysicistFactory → PauliRegisterSequence` | Dress a skeleton with raw physicist integrals |
+| `applyCoefficientsFromWeighted` | `HamiltonianSkeleton → WeightedFactory → PauliRegisterSequence` | Dress a skeleton with legacy weighted coefficients |
 
 ### Tapering
 
