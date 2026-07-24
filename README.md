@@ -145,6 +145,11 @@ open Encodings
 open Encodings.JordanWigner
 ```
 
+Release provenance: FockMap `0.9.0` was published from repository commit
+`96320a56786393269fd681c67c66df88058a8b8f`; the public NuGet
+`Encodings.dll` has SHA-256
+`0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+
 FockMap feature modules are explicit rather than `AutoOpen`; Hamiltonian,
 tapering, Trotter, circuit-export, and other examples open their corresponding
 `Encodings.*` modules.

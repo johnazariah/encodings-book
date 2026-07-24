@@ -1597,3 +1597,55 @@ published**, so the public-package run remains fail-closed. Package
 push/PR/merge, NuGet publication/provenance, Zenodo mixed-rights correction, and
 the separate CA-H008/CA-M010/CA-M011 gates remain outside this book-branch
 closure.
+
+## Public FockMap 0.9.0 release verification — 2026-07-24
+
+The package rollout gate is closed.
+
+### Public provenance
+
+| Artifact | Verified value |
+|---|---|
+| GitHub release | `v0.9.0`, published 2026-07-24 |
+| Tag target / main | `96320a56786393269fd681c67c66df88058a8b8f` |
+| NuGet package | `FockMap 0.9.0` present in the public v3 flat-container index |
+| Public NuGet nupkg SHA-256 | `2911c0b5df790a8f7ed4b1756ca7f0af684a75f4a41b404a5ccefb713de6adf2` |
+| Nuspec repository commit | `96320a56786393269fd681c67c66df88058a8b8f` |
+| Published `Encodings.dll` SHA-256 | `0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3` |
+
+The public package exposes the accepted raw-primary contract and preserves the
+named weighted migration APIs. Its canonical fixture and 15-term H₂ behavior
+remain the accepted lineage.
+
+### Public-package book verification
+
+The repository was executed normally through its pinned
+`#r "nuget: FockMap, 0.9.0"` references, with no local DLL substitution:
+
+- `make verify-data` — passed;
+- `make pipeline-check` — passed;
+- `make lab-check` — all 10 numbered labs passed;
+- every `code/ch*.fsx` companion — all six passed;
+- obsolete API warnings — none; and
+- worktree/deterministic-data drift — none.
+
+The selective clarity pass was already complete and introduced no technical
+change. Package-independent publication outputs remain verified:
+
+- full PDF: 176 pages, 27 image placements;
+- sample PDF: 55 pages, 9 image placements;
+- EPUB: 29 content files, 27 PNG assets;
+- strict MyST HTML: 27 pages, 18 DOI links; and
+- canonical fixture/oracle hashes and Mermaid output remain unchanged.
+
+### Final package-gate status
+
+- CA-H002, CA-H003, CA-H004, CA-H005, CA-H006, ordering-convention, and
+  CA-M005 are closed against the public released package.
+- FockMap `0.9.0` is published and provenance-verified.
+- CA-H008, CA-M010, and CA-M011 remain partial under their separate gates.
+- Zenodo mixed-rights metadata remains an explicit owner/release blocker; this
+  addendum does not claim it is fixed.
+
+The book PR may now be marked ready and evaluated by its own CI. No remaining
+package publication blocker applies to the book branch.

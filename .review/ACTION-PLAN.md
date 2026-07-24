@@ -1,6 +1,6 @@
 # ACTION PLAN — From Molecules to Quantum Circuits
 
-**Updated:** 2026-07-23
+**Updated:** 2026-07-24
 **Authoritative audit:** `.review/CORRECTNESS-AUDIT.md`
 **Baseline HEAD:** `2269f0d3eb87f0d22e1b275e56add2077ad6915d`
 **Verified tree:** Current uncommitted remediation
@@ -8,13 +8,14 @@
 implementation are accepted at `encodings` successor
 `3e62bd71b113d78a6f5933858336e06af1e3d9c7`; designated audit also accepts
 release-workflow successor `9e1afe267efefc4056f726ea98dadfed8af0214e`.
-Portability follow-up `660c4839223037bc69909bb8fcb7d3be0f226b20` is
-**book-side verified; designated one-delta audit pending**. The book worktree is
-fully verified after its selective clarity pass and is ready to commit/push/open
-its PR. Package push/PR/NuGet publication and provenance, Zenodo mixed-rights
-metadata, and the explicitly partial items below remain. FockMap `0.9.0` must
-not be described as published. The 2026-07-23 audit addenda are the acceptance
-and change-control record.
+Final package lineage was merged and released publicly as FockMap `0.9.0` at
+source commit `96320a56786393269fd681c67c66df88058a8b8f`; the public NuGet DLL
+SHA-256 is
+`0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+The pinned public-package data/pipeline/labs/companions and all book outputs
+pass after the selective clarity pass. The book PR may proceed. Zenodo
+mixed-rights metadata and the explicitly partial CA-H008/CA-M010/CA-M011 gates
+remain. The dated audit addenda are the acceptance and change-control record.
 
 ## Status vocabulary
 
@@ -60,9 +61,8 @@ synthesized:
 Source-independent implementation is not permission to claim source parity. In
 particular, regenerated H₂ numbers required exact-source FockMap parity before
 CA-H002/003 closure. Exact runtime/package parity is accepted at
-`3e62bd71b113d78a6f5933858336e06af1e3d9c7`; release-workflow successor
-`9e1afe2` is book-side verified, while designated workflow audit and public
-package execution remain open.
+`3e62bd71b113d78a6f5933858336e06af1e3d9c7`; public FockMap `0.9.0` from
+source commit `96320a5` reproduces that accepted behavior.
 
 ## B — Cross-repository parity and evidence gates
 
@@ -135,6 +135,13 @@ command scans, workflow parsing, 900 package tests, and the full exact-DLL book
 baseline. The designated one-delta audit of `660c483` remains an external
 package gate and does not reopen book code.
 
+**Public release closure — 2026-07-24:** PR #7 and the hosted release-workflow
+follow-up merged. Tag/release `v0.9.0` points to main commit
+`96320a56786393269fd681c67c66df88058a8b8f`. NuGet publishes `FockMap 0.9.0`;
+its nuspec records the same source commit and its `Encodings.dll` SHA-256 is
+`0ba8ae967ea65d4945a336c1217f8939e41feb63b6f04af617b66537717d25c3`.
+The book's normal pinned NuGet path passes the full runtime and output baseline.
+
 If an external report does not support a claimed capability or number, the default
 repair is to remove the unsupported claim or narrow it to a tested local
 illustration. Softened wording alone is not sufficient where the book promises
@@ -160,15 +167,14 @@ through the existing builders must pass; preweighted callers must use the named
 weighted migration APIs, and accidental double adaptation must fail.
 All four runtime/package implementation gates pass designated audit at
 `3e62bd71`; release workflow passes designated audit at `9e1afe2`.
-Portability follow-up `660c483` is book-side verified, while its designated
-one-delta audit and public FockMap `0.9.0` execution remain fail-closed.
+The final release lineage is public as FockMap `0.9.0`, and public-package
+execution passes.
 
 ---
 
 # Priority 0 — Freeze trust-critical derived claims
 
-Until the designated auditor accepts portability follow-up `660c483`, the
-remaining CA-H008 API gate closes, and the public-package release check passes:
+Until the remaining CA-H008 API gate closes:
 
 1. The direct fixture, JW coefficient table, and sector spectrum are canonical;
    do not treat live package, tapered, Trotter, or QPE outputs as final.
@@ -232,8 +238,7 @@ contract. The book and PR #6 package fixture consume the same bytes.
 
 ## CA-H002 — Re-derive and regenerate the 15-term H₂ JW Hamiltonian
 
-**Status:** Closed (book and runtime/package implementation) at `3e62bd71`;
-release-workflow successor operational
+**Status:** Closed; public FockMap `0.9.0` parity verified
 **Files:** `manuscript/04-qubits-gates-circuits.md`, `manuscript/06-building-hamiltonian.md`, `manuscript/07-six-encodings.md`, `manuscript/15-trotter-formulas.md`; companion `code/ch06-building-hamiltonian.fsx`.
 **Fix direction:**
 
@@ -242,9 +247,7 @@ release-workflow successor operational
 3. Regenerate all coefficients from CA-H001.
 4. Use electronic identity coefficient `-0.8121706072` Ha; use four-body magnitude `0.0453026155` Ha.
 
-**Dependencies:** No runtime/source-correctness dependency. Release workflow
-`9e1afe2` is designated-audit accepted; portability follow-up `660c483` awaits
-one-delta audit before package push/PR and public release.
+**Dependencies:** None for Hamiltonian/package correctness.
 **Acceptance criteria:**
 
 - The displayed Pauli matrix equals a direct fermionic matrix to numerical tolerance.
@@ -289,8 +292,7 @@ terms, and units.
 
 ## CA-H003 — Replace the complete H₂ sector spectrum and energies
 
-**Status:** Closed (direct and runtime/package parity) at `3e62bd71`;
-release-workflow successor operational
+**Status:** Closed; direct and public-package parity verified
 **Files:** `manuscript/09-verification.md`, `manuscript/18-complete-pipeline.md`, `manuscript/21-circuit-export.md`, README/back-cover numerical claims if affected.
 **Fix direction:** Recompute all 16 eigenvalues and label \(N_e\), \(M_S\), electronic/total energies. Replace HF, FCI, MP2, and correlation comparisons from one geometry-consistent source.
 
@@ -304,8 +306,7 @@ release-workflow successor operational
 
 ## CA-H004 — Make the H₂ capstone execution story honest
 
-**Status:** Closed (execution story and runtime/package API integration) at
-`3e62bd71`; release-workflow successor operational
+**Status:** Closed; execution story and public-package API integration verified
 **Files:** `manuscript/18-complete-pipeline.md`; companion `code/ch18-pipeline.fsx`, `code/ch18-dissociation-scan.py`, `code/ch18-generate-h2-integrals.py`.
 **Fix direction:** Choose one of:
 
@@ -513,14 +514,12 @@ records, then update Zenodo resource type, license/rights, description, files,
 and DOI/version relations. Do not mark fixed until the public landing page,
 GitHub/CFF, PDF/EPUB notice, and packaged code licenses agree.
 
-**Disposable execution gate:** Against exact successor DLL
-`3e62bd71b113d78a6f5933858336e06af1e3d9c7`, the current tree passes
+**Public execution gate:** Against public NuGet FockMap `0.9.0`, the current
+tree passes
 `make verify-data`, `make pipeline-check`, `make lab-check`, and every
 `code/ch*.fsx` companion without obsolete-API warnings. Every NuGet reference is
-pinned to `FockMap 0.9.0`. Book-side verification observes 900/900 package
-tests, harness selftest, 19 executable docs, and strict fsdocs passing; the
-designated audit accepts all runtime/package code and tests. Release tooling and
-public execution remain fail-closed until the workflow successor lands.
+pinned to `FockMap 0.9.0`. The published nuspec source commit and DLL digest
+match the accepted release provenance.
 
 **Release-tooling gate:** Against
 `9e1afe267efefc4056f726ea98dadfed8af0214e`, the 39-assertion harness passes
@@ -565,16 +564,15 @@ remain green. Designated one-delta audit remains.
 **Audited base accepted 2026-07-23 at PR #6 commit
 `440540b54f093d7a9f259da7bf18b7df8da74270`; breaking runtime/package successor
 `3e62bd71b113d78a6f5933858336e06af1e3d9c7` accepted by designated audit;
-release-workflow successor pending.**
+public release verified 2026-07-24.**
 The exact base passes 887/887 tests and the strict 19-document executable
 harness. Its implementation repairs remain required regressions. The owner then
 selected a breaking raw-integral API, returned PR #6 to draft, and delegated a
 new stack. `8e562175` supplies the versioned migration contract; successor
 `3e62bd71` addresses all runtime/package metadata/test blockers and passes
 900/900 tests, strict documentation gates, and exact book integration. The
-release-engineering successor `9e1afe2` is book-side verified for explicit
-current/staged mode, robust CFF date insertion, portable matching, and tests;
-designated workflow audit remains.
+release-engineering lineage was completed and published as FockMap `0.9.0` at
+source commit `96320a5`; public book execution passes.
 CA-H008 and CA-M011 retain their narrower API-output gates.
 
 - Six-encoding CAR/matrix/sign and ordering report.
@@ -638,10 +636,8 @@ The package reader contract changed after the first pass. PR #6/`440540b` is the
 audited base; `8e562175` implements the breaking contract; designated audit
 accepts runtime/package successor `3e62bd71`. The book uses the raw primary APIs
 and pins FockMap `0.9.0`; all book checks pass. The canonical direct
-fixture/oracle remains valid. Release-workflow successor `9e1afe2` is
-designated-audit accepted; portability follow-up `660c483` is book-side
-verified and awaits one-delta audit. Public package and Zenodo operations
-remain.
+fixture/oracle remains valid. FockMap `0.9.0` is now public and provenance
+verified. Zenodo operations remain.
 
 ---
 
