@@ -1649,3 +1649,42 @@ change. Package-independent publication outputs remain verified:
 
 The book PR may now be marked ready and evaluated by its own CI. No remaining
 package publication blocker applies to the book branch.
+
+---
+
+# Provenance correction — 2026-07-24
+
+**Trigger:** The canonical `encodings-research` H₂/STO-3G physicist spin-integral
+artifact was merged to `main`. Earlier verification records above (see the
+2026-07-23 verification addendum) checked the pre-merge PR head
+`1e000bbc9664b8e5cfef48608d07364279c0a54f`. Those dated records are preserved
+verbatim as a faithful account of what was verified at that time; this
+append-only entry updates the current canonical source-commit pointer without
+altering any fixture bytes or numerical outputs.
+
+**Correction:** The canonical source commit is now the merged `main` commit
+`66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06`. Because the fixture is
+content-addressed, the git blob and file hashes are immutable and unchanged; the
+merge only advances the commit that contains the identical blob.
+
+## Current canonical fixture identity
+
+`code/physicist_spin_integrals.json` is byte-identical to the merged
+`encodings-research` artifact:
+
+| Identity | Value |
+|---|---|
+| Source commit (current) | `66ebdfe255c0cc6ba25a6d1b76b58401aee3ab06` |
+| Source commit (pre-merge PR head, historical) | `1e000bbc9664b8e5cfef48608d07364279c0a54f` |
+| Source repo | `johnazariah/encodings-research` |
+| Source path | `papers/results/h2_sto3g/physicist_spin_integrals.json` |
+| Git blob SHA-1 | `e0477e70c0dfd35b865000bb23b7b31882b062d3` |
+| File SHA-256 | `6539afb30a1c03ec89202a2960a06c6580a91afaebf13a6cadbcfd32c2d71812` |
+| Exact 4+32 map SHA-256 | `d5d8e2f7c83b1d1322f10217198d125b7c7cae1f99fa09a6e1e232ee38dd098c` |
+
+The repo, path, git blob, file SHA-256, semantic-map SHA-256, and all fixture
+bytes and numerical outputs are unchanged. Live metadata updated to the merged
+commit: `code/physicist_spin_integrals.provenance.json`,
+`code/h2_dissociation_integrals.json`, `code/h2_0.74_fixture.json`,
+`code/h2_0.74_oracle.json`, and the `.review/ACTION-PLAN.md` canonical
+upstream-fixture note.
