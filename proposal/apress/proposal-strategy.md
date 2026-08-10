@@ -4,11 +4,11 @@ Internal positioning notes for the Apress submission of *Molecules to Quantum Ci
 
 ## 1. Title recommendation
 
-- **Recommended (in the form):** **Molecules to Quantum Circuits** — *An Engineer's Guide to Fermion-to-Qubit Encodings with Open-Source Tools*.
-  - Rationale: "Molecules to Quantum Circuits" is punchier than the repo's current "From Molecules to Quantum Circuits" and reads better on an Apress spine; the subtitle signals practitioner focus, the specific technical hook (fermion-to-qubit encodings), and the open-source angle James asked about.
-- **Alternate subtitle A:** "Building and Verifying Quantum-Simulation Circuits with Open-Source F# Tools" (leads with the build/verify outcome).
-- **Alternate subtitle B:** "A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits" (leads with the end-to-end pipeline; drops the F# specificity if that feels narrowing).
-- **Alternate title option:** keep **From Molecules to Quantum Circuits** to preserve continuity with the existing repo, Zenodo DOI, and public README brand. Trade-off: slightly less crisp as a commercial title.
+- **Final (confirmed by author):** **Molecules to Quantum Circuits** — *A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits*.
+  - Rationale: "Molecules to Quantum Circuits" is punchier than the repo's current "From Molecules to Quantum Circuits" and reads better on an Apress spine; the subtitle leads with the practitioner outcome — an end-to-end, hands-on pipeline — and stays broad rather than tying the book to one language or SDK.
+- **Alternate subtitle considered:** "An Engineer's Guide to Fermion-to-Qubit Encodings with Open-Source Tools" (leads with the specific technical hook and the open-source angle).
+- **Alternate subtitle considered:** "Building and Verifying Quantum-Simulation Circuits with Open-Source F# Tools" (leads with the build/verify outcome and names F#).
+- **Alternate title considered:** keep **From Molecules to Quantum Circuits** to preserve continuity with the existing repo, Zenodo DOI, and public README brand. Trade-off: slightly less crisp as a commercial title.
 
 ## 2. How to answer likely Apress practicality feedback
 

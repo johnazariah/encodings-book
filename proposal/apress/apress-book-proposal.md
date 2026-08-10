@@ -1,7 +1,7 @@
 # Apress Book Proposal
 
 **Proposed title:** Molecules to Quantum Circuits
-**Proposed subtitle:** An Engineer's Guide to Fermion-to-Qubit Encodings with Open-Source Tools
+**Proposed subtitle:** A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits
 **Author:** John S. Azariah
 **Date:** 10 August 2026
 **Series/positioning:** Apress professional / practitioner technology
@@ -146,15 +146,15 @@ A complete first draft exists today; the delta to an Apress final is editorial (
 
 Quantum-simulation toolchains are maturing, but the encoding/compilation layer remains the least-documented and most error-prone part of the stack for practitioners. Engineers arriving from software and chemistry need a reproducible, vendor-neutral account of how a molecule becomes a circuit. This book meets that need with released, testable code rather than pseudocode.
 
-## 13. Delivery schedule (for author confirmation)
+## 13. Delivery schedule
 
 | Milestone | Target date |
 |:----------|:------------|
 | Proposal submission | 10 August 2026 |
-| Revised, Apress-formatted sample chapters | 31 October 2026 |
-| Complete Apress revision / full manuscript delivery | 30 April 2027 |
+| Revised, Apress-formatted sample chapters | 30 September 2026 |
+| Complete Apress revision / full manuscript delivery | 31 March 2027 |
 
-Dates are derived from current manuscript maturity (a complete first draft exists) and are proposed for confirmation.
+Dates are derived from current manuscript maturity (a complete first draft exists) and are confirmed by the author.
 
 ## 14. Proposed technical reviewers
 
@@ -167,7 +167,7 @@ Apress typically requests two reviewers. Both below have reviewed the author's w
 
 ## 15. Apress Open (open access)
 
-Not at this stage; open to discussing it if institutional or sponsor funding is available.
+Not at this stage; open to discussing it if institutional or sponsor funding is available. (Confirmed.)
 
 ## 16. Relationship to the author's other proposed Apress book
 

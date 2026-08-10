@@ -4,7 +4,7 @@
 
 Hi James,
 
-Thank you again for the encouragement on the first proposal. As you suggested, here is the separate proposal for the quantum-circuits book with open-source components — it's attached as a standalone packet (`apress-book-proposal.docx`).
+Thank you again for the encouragement on the first proposal. As you suggested, here is the separate proposal for the quantum-circuits book with open-source components — **Molecules to Quantum Circuits: A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits** — attached as a standalone packet (`apress-book-proposal.docx`).
 
 Quick framing so the two don't blur together:
 

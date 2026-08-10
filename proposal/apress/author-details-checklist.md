@@ -1,10 +1,11 @@
 # Author Details Checklist — unresolved items only
 
-Items the author (John) still needs to decide or supply before/at submission. Resolved items are omitted.
+Items the author (John) still needs to decide or supply before/at submission. Recently confirmed decisions are recorded at the top for reference; remaining open items follow as checkboxes.
 
-## Decisions
-- [ ] **Final title/subtitle.** Recommended: *Molecules to Quantum Circuits — An Engineer's Guide to Fermion-to-Qubit Encodings with Open-Source Tools*. Two alternate subtitles and a "keep 'From…'" option are in `proposal-strategy.md`.
-- [ ] **Apress Open funding stance.** Current answer: "Not at this stage; open to discussing if institutional or sponsor funding is available." Confirm this still holds.
+## Confirmed (recorded for reference)
+- ✅ **Title/subtitle:** *Molecules to Quantum Circuits — A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits*.
+- ✅ **Schedule:** revised sample chapters 30 September 2026; full revised manuscript 31 March 2027.
+- ✅ **Apress Open:** Not at this stage; open to discussing if institutional or sponsor funding is available.
 
 ## Reviewers (pair confirmed: Whitfield + Suchara)
 - [ ] **Confirm Apress-specific availability and contact permission** for Dr James Daniel Whitfield (prior consent was Springer-specific).
@@ -12,7 +13,6 @@ Items the author (John) still needs to decide or supply before/at submission. Re
 - [ ] **Fill reviewer emails in the PRIVATE copy only** (`proposal/apress/private/`): Whitfield and Suchara. Committed proposal keeps placeholders.
 
 ## Schedule
-- [ ] **Confirm delivery dates.** Proposed: revised sample chapters 31 October 2026; complete Apress revision 30 April 2027. Adjust if manuscript maturity or other commitments require.
 - [ ] **Refresh submission date** if not submitting on 10 August 2026.
 
 ## Attachments / logistics
