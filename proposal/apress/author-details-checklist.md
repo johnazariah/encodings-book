@@ -16,7 +16,7 @@ Items the author (John) still needs to decide or supply before/at submission. Re
 - [ ] **Refresh submission date** if not submitting on 10 August 2026.
 
 ## Attachments / logistics
-- [ ] **CV / résumé** for Apress (not yet attached).
+- [ ] **CV / résumé** for Apress: reuse the existing Springer-submission CV (3-page, historically named `John_Azariah_Resume 2.pdf`); rename the attachment to `John-Azariah-CV.pdf` before sending. Do not commit the CV or its contents to Git.
 
 ## Private notes (do not put in the proposal)
 - **Foreword:** Foreword candidate: Guang Hao Low; fallback Hongbin Liu — approach only after availability/interest is confirmed. Keep out of the formal proposal unless assent arrives.
