@@ -36,7 +36,7 @@ Molecules to Quantum Circuits is a hands-on engineering guide to the one layer o
 
 The book follows one concrete pipeline end to end. Starting from generated one- and two-body integrals for the hydrogen molecule in the STO-3G basis, it builds the 15-term Jordan–Wigner Hamiltonian by hand and in code, then verifies its matrix and full spectrum against an independent PySCF/Full-CI reference (ground-state energy −1.137 Ha). That verified result becomes the acceptance target for six encodings — Jordan–Wigner, Bravyi–Kitaev, Parity, balanced binary tree, balanced ternary tree, and Vlasov tree — presented behind a single interface and compared directly. From there the pipeline continues through Z₂ symmetry tapering (diagonal and Clifford), Trotterized time evolution with explicit CNOT-staircase compilation and gate-cost analysis, and finally circuit export to OpenQASM 3.0, Q#, and JSON.
 
-Every transformation is executable. The companion is FockMap, an open-source F# library published on NuGet, built around a deliberately raw, physicist-facing Hamiltonian API, canonical H₂ fixtures with published release provenance, and an extensive automated test suite. Eleven interactive lab scripts and ten data-generation/verification scripts let readers reproduce every number in the book, one command at a time, from a one-click Codespaces environment. A second running example — a fixed-bond water angular scan — is used honestly to mark exactly where the translation layer ends and where separate algorithmic tasks (state preparation, VQE/QPE energy estimation) begin.
+Every transformation is executable. The companion is FockMap, an open-source F# library published on NuGet, built around a deliberately raw, physicist-facing Hamiltonian API, canonical H₂ fixtures with published release provenance, and an extensive automated test suite. Ten interactive lab scripts and ten data-generation/verification scripts let readers reproduce every number in the book, one command at a time, from a one-click Codespaces environment. A second running example — a fixed-bond water angular scan — is used honestly to mark exactly where the translation layer ends and where separate algorithmic tasks (state preparation, VQE/QPE energy estimation) begin.
 
 The result is a practitioner's guide, not another survey. Readers who work through it can take real molecular integrals and produce a verified, tapered, hardware-portable circuit — and explain every step in between. The book assumes only linear algebra and introductory quantum mechanics; second quantization, Pauli algebra, the encodings, and F# are all developed from scratch. It is written for quantum software engineers, computational chemists, and graduate students who need the encoding and compilation layer explained carefully, concretely, and reproducibly — with the mathematics kept independent of any single vendor SDK.
 
@@ -68,7 +68,7 @@ After working through the book, a reader can:
 ## 7. Source code and ancillary materials
 
 - **FockMap** open-source F# library — NuGet package `FockMap` 0.9.0; source at https://github.com/johnazariah/encodings; companion code MIT-licensed. Release provenance (commit + DLL SHA-256) is published in the book.
-- **11 interactive lab scripts** (`labs/*.fsx`), each runnable with `dotnet fsi`.
+- **10 interactive lab scripts** (`labs/01..10-*.fsx`), each runnable with `dotnet fsi` (plus a shared `PauliMatrix.fsx` helper module).
 - **10 companion scripts** for data generation and independent verification (F# + Python/PySCF).
 - **One-click Codespaces / Dev Container** so readers reproduce every result without local setup.
 - **Exported circuit artifacts** in OpenQASM 3.0, Q#, and JSON.
@@ -116,7 +116,7 @@ The book is 23 chapters plus 2 appendices, organized in seven parts, each mappin
 | Print pages | ~175 | ~240–280 |
 | Chapters | 23 + 2 appendices | 23–25 + appendices |
 | Code listings (inline) | ~43 F# listings + Python snippets | ~45–60 |
-| Runnable lab scripts | 11 (`.fsx`) | 10–12 |
+| Runnable lab scripts | 10 (`.fsx`) | 10–12 |
 | Companion data/verify scripts | 10 (F# + Python) | 10+ |
 | Figures | ~27 (25 diagrams + 2 data plots) | ~30 |
 
