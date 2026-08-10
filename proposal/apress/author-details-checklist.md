@@ -3,7 +3,7 @@
 Items the author (John) still needs to decide or supply before/at submission. Recently confirmed decisions are recorded at the top for reference; remaining open items follow as checkboxes.
 
 ## Confirmed (recorded for reference)
-- ✅ **Title/subtitle:** *Molecules to Quantum Circuits — A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits*.
+- ✅ **Title/subtitle:** *Molecules to Quantum Circuits — A Hands-On Pipeline from Electronic Structure to Exportable Quantum Circuits*.
 - ✅ **Schedule:** revised sample chapters 30 September 2026; full revised manuscript 31 March 2027.
 - ✅ **Apress Open:** Not at this stage; open to discussing if institutional or sponsor funding is available.
 
@@ -17,7 +17,6 @@ Items the author (John) still needs to decide or supply before/at submission. Re
 
 ## Attachments / logistics
 - [ ] **CV / résumé** for Apress (not yet attached).
-- [ ] **James's Apress-specific assent**, if you want confirmation he's happy to receive this second proposal now.
 
 ## Private notes (do not put in the proposal)
 - **Foreword:** Foreword candidate: Guang Hao Low; fallback Hongbin Liu — approach only after availability/interest is confirmed. Keep out of the formal proposal unless assent arrives.

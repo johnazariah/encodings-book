@@ -5,8 +5,8 @@ This maps every current manuscript file to a proposal-facing practical chapter t
 
 ## Foreword
 - **File:** `manuscript/foreword.md`
-- **Manuscript title:** Foreword
-- **Practical title:** Foreword & Reader's Guide
+- **Manuscript title:** Front matter (`## Preface`)
+- **Practical title:** Preface & Reader's Guide
 - **Goal:** Frame the translation-layer problem and the book's chemistry→math→code teaching order; set prerequisites and how to run the labs.
 - **First-level headings:**
 - Preface

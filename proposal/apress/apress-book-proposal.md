@@ -1,7 +1,7 @@
 # Apress Book Proposal
 
 **Proposed title:** Molecules to Quantum Circuits
-**Proposed subtitle:** A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits
+**Proposed subtitle:** A Hands-On Pipeline from Electronic Structure to Exportable Quantum Circuits
 **Author:** John S. Azariah
 **Date:** 10 August 2026
 **Series/positioning:** Apress professional / practitioner technology
@@ -32,17 +32,17 @@ He is the creator of FockMap, the open-source F# library that is the computation
 
 ## 3. Book description (practical overview)
 
-Molecules to Quantum Circuits is a hands-on engineering guide to the one layer of quantum chemistry simulation that almost every other resource treats as a black box: the translation from a molecule's electronic structure to a hardware-ready quantum circuit. Between the molecule and the circuit sits the fermion-to-qubit encoding — the step that turns creation and annihilation operators into the Pauli strings a quantum computer actually runs. This book opens that box and keeps it open, exposing every coefficient, sign, and intermediate Pauli string along the way.
+Molecules to Quantum Circuits is a hands-on engineering guide to the one layer of quantum chemistry simulation that almost every other resource treats as a black box: the translation from a molecule's electronic structure to an exportable quantum circuit. Between the molecule and the circuit sits the fermion-to-qubit encoding — the step that turns creation and annihilation operators into the Pauli strings a quantum computer actually runs. This book opens that box and keeps it open, exposing every coefficient, sign, and intermediate Pauli string along the way.
 
 The book follows one concrete pipeline end to end. Starting from generated one- and two-body integrals for the hydrogen molecule in the STO-3G basis, it builds the 15-term Jordan–Wigner Hamiltonian by hand and in code, then verifies its matrix and full spectrum against an independent PySCF/Full-CI reference (ground-state energy −1.137 Ha). That verified result becomes the acceptance target for six encodings — Jordan–Wigner, Bravyi–Kitaev, Parity, balanced binary tree, balanced ternary tree, and Vlasov tree — presented behind a single interface and compared directly. From there the pipeline continues through Z₂ symmetry tapering (diagonal and Clifford), Trotterized time evolution with explicit CNOT-staircase compilation and gate-cost analysis, and finally circuit export to OpenQASM 3.0, Q#, and JSON.
 
 Every transformation is executable. The companion is FockMap, an open-source F# library published on NuGet, built around a deliberately raw, physicist-facing Hamiltonian API, canonical H₂ fixtures with published release provenance, and an extensive automated test suite. Ten interactive lab scripts and ten data-generation/verification scripts let readers reproduce every number in the book, one command at a time, from a one-click Codespaces environment. A second running example — a fixed-bond water angular scan — is used honestly to mark exactly where the translation layer ends and where separate algorithmic tasks (state preparation, VQE/QPE energy estimation) begin.
 
-The result is a practitioner's guide, not another survey. Readers who work through it can take real molecular integrals and produce a verified, tapered, hardware-portable circuit — and explain every step in between. The book assumes only linear algebra and introductory quantum mechanics; second quantization, Pauli algebra, the encodings, and F# are all developed from scratch. It is written for quantum software engineers, computational chemists, and graduate students who need the encoding and compilation layer explained carefully, concretely, and reproducibly — with the mathematics kept independent of any single vendor SDK.
+The result is a practitioner's guide, not another survey. Readers who work through it can take real molecular integrals and produce a verified, tapered circuit exported to OpenQASM 3.0 and Q# — and explain every step in between. That exported circuit is a portable description, not a run-ready program: it still requires backend-specific transpilation, qubit mapping, and calibration, plus the separate state-preparation and algorithm (VQE/QPE) layers, before it yields energies on hardware. The book assumes only linear algebra and introductory quantum mechanics; second quantization, Pauli algebra, the encodings, and F# are all developed from scratch. It is written for quantum software engineers, computational chemists, and graduate students who need the encoding and compilation layer explained carefully, concretely, and reproducibly — with the mathematics kept independent of any single vendor SDK.
 
 ## 4. Unique selling points (exactly three)
 
-1. **The only fully executable, black-box-free pipeline from molecular integrals to hardware-ready circuits.** Built on the released open-source FockMap library (NuGet) with runnable F# labs and one-click Codespaces, every coefficient, sign, and Pauli string is inspectable and every result is reproducible — and independently checked against a classical PySCF/Full-CI reference.
+1. **A book-length, fully executable, black-box-free pipeline from molecular integrals to exportable quantum circuits.** Built on the released open-source FockMap library (NuGet) with runnable F# labs and one-click Codespaces, every coefficient, sign, and Pauli string is inspectable and every result is reproducible — and independently checked against a classical PySCF/Full-CI reference.
 
 2. **Six fermion-to-qubit encodings behind one interface, compared side by side.** Jordan–Wigner, Bravyi–Kitaev, Parity, binary tree, ternary tree, and Vlasov — where most resources cover one or two — with Z₂ tapering, Trotterization, and explicit CNOT/gate-cost accounting made concrete rather than cited.
 
@@ -54,7 +54,7 @@ After working through the book, a reader can:
 - take one- and two-body molecular integrals and build a verified qubit Hamiltonian in any of six encodings;
 - apply diagonal and Clifford Z₂ symmetry tapering to reduce qubit count, and justify which symmetries are physically valid;
 - compile a Trotterized time-evolution circuit and estimate its CNOT and gate cost across encodings;
-- export a hardware-ready circuit to OpenQASM 3.0 and Q#, and validate it against an independent classical reference; and
+- export a circuit to OpenQASM 3.0 and Q# — a portable description that still needs backend-specific transpilation, qubit mapping, and calibration — and validate it against an independent classical reference; and
 - state precisely where the translation layer ends and where state preparation and energy estimation (VQE/QPE) begin — avoiding the common overclaim that encoding "solves" the ground-state problem.
 
 ## 6. Target audience
@@ -85,7 +85,7 @@ The book is 23 chapters plus 2 appendices, organized in seven parts, each mappin
 
 | # | Practical chapter title | Goal |
 |:--|:------------------------|:-----|
-| — | Foreword & Reader's Guide | Frame the translation-layer problem and the chemistry→math→code teaching order; set prerequisites and how to run the labs. |
+| — | Preface & Reader's Guide | Frame the translation-layer problem and the chemistry→math→code teaching order; set prerequisites and how to run the labs. |
 | 1 | The Electronic Structure Problem | Why molecular energies are hard classically and where quantum simulation enters; introduce H₂ and H₂O as running examples. |
 | 2 | Fixing the Notation Minefield | Nail down indices, spin-orbital conventions, and the FockMap API/version so every later derivation is unambiguous and runnable. |
 | 3 | From Spatial to Spin-Orbital Integrals | Turn one- and two-body spatial integrals into the spin-orbital tensors the encoders consume. |
@@ -140,7 +140,7 @@ A complete first draft exists today; the delta to an Apress final is editorial (
 | Qiskit Nature tutorials | Online | IBM, ongoing | SDK-tied tutorials; transforms are largely black-box and Qiskit-locked. |
 | PennyLane quantum-chemistry demos | Online | Xanadu, ongoing | Demo-style and PennyLane-locked; no cross-encoding comparison or explicit intermediate exposure. |
 
-**Differentiator:** No competing book or online resource teaches the *encoding and compilation layer itself* as an executable engineering pipeline — molecular integrals → second quantization → six encodings → tapering → Trotterization → OpenQASM/Q# — with every intermediate exposed, independently verified, and reproducible from an open-source library. This is neither another general quantum-computing textbook nor another quantum-chemistry textbook; it is the missing bridge between them.
+**Differentiator:** We are not aware of another book-length treatment that teaches the *encoding and compilation layer itself* as an executable engineering pipeline — molecular integrals → second quantization → six encodings → tapering → Trotterization → OpenQASM/Q# — with every intermediate exposed, independently verified, and reproducible from an open-source library. This is neither another general quantum-computing textbook nor another quantum-chemistry textbook; it is the missing bridge between them.
 
 ## 12. Why now
 

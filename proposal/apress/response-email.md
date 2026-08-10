@@ -1,20 +1,23 @@
+> Internal note (not part of the email): this is the combined submission email covering both invited books. Send as ONE email with both Apress proposal Word forms attached — this book's `apress-book-proposal.docx` plus the *Demystifying Quantum Computing for Engineers* form (see that book's PR). Coordinate the attachment filename for the Demystifying form before sending.
+
 **To:** James Robinson-Prior, Senior Editor, Apress
 **From:** John Azariah
-**Subject:** Second proposal (as invited): *Molecules to Quantum Circuits*
+**Subject:** Two proposals, as invited — *Demystifying Quantum Computing for Engineers* and *Molecules to Quantum Circuits*
 
 Hi James,
 
-Thank you again for the encouragement on the first proposal. As you suggested, here is the separate proposal for the quantum-circuits book with open-source components — **Molecules to Quantum Circuits: A Hands-On Pipeline from Electronic Structure to Hardware-Ready Circuits** — attached as a standalone packet (`apress-book-proposal.docx`).
+Thank you for the encouragement, and for inviting both of these. I'm sending the two proposals together in this one email so you can see how they relate — and how they differ. Each is a self-contained Apress proposal form (Word), and each can be commissioned on its own; neither depends on the other.
 
-Quick framing so the two don't blur together:
+The two books, side by side:
 
-- **This book, *Molecules to Quantum Circuits*, is single-domain and depth-first.** It teaches the one layer most resources skip — the fermion-to-qubit encoding and circuit-compilation step — as a fully executable, vendor-neutral engineering pipeline: molecular integrals → second quantization → six encodings → symmetry tapering → Trotterized circuits → OpenQASM 3.0 and Q# export. Every intermediate coefficient and Pauli string is exposed and independently verified against a classical PySCF/Full-CI reference.
-- **It is built on real, released open source.** The companion is FockMap, an F# library published on NuGet, with ten runnable lab scripts, canonical H₂ fixtures with published provenance, and one-click Codespaces so a reader reproduces every number in the book.
-- **It is distinct from the application-first book.** *Demystifying Quantum Computing for Engineers* surveys industry problems broadly; this one goes deep on the machinery behind one of them. I'd be grateful if the two proposals could be reviewed and approved independently — neither depends on the other.
+- ***Demystifying Quantum Computing for Engineers*** — the breadth book. Application-first: it surveys real industry problems and the quantum approaches to them, for working engineers who want to understand where quantum computing could matter, and why. (Proposal form attached.)
+- ***Molecules to Quantum Circuits: A Hands-On Pipeline from Electronic Structure to Exportable Quantum Circuits*** — the depth book. Single-domain: it teaches the one layer most resources skip — fermion-to-qubit encoding and circuit compilation — as a fully executable, vendor-neutral pipeline (molecular integrals → second quantization → six encodings → symmetry tapering → Trotterized circuits → OpenQASM 3.0 and Q# export), with every intermediate coefficient and Pauli string exposed and independently verified against a classical PySCF/Full-CI reference. It is built on FockMap, an F# library published on NuGet, with ten runnable lab scripts, canonical H₂ fixtures with published provenance, and one-click Codespaces. (Proposal form attached: `apress-book-proposal.docx`.)
 
-The manuscript is a complete first draft (~46,000 words, 23 chapters plus 2 appendices). The proposal includes a full chapter-by-chapter TOC, an honest competition analysis, estimated final length, a delivery schedule, and two proposed technical reviewers.
+Together they're complementary: one shows engineers *why* quantum could matter across industries; the other takes one of those domains and shows *how* the machinery actually works, end to end, in runnable code. Different readers, different reading goals — the same no-hype, executable philosophy.
 
-Happy to send sample chapters or a live Codespaces link whenever useful.
+Status and schedule: both are complete first drafts. I can align both to Apress production with a shared outside date of 31 March 2027 for full revised manuscripts, and I'm happy to sequence the intermediate milestones — sample chapters and revisions — however best suits your list, including staggering the two so they don't arrive at once.
+
+I'd be grateful if the two could be reviewed on their own merits and commissioned independently. I'm glad to send sample chapters or a live Codespaces link for either whenever it's useful.
 
 Best regards,
 John Azariah
