@@ -65,7 +65,11 @@ After working through the book, a reader can:
 
 **Assumed background:** linear algebra (vectors, matrices, eigenvalues) and introductory quantum mechanics (wavefunctions, bra–ket). **Developed from scratch:** second quantization, Pauli algebra, the six encodings, tapering, product-formula compilation, and F#.
 
-## 7. Source code and ancillary materials
+## 7. Keywords
+
+fermion-to-qubit encoding · quantum chemistry simulation · Jordan–Wigner transform · Bravyi–Kitaev transform · qubit tapering · Trotterization · quantum circuit compilation · molecular Hamiltonian · OpenQASM · VQE (variational quantum eigensolver) · quantum resource estimation · F# / functional programming
+
+## 8. Source code and ancillary materials
 
 - **FockMap** open-source F# library — NuGet package `FockMap` 0.9.0; source at https://github.com/johnazariah/encodings; companion code MIT-licensed. Release provenance (commit + DLL SHA-256) is published in the book.
 - **10 interactive lab scripts** (`labs/01..10-*.fsx`), each runnable with `dotnet fsi` (plus a shared `PauliMatrix.fsx` helper module).
@@ -75,7 +79,7 @@ After working through the book, a reader can:
 - **~27 figures** (25 diagrams + 2 computed data plots) and an API cookbook appendix.
 - A companion research-evidence repository backs the book's computed numbers; the manuscript and labs have been correctness- and reproducibility-checked.
 
-## 8. Table of contents (tentative)
+## 9. Table of contents (tentative)
 
 The book is 23 chapters plus 2 appendices, organized in seven parts, each mapping one-to-one to an existing manuscript chapter. Full section-level headings are in the companion file `tentative-toc.md`.
 
@@ -108,7 +112,7 @@ The book is 23 chapters plus 2 appendices, organized in seven parts, each mappin
 | A | Library Cookbook Reference | Quick-reference recipes for the FockMap API used throughout. |
 | B | Mathematical Background | Self-contained refresher on the linear algebra and operator theory assumed in the main text. |
 
-## 9. Estimated length
+## 10. Estimated length
 
 | Metric | Current draft | Estimated Apress final |
 |:-------|:--------------|:-----------------------|
@@ -122,7 +126,7 @@ The book is 23 chapters plus 2 appendices, organized in seven parts, each mappin
 
 A complete first draft exists today; the delta to an Apress final is editorial (practitioner-facing chapter intros, condensed introductory material, expanded code walkthroughs, index/glossary), not new research.
 
-## 10. Competition and complementary works
+## 11. Competition and complementary works
 
 | Title / resource | Type | Source, year | How this book differs |
 |:-----------------|:-----|:-------------|:----------------------|
@@ -138,11 +142,11 @@ A complete first draft exists today; the delta to an Apress final is editorial (
 
 **Differentiator:** No competing book or online resource teaches the *encoding and compilation layer itself* as an executable engineering pipeline — molecular integrals → second quantization → six encodings → tapering → Trotterization → OpenQASM/Q# — with every intermediate exposed, independently verified, and reproducible from an open-source library. This is neither another general quantum-computing textbook nor another quantum-chemistry textbook; it is the missing bridge between them.
 
-## 11. Why now
+## 12. Why now
 
 Quantum-simulation toolchains are maturing, but the encoding/compilation layer remains the least-documented and most error-prone part of the stack for practitioners. Engineers arriving from software and chemistry need a reproducible, vendor-neutral account of how a molecule becomes a circuit. This book meets that need with released, testable code rather than pseudocode.
 
-## 12. Delivery schedule (for author confirmation)
+## 13. Delivery schedule (for author confirmation)
 
 | Milestone | Target date |
 |:----------|:------------|
@@ -152,7 +156,7 @@ Quantum-simulation toolchains are maturing, but the encoding/compilation layer r
 
 Dates are derived from current manuscript maturity (a complete first draft exists) and are proposed for confirmation.
 
-## 13. Proposed technical reviewers
+## 14. Proposed technical reviewers
 
 Apress typically requests two reviewers. Both below have reviewed the author's work previously; their availability and contact permission specifically for Apress are being confirmed, and their contact details are held in the author's private copy of this proposal.
 
@@ -161,10 +165,10 @@ Apress typically requests two reviewers. Both below have reviewed the author's w
 | 1 | Dr James Daniel Whitfield | Associate Professor, Dartmouth College | Quantum-chemistry simulation; fermion-to-qubit methods | [REVIEWER EMAIL — SEE PRIVATE COPY] |
 | 2 | Dr Martin Suchara | IonQ (formerly Argonne National Laboratory) | Applied quantum computing and quantum simulation | [REVIEWER EMAIL — SEE PRIVATE COPY] |
 
-## 14. Apress Open (open access)
+## 15. Apress Open (open access)
 
 Not at this stage; open to discussing it if institutional or sponsor funding is available.
 
-## 15. Relationship to the author's other proposed Apress book
+## 16. Relationship to the author's other proposed Apress book
 
 This proposal is deliberately standalone. *Molecules to Quantum Circuits* is a deep, single-domain engineering guide to the fermion-to-qubit encoding and circuit-compilation layer, built around one open-source library and a reproducible pipeline. The separately proposed *Demystifying Quantum Computing for Engineers* is application-first and breadth-oriented, surveying multiple industry problems. They share an author and a hands-on, no-hype philosophy but serve different readers and reading goals. The author requests that the two proposals be evaluated and approved independently; neither is a prerequisite for, or dependent on, the other.
