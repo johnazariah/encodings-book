@@ -44,4 +44,4 @@ Apress will push on practitioner outcomes and executable content. We are strong 
 
 - **Foreword:** Foreword candidate: Guang Hao Low; fallback Hongbin Liu — approach only after availability/interest is confirmed. Do NOT name a planned/secured foreword in the proposal or email unless assent arrives.
 - **Reviewer contact details** are kept only in `proposal/apress/private/` (never committed): James Daniel Whitfield and Martin Suchara emails.
-- Reviewer status is asymmetric: Dr Whitfield is proposed but not yet approached (no consent yet); Dr Suchara has enthusiastically reviewed the author's work before but needs Apress-specific availability reconfirmed. Do not imply either has reviewed this book or given current Apress assent. Confirm both before James contacts them.
+- Both reviewers are confirmed: Dr James Daniel Whitfield and Dr Martin Suchara have already agreed to review this book, regardless of publisher. Their emails live only in the private copy.

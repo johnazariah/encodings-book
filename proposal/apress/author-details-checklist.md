@@ -7,9 +7,8 @@ Items the author (John) still needs to decide or supply before/at submission. Re
 - ✅ **Schedule:** revised sample chapters 30 September 2026; full revised manuscript 31 March 2027.
 - ✅ **Apress Open:** Not at this stage; open to discussing if institutional or sponsor funding is available.
 
-## Reviewers (pair confirmed: Whitfield + Suchara)
-- [ ] **Approach Dr James Daniel Whitfield and obtain consent.** He is proposed but has not yet been approached and has not consented (Apress or otherwise). Do not list him as having agreed until he does.
-- [ ] **Reconfirm Dr Martin Suchara's Apress-specific availability.** He has heartily agreed to review the author's work in the past; reconfirm current availability/permission specifically for Apress.
+## Reviewers (confirmed: Whitfield + Suchara)
+- ✅ **Reviewers confirmed.** Dr James Daniel Whitfield and Dr Martin Suchara have both agreed to review the book (regardless of publisher).
 - [ ] **Fill reviewer emails in the PRIVATE copy only** (`proposal/apress/private/`): Whitfield and Suchara. Committed proposal keeps placeholders.
 
 ## Schedule
