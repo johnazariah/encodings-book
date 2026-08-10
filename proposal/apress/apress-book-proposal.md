@@ -158,7 +158,7 @@ Dates are derived from current manuscript maturity (a complete first draft exist
 
 ## 14. Proposed technical reviewers
 
-Apress typically requests two reviewers. Both below have reviewed the author's work previously; their availability and contact permission specifically for Apress are being confirmed, and their contact details are held in the author's private copy of this proposal.
+Apress typically requests two reviewers. Both names below are proposed, subject to Apress-specific confirmation; their contact details are held in the author's private copy of this proposal. Dr Whitfield is proposed but has not yet been approached, so he has not consented. Dr Suchara has enthusiastically reviewed the author's work in the past; his current availability for Apress still needs to be reconfirmed. Neither should be contacted until the author confirms.
 
 | # | Name | Affiliation | Expertise | Email |
 |:--|:-----|:------------|:----------|:------|
